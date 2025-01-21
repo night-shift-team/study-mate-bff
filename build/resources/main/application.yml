@@ -1,4 +1,0 @@
-# Local 환경(Default), Dev 환경, Prod 환경
-spring:
-  profiles:
-    active: local
