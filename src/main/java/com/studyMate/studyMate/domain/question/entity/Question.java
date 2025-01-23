@@ -1,6 +1,7 @@
 package com.studyMate.studyMate.domain.question.entity;
 
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,9 +13,8 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Question {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Tsid
     @Column(name = "question_id")
     private Long questionId;
 

@@ -2,6 +2,7 @@ package com.studyMate.studyMate.domain.user.entity;
 
 import com.studyMate.studyMate.domain.user.data.LoginType;
 import com.studyMate.studyMate.domain.user.data.UserStatus;
+import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Tsid
     @Column(name = "user_id")
     private Long userId;
 
