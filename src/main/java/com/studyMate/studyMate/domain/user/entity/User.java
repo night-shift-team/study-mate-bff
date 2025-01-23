@@ -47,7 +47,7 @@ public class User {
     private Integer initScore;
 
     @Column(name = "role", nullable = false)
-    private Boolean role;
+    private Integer role;
 
     @Column(name = "created_dt", updatable = false)
     private LocalDateTime createdDt;
