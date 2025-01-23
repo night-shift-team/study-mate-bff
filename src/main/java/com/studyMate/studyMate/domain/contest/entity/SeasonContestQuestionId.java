@@ -7,7 +7,6 @@ import java.util.Objects;
 
 @Embeddable
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

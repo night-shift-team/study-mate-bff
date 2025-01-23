@@ -7,7 +7,6 @@ import lombok.*;
 @Entity
 @Table(name = "season_contest_questions")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

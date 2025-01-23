@@ -6,7 +6,6 @@ import lombok.*;
 @Entity
 @Table(name = "maq")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder

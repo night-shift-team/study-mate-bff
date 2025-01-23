@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "contest_history")
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
