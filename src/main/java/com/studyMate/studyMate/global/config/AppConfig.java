@@ -1,4 +1,4 @@
-package com.studyMate.studyMate.global.common;
+package com.studyMate.studyMate.global.config;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
