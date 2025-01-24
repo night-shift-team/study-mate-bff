@@ -8,6 +8,7 @@ import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.domain.user.repository.UserRepository;
 import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
+import com.studyMate.studyMate.global.util.EncryptionUtil;
 import com.studyMate.studyMate.global.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,8 +24,8 @@ import java.time.LocalDateTime;
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
-    private JwtTokenUtil jwtTokenUtil;
-
+    private final JwtTokenUtil jwtTokenUtil;
+    private final EncryptionUtil encryptionUtil;
     /**
      * 로컬 회원가입 메소드
      * @param signUpRequestDto
@@ -34,7 +35,6 @@ public class UserService {
     public SignUpResponseDto signUpLocal(SignUpRequestDto signUpRequestDto) {
         // Exceptions
         boolean isLoginIdValid = checkDuplicateEmail(signUpRequestDto.loginId());
-        System.out.println("is login id valid: " + isLoginIdValid);
         if(isLoginIdValid){
             throw new CustomException(ErrorCode.DUP_USER_ID);
         }
@@ -44,8 +44,8 @@ public class UserService {
             throw new CustomException(ErrorCode.DUP_USER_NICKNAME);
         }
 
-        // TODO (HD) : 비밀번호 암호화할 것.
-        User newUser = createUser(LoginType.LOCAL, signUpRequestDto.loginId(), signUpRequestDto.loginPw(), signUpRequestDto.nickname(), "default", 0);
+        String encryptedUserPw = encryptionUtil.encryptBcrypt(signUpRequestDto.loginPw());
+        User newUser = createUser(LoginType.LOCAL, signUpRequestDto.loginId(), encryptedUserPw, signUpRequestDto.nickname(), "default", 0);
 
         return new SignUpResponseDto(newUser.getUserId(), newUser.getLoginId(), newUser.getCreatedDt());
     }
