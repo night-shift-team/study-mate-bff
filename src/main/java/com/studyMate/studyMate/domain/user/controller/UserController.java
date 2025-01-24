@@ -18,4 +18,14 @@ public class UserController {
         return userService.signUpLocal(signUpRequestBody);
     }
 
+    @GetMapping("/email/duplicate")
+    public boolean duplicateCheckEmail(@RequestParam("email") String email){
+        return userService.checkDuplicateEmail(email);
+    }
+
+    @GetMapping("/nickname/duplicate")
+    public boolean duplicateCheckNickname(@RequestParam("nickname") String nickname){
+        return userService.checkDuplicateNickname(nickname);
+    }
+
 }
