@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 public record SignUpResponseDto(
         Long id,
-        String userId,
-        LocalDateTime createdDt
+        String userId
 ) {
 }

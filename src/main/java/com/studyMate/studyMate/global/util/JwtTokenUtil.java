@@ -58,7 +58,7 @@ public class JwtTokenUtil {
         }
     }
 
-    private enum TokenType {
+    public enum TokenType {
         ACCESS, REFRESH
     }
 }
