@@ -1,8 +1,12 @@
 package com.studyMate.studyMate.global.util;
 
+import com.studyMate.studyMate.global.error.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import static com.studyMate.studyMate.global.util.StringUtil.isNullOrEmpty;
 
@@ -36,5 +40,16 @@ public class EncryptionUtil {
         }
 
         return encoder.matches(plainText, cipherText);
+    }
+
+    /**
+     * UTF-8 Standard URL Decoder
+     */
+    public String decodeUrl(String encodedUrl) {
+        if(isNullOrEmpty(encodedUrl)) {
+            throw new IllegalArgumentException("encoded url can not be null");
+        }
+
+        return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
     }
 }
