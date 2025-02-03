@@ -1,9 +1,6 @@
 package com.studyMate.studyMate.domain.user.controller;
 
-import com.studyMate.studyMate.domain.user.dto.SignInRequestDto;
-import com.studyMate.studyMate.domain.user.dto.SignInResponseDto;
-import com.studyMate.studyMate.domain.user.dto.SignUpRequestDto;
-import com.studyMate.studyMate.domain.user.dto.SignUpResponseDto;
+import com.studyMate.studyMate.domain.user.dto.*;
 import com.studyMate.studyMate.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.NoArgsConstructor;
@@ -25,6 +22,11 @@ public class UserController {
     @PostMapping("/sign-in/local")
     public SignInResponseDto signIn (@RequestBody @Validated SignInRequestDto signInRequestBody) {
         return userService.signInLocal(signInRequestBody);
+    }
+
+    @PostMapping("/sign-in/google")
+    public SignInResponseDto googleSignIn (@RequestBody @Validated GoogleSignInRequestDto googleSignInRequestBody) {
+        return userService.signInGoogle(googleSignInRequestBody.googleCode());
     }
 
     @GetMapping("/email/duplicate")

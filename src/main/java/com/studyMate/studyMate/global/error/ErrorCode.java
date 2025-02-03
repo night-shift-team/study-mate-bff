@@ -29,6 +29,8 @@ public enum ErrorCode {
 
     NOT_ACTIVE_USER(403, "not active user", "0105"),
 
+    INVALID_GOOGLE_AUTH_CODE(403, "invalid google auth code", "0106"),
+
     ;
     private final int status;
     private final String message;
