@@ -44,7 +44,7 @@ public class JwtTokenUtil {
      * @param token JWT Token
      * @return jwt token claim
      */
-    public Claims validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(SECRET_KEY)
@@ -52,9 +52,9 @@ public class JwtTokenUtil {
                     .parseSignedClaims(token)
                     .getPayload();
 
-            return claims;
+            return !claims.getExpiration().before(new Date());
         } catch (JwtException e) {
-            throw new IllegalStateException("[jwtUtil] invalid token",  e);
+            return false;
         }
     }
 

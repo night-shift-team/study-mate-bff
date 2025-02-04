@@ -2,6 +2,7 @@ package com.studyMate.studyMate.domain.user.controller;
 
 import com.studyMate.studyMate.domain.user.dto.*;
 import com.studyMate.studyMate.domain.user.service.UserService;
+import com.studyMate.studyMate.global.config.RoleAuth;
 import jakarta.validation.Valid;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,12 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/users")
 public class UserController {
     private final UserService userService;
+
+    @GetMapping("/")
+    @RoleAuth
+    public boolean getUserInfo() {
+        return true;
+    }
 
     @PostMapping("/sign-up/local")
     public SignUpResponseDto signUp(@RequestBody @Validated SignUpRequestDto signUpRequestBody){
