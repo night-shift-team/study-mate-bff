@@ -1,8 +1,7 @@
 package com.studyMate.studyMate.global.util;
 
-import com.studyMate.studyMate.global.error.CustomException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import java.net.URLDecoder;
@@ -13,18 +12,16 @@ import static com.studyMate.studyMate.global.util.StringUtil.isNullOrEmpty;
 @Component
 @RequiredArgsConstructor
 public class EncryptionUtil {
-    private static final int STRENGTH = 12;
-    private final BCryptPasswordEncoder encoder;
-
     /**
      * 암호화 (Bcrypt)
      */
     public String encryptBcrypt(String plainText) {
-        if(isNullOrEmpty(plainText)) {
+        if (isNullOrEmpty(plainText)) {
             throw new IllegalArgumentException("plain text can not be null");
         }
 
-        return encoder.encode(plainText);
+        // Bcrypt 해시 생성
+        return BCrypt.hashpw(plainText, BCrypt.gensalt());
     }
 
     /**
@@ -39,14 +36,15 @@ public class EncryptionUtil {
             throw new IllegalArgumentException("cipher text can not be null");
         }
 
-        return encoder.matches(plainText, cipherText);
+        // 해시와 평문 비교
+        return BCrypt.checkpw(plainText, cipherText);
     }
 
     /**
      * UTF-8 Standard URL Decoder
      */
     public String decodeUrl(String encodedUrl) {
-        if(isNullOrEmpty(encodedUrl)) {
+        if (isNullOrEmpty(encodedUrl)) {
             throw new IllegalArgumentException("encoded url can not be null");
         }
 
