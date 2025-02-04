@@ -45,6 +45,21 @@ public class UserService {
     @Value("${e.auth.redirect_url}")
     private String FRONT_REDIRECT_URL;
 
+    public GetUserDto getActiveUserById(long id) {
+        User user = userRepository.findByUserIdAndStatus(id, UserStatus.ACTIVE).orElseThrow(() ->  new CustomException(ErrorCode.NOT_ACTIVE_USER));
+
+        return GetUserDto.builder()
+                .userId(user.getUserId())
+                .loginType(user.getLoginType())
+                .loginId(user.getLoginId())
+                .nickname(user.getNickname())
+                .profileImg(user.getProfileImg())
+                .status(user.getStatus())
+                .role(user.getRole())
+                .registeredAt(user.getCreatedDt())
+                .build();
+    }
+
     /**
      * 로컬 회원가입 메소드
      * @param signUpRequestDto

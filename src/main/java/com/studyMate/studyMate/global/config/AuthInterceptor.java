@@ -22,7 +22,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String requestURI = request.getRequestURI();
         String sessionId = request.getSession().getId();
-        log.info("Auth Interceptor Activated {}", requestURI);
+
         boolean verifyResult = false;
 
         if (handler instanceof HandlerMethod handlerMethod) {
@@ -40,8 +40,16 @@ public class AuthInterceptor implements HandlerInterceptor {
                 // Token 검증
                 String acToken = authHeader.substring(7);
 
-                // JWT 검증을 거치고, -> 만약 실패시 에러 나감
+                // JWT 검증을 거치고, -> 만약 실패시 에러
                 boolean isValid = jwtTokenUtil.validateToken(acToken);
+                long userId = jwtTokenUtil.getUserId(acToken);
+                if(!isValid) {
+                    throw new CustomException(ErrorCode.UNAUTHORIZED);
+                }
+
+                request.setAttribute("userId", userId);
+                log.info("[AuthInterceptor] user id : {} || url : {}", userId, requestURI);
+
                 verifyResult = isValid;
             } else {
                 verifyResult = true;

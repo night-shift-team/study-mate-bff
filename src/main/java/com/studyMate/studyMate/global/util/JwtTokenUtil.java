@@ -58,6 +58,23 @@ public class JwtTokenUtil {
         }
     }
 
+    /**
+     * Token Claim 조회
+     */
+    public Long getUserId(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(SECRET_KEY)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            return claims.get("userId", Long.class);
+        } catch (JwtException e) {
+            throw new IllegalStateException("[jwtUtil] invalid token");
+        }
+    }
+
     public enum TokenType {
         ACCESS, REFRESH
     }
