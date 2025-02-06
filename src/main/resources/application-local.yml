@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: ${DB_HOST}/devmate?serverTimezone=UTC
+    url: ${DB_HOST}?serverTimezone=UTC
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
