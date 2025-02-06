@@ -17,7 +17,8 @@ import org.springframework.context.annotation.Configuration;
                 version = "v1"
         ),
         servers = {
-                @Server(url = "http://localhost:8080", description = "로컬 환경")
+                @Server(url = "http://localhost:8080", description = "로컬 환경"),
+                @Server(url = "https://study-mate-bff-ecb080c0db60.herokuapp.com/", description = "dev")
         }
 )
 @Configuration
