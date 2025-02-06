@@ -57,4 +57,20 @@ public class User {
 
     @Column(name = "removed_dt")
     private LocalDateTime removedDt;
+
+    public void setNewPassword(String password) {
+        this.loginPw = password;
+    }
+
+    public void setNewProfileImg(String profileImg) {
+        this.profileImg = profileImg;
+    }
+
+    public void setNewNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public void setRole(int role) {
+        this.role = role;
+    }
 }

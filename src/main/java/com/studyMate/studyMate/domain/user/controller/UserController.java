@@ -56,6 +56,16 @@ public class UserController {
         return userService.signInLocal(signInRequestBody);
     }
 
+    @PostMapping("/reset-password/admin")
+    @RoleAuth(requiredRole = 7)
+    @Operation(summary = "비밀번호 초기화 (어드민 전용)", description = "비밀번호 초기화 API (123456)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
+    })
+    public long resetPassword (@RequestBody @Validated ResetPasswordRequestDto resetPasswordRequestBody) {
+        return userService.resetPasswordAdmin(resetPasswordRequestBody.email());
+    }
+
     @PostMapping("/sign-in/google")
     @Operation(summary = "구글 로그인", description = "구글 로그인 API")
     @ApiResponses(value = {

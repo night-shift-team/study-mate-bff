@@ -139,6 +139,13 @@ public class UserService {
         }
     }
 
+
+    @Transactional
+    public long resetPasswordAdmin(String email) {
+        return resetPassword(email);
+    }
+
+
     /**
      * 구글 로그인 - 구글 Access Token 가져오기
      * @return google access token
@@ -203,6 +210,20 @@ public class UserService {
         return userRepository.existsByNickname(nickname);
     }
 
+
+    /**
+     * Reset Password
+     */
+    private long resetPassword(String email) {
+        User user = userRepository.findByLoginId(email).orElseThrow(() -> new CustomException(ErrorCode.INVALID_LOGINID));
+
+        String encryptedUserPw = encryptionUtil.encryptBcrypt("123456");
+        user.setNewPassword(encryptedUserPw);
+
+        userRepository.save(user);
+
+        return user.getUserId();
+    }
 
     /**
      * 유저생성
