@@ -38,12 +38,20 @@ public class UserService {
     private final String GOOGLE_GET_ACCESS_TOKEN_URL = "https://oauth2.googleapis.com/token";
     private final String GOOGLE_GET_USERINFO_BASE_URL = "https://www.googleapis.com/userinfo/v2/me?access_token=";
 
+    private final String GITHUB_GET_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token";
+    private final String GITHUB_GET_USERINFO_BASE_URL = "https://api.github.com/user";
+
     @Value("${e.auth.google_client_id}")
     private String GOOGLE_CLIENT_ID;
     @Value("${e.auth.google_client_secret}")
     private String GOOGLE_CLIENT_SECRET;
     @Value("${e.auth.redirect_url}")
     private String FRONT_REDIRECT_URL;
+
+    @Value("${e.auth.github_client_id}")
+    private String GITHUB_CLIENT_ID;
+    @Value("{e.auth.github_client_secret}")
+    private String GITHUB_CLIENT_SECRET;
 
     public GetUserDto getActiveUserById(long id) {
         User user = userRepository.findByUserIdAndStatus(id, UserStatus.ACTIVE).orElseThrow(() ->  new CustomException(ErrorCode.NOT_ACTIVE_USER));
@@ -140,6 +148,44 @@ public class UserService {
     }
 
 
+    /**
+     * Github 로그인 - 유저 호출 api 메소드
+     * @return SignInResponseDto
+     */
+    @Transactional
+    public SignInResponseDto signInGithub(String githubCode) {
+        try {
+            // 1. Get Access Token
+            String gAccessToken = getGithubAccessToken(githubCode);
+
+            // 2. Get User info
+            GetGithubUserInfoResponseDto userInfo = getGithubUserInfo(gAccessToken);
+
+            // 3.1 DB 유저 존재확인 -> 있으면 해당 유저 사용
+            User user = userRepository.findByLoginId(userInfo.email()).orElseGet(() -> {
+                // 3.2 없으면, 새로운 유저 생성
+                return this.createUser(
+                        LoginType.GITHUB,
+                        userInfo.email(),
+                        "github",
+                        userInfo.login(),
+                        userInfo.avatar_url(),
+                        0
+                );
+            });
+
+            // 4. 토큰 페어 발급 -> 리턴
+            String acToken = jwtTokenUtil.generateToken(user.getUserId(), JwtTokenUtil.TokenType.ACCESS);
+            String rfToken = jwtTokenUtil.generateToken(user.getUserId(), JwtTokenUtil.TokenType.REFRESH);
+
+            return new SignInResponseDto(acToken, rfToken);
+        } catch(Exception e) {
+            System.out.println(e);
+            throw new CustomException(ErrorCode.INVALID_GOOGLE_AUTH_CODE);
+        }
+    }
+
+
     @Transactional
     public long resetPasswordAdmin(String email) {
         return resetPassword(email);
@@ -195,6 +241,60 @@ public class UserService {
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<GetGoogleUserInfoResponseDto> response = restTemplate.getForEntity(requestUrl, GetGoogleUserInfoResponseDto.class);
+
+        return Objects.requireNonNull(response.getBody());
+    }
+
+    /**
+     * Github 로그인 - 깃허브 Access Token 가져오기
+     */
+    private String getGithubAccessToken(String githubCode) {
+        final HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
+
+        final HttpEntity<GetGithubAccessTokenRequest> body = new HttpEntity<>(
+                new GetGithubAccessTokenRequest(
+                        GITHUB_CLIENT_ID,
+                        GITHUB_CLIENT_SECRET,
+                        githubCode
+                ),
+                headers
+        );
+
+        try {
+            // 3. decrypt된 code값으로 google access token 받아오기 : [POST] https://oauth2.googleapis.com/token
+            RestTemplate restTemplate = new RestTemplate();
+
+            ResponseEntity<GetGithubAccessTokenResponse> response = restTemplate.exchange(
+                    GITHUB_GET_ACCESS_TOKEN_URL,
+                    HttpMethod.POST,
+                    body,
+                    GetGithubAccessTokenResponse.class
+            );
+
+            // 4. response 에서 access token 추출 리턴
+            return Objects.requireNonNull(response.getBody()).access_token();
+        } catch(Exception e) {
+            e.getMessage();
+            throw new IllegalArgumentException("fail to get github access token");
+        }
+    }
+
+    /**
+     * Github 로그인 - 계정정보 가져오기
+     */
+    private GetGithubUserInfoResponseDto getGithubUserInfo(String githubAccessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(githubAccessToken);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<GetGithubUserInfoResponseDto> response = restTemplate.exchange(
+                GITHUB_GET_USERINFO_BASE_URL,
+                HttpMethod.GET,
+                request,
+                GetGithubUserInfoResponseDto.class
+        );
 
         return Objects.requireNonNull(response.getBody());
     }

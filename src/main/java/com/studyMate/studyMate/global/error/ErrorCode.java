@@ -29,7 +29,8 @@ public enum ErrorCode {
 
     NOT_ACTIVE_USER(403, "not active user", "0105"),
 
-    INVALID_GOOGLE_AUTH_CODE(403, "invalid google auth code", "0106"),
+    INVALID_GOOGLE_AUTH_CODE(400, "invalid google auth code", "0106"),
+    INVALID_GITHUB_AUTH_CODE(400, "invalid github auth code", "0107"),
 
     ;
     private final int status;
