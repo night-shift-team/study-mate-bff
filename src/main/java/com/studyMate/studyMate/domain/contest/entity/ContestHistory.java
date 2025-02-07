@@ -4,10 +4,13 @@ import com.studyMate.studyMate.domain.question.entity.Question;
 import com.studyMate.studyMate.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(name = "contest_history")
 @Getter
 @NoArgsConstructor
@@ -37,6 +40,7 @@ public class ContestHistory {
     @Column(name = "score_result", nullable = false)
     private Integer scoreResult;
 
+    @CreatedDate
     @Column(name = "created_dt")
     private LocalDateTime createdDt;
 }
