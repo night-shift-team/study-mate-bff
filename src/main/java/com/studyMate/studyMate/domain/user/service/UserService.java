@@ -50,7 +50,7 @@ public class UserService {
 
     @Value("${e.auth.github_client_id}")
     private String GITHUB_CLIENT_ID;
-    @Value("{e.auth.github_client_secret}")
+    @Value("${e.auth.github_client_secret}")
     private String GITHUB_CLIENT_SECRET;
 
     public GetUserDto getActiveUserById(long id) {
