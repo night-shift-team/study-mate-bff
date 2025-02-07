@@ -27,6 +27,18 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
+    @PostMapping("/refresh")
+    @Operation(summary = "Token 리프레쉬(*)", description = "토큰 리프레시 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignUpResponseDto.class))})
+    })
+    @RoleAuth
+    public SignInResponseDto tokenRefresh(HttpServletRequest request, @RequestBody @Validated RefreshTokenRequestDto refreshTokenRequestbody) {
+        long userId = (Long) request.getAttribute("userId");
+        return userService.refreshTokenPair(userId, refreshTokenRequestbody.refreshToken());
+    }
+
+
     @GetMapping("/oauth/parameters/admin")
 //    @RoleAuth(requiredRole = 7)
     @Operation(summary = "OAuth 인자 확인 (어드민 전용)", description = "OAuth 인자확인 API")

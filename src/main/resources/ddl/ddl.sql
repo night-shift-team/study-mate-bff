@@ -9,7 +9,7 @@ create table users (
     status      enum('ACTIVE', 'PAUSE', 'BAN') not null default 'ACTIVE',
     score       int(11)         not null,
     init_score  int(11)         not null,
-    role        tinyint(1)      not null default 0,
+    role        int(11)         not null default 0,
     created_dt  datetime(6)     null default current_timestamp(6),
     updated_dt  datetime(6)     null default current_timestamp(6) on update current_timestamp(6),
     removed_dt  datetime(6)     null
@@ -18,10 +18,10 @@ create table users (
 ################################ 문제 관련 테이블 ################################
 create table questions (
     question_id     bigint      primary key not null,
-    question        longtext    not null,
+    question        longtext        not null,
     category        enum('ALGORITHUM_MAQ', 'ALGORITHUM_UAQ', 'ALGORITHUM_SAQ', 'OS_MAQ', 'OS_UAQ', 'OS_SAQ', 'NETWORK_MAQ', 'NETWORK_UAQ', 'NETWORK_SAQ', 'DB_MAQ', 'DB_UAQ', 'DB_SAQ', 'DESIGN_MAQ', 'DESIGN_UAQ', 'DESIGN_SAQ') not null,
-    comment         longtext    not null,
-    difficulty      tinyint(6)  not null default 0
+    comment         longtext        not null,
+    difficulty      int(11)  not null default 0
 );
 
 create table maq (
@@ -30,14 +30,14 @@ create table maq (
     choice_2       varchar(255)     not null,
     choice_3       varchar(255)     not null,
     choice_4       varchar(255)     not null,
-    answer         tinyint(1)       not null,
+    answer         int(11)             not null,
     primary key (question_id),
     foreign key (question_id) references questions(question_id)
 );
 
 create table uaq (
      question_id     bigint          not null,
-     answer         tinyint(1)       not null,
+     answer         int(11)       not null,
      primary key (question_id),
      foreign key (question_id) references questions(question_id)
 );
@@ -47,7 +47,7 @@ create table saq (
      keyword_1      varchar(255)     not null,
      keyword_2      varchar(255)     not null,
      keyword_3      varchar(255)     not null,
-     answer         tinyint(1)       not null,
+     answer         int(11)       not null,
      primary key (question_id),
      foreign key (question_id) references questions(question_id)
 );
@@ -75,7 +75,7 @@ create table question_history (
     id              bigint          primary key auto_increment not null,
     user_id         bigint          not null,
     question_id     bigint          not null,
-    selected_answer tinyint(1)      not null,
+    selected_answer int(11)         not null,
     is_correct      boolean         not null,
     score_result    int(11)         not null default 0,
     created_dt      datetime(6)     default current_timestamp(6),
@@ -88,7 +88,7 @@ create table contest_history (
     id              bigint          primary key auto_increment not null,
     user_id         bigint          not null,
     question_id     bigint          not null,
-    selected_answer tinyint(1)      not null,
+    selected_answer int(11)      not null,
     is_correct      boolean         not null,
     score_result    int(11)         not null default 0,
     created_dt      datetime(6)     default current_timestamp(6),

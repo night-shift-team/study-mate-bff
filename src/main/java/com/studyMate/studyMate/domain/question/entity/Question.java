@@ -17,16 +17,14 @@ public class Question {
     @Column(name = "question_id")
     private Long questionId;
 
-    @Lob
-    @Column(name = "question", nullable = false)
+    @Column(name = "question", nullable = false, columnDefinition = "LONGTEXT")
     private String question;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private QuestionCategory category;
 
-    @Lob
-    @Column(name = "comment", nullable = false)
+    @Column(name = "comment", nullable = false, columnDefinition = "LONGTEXT")
     private String comment;
 
     @Column(name = "difficulty", nullable = false)

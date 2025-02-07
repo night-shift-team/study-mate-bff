@@ -1,7 +1,5 @@
 package com.studyMate.studyMate.domain.user.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studyMate.studyMate.domain.user.data.LoginType;
 import com.studyMate.studyMate.domain.user.data.UserStatus;
 import com.studyMate.studyMate.domain.user.dto.*;
@@ -17,14 +15,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -82,6 +75,20 @@ public class UserService {
     }
 
     /**
+     * Token Refresh
+     */
+    public SignInResponseDto refreshTokenPair(long userId, String refreshToken) {
+        boolean isValid = jwtTokenUtil.validateToken(refreshToken);
+        if(!isValid) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+
+        User user = userRepository.findByUserIdAndStatus(userId, UserStatus.ACTIVE).orElseThrow(() -> new CustomException(ErrorCode.INVALID_LOGINID));
+
+        return createTokenPair(user.getUserId());
+    }
+
+    /**
      * 로컬 회원가입 메소드
      * @param signUpRequestDto
      * @return signUpResponseDto
@@ -119,10 +126,7 @@ public class UserService {
         }
 
         // 3. JWT Token 발급
-        String acToken = jwtTokenUtil.generateToken(user.getUserId(), JwtTokenUtil.TokenType.ACCESS);
-        String rfToken = jwtTokenUtil.generateToken(user.getUserId(), JwtTokenUtil.TokenType.REFRESH);
-
-        return new SignInResponseDto(acToken, rfToken);
+        return createTokenPair(user.getUserId());
     }
 
     /**
@@ -151,10 +155,7 @@ public class UserService {
             });
 
             // 4. 토큰 페어 발급 -> 리턴
-            String acToken = jwtTokenUtil.generateToken(user.getUserId(), JwtTokenUtil.TokenType.ACCESS);
-            String rfToken = jwtTokenUtil.generateToken(user.getUserId(), JwtTokenUtil.TokenType.REFRESH);
-
-            return new SignInResponseDto(acToken, rfToken);
+            return createTokenPair(user.getUserId());
         } catch (Exception e) {
             throw new CustomException(ErrorCode.INVALID_GOOGLE_AUTH_CODE);
         }
@@ -188,10 +189,7 @@ public class UserService {
             });
 
             // 4. 토큰 페어 발급 -> 리턴
-            String acToken = jwtTokenUtil.generateToken(user.getUserId(), JwtTokenUtil.TokenType.ACCESS);
-            String rfToken = jwtTokenUtil.generateToken(user.getUserId(), JwtTokenUtil.TokenType.REFRESH);
-
-            return new SignInResponseDto(acToken, rfToken);
+            return createTokenPair(user.getUserId());
         } catch(Exception e) {
             System.out.println(e);
             throw new CustomException(ErrorCode.INVALID_GOOGLE_AUTH_CODE);
@@ -202,6 +200,15 @@ public class UserService {
     @Transactional
     public long resetPasswordAdmin(String email) {
         return resetPassword(email);
+    }
+
+    /**
+     * Token Pair 생성 (Access Token & Refresh Token)
+     */
+    private SignInResponseDto createTokenPair(long userId) {
+        String acToken = jwtTokenUtil.generateToken(userId, JwtTokenUtil.TokenType.ACCESS);
+        String rfToken = jwtTokenUtil.generateToken(userId, JwtTokenUtil.TokenType.REFRESH);
+        return SignInResponseDto.builder().accessToken(acToken).refreshToken(rfToken).build();
     }
 
 
@@ -322,7 +329,6 @@ public class UserService {
     public boolean checkDuplicateNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
     }
-
 
     /**
      * Reset Password
