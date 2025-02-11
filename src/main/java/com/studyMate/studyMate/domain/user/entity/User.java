@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.studyMate.studyMate.domain.user.data.LoginType;
 import com.studyMate.studyMate.domain.user.data.UserStatus;
+import com.studyMate.studyMate.global.data.BaseEntityDate;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -21,7 +22,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User extends BaseEntityDate {
     @Id
     @Tsid
     @Column(name = "user_id")
@@ -55,18 +56,6 @@ public class User {
 
     @Column(name = "role", nullable = false)
     private Integer role;
-
-    @CreatedDate
-    @Column(name = "created_dt", updatable = false)
-    @Schema(description = "생성일", example = "2024-09-28T16:23:00.00")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime createdDt;
-
-    @LastModifiedDate
-    @Column(name = "updated_dt")
-    @Schema(description = "업데이트일", example = "2024-09-28T16:23:00.00")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-    private LocalDateTime updatedDt;
 
     @Column(name = "removed_dt")
     @Schema(description = "삭제일", example = "2024-09-28T16:23:00.00")

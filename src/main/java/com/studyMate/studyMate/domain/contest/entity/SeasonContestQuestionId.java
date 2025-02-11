@@ -12,8 +12,8 @@ import java.util.Objects;
 @Builder
 public class SeasonContestQuestionId implements Serializable {
 
-    private Long seasonId; // Season의 기본 키
-    private Long questionId; // Question의 기본 키
+    private Long seasonId;
+    private Long questionId;
 
     @Override
     public boolean equals(Object o) {

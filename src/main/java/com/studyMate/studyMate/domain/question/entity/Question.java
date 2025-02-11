@@ -1,6 +1,7 @@
 package com.studyMate.studyMate.domain.question.entity;
 
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
+import com.studyMate.studyMate.global.data.BaseEntityDate;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Question {
+public class Question extends BaseEntityDate {
     @Id
     @Tsid
     @Column(name = "question_id")
