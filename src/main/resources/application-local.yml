@@ -1,3 +1,8 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+
 spring:
   datasource:
     url: ${DB_HOST}?serverTimezone=UTC
@@ -5,7 +10,7 @@ spring:
     password: ${DB_PASSWORD}
     driver-class-name: org.mariadb.jdbc.Driver
     hikari:
-      maximum-pool-size: 10
+      maximum-pool-size: 5
   jpa:
     hibernate:
       ddl-auto: none
@@ -17,11 +22,13 @@ spring:
 
 springdoc:
   swagger-ui:
+    path: /swagger-ui/index.html
     groups-order: DESC
     tags-sorter:  alpha
     operations-sorter: method
+    enabled: true
   paths-to-match:
-    - /api/**
+    - /**
 
 e:
   auth:

@@ -9,6 +9,8 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @OpenAPIDefinition(
         info = @Info(
@@ -17,12 +19,12 @@ import org.springframework.context.annotation.Configuration;
                 version = "v1"
         ),
         servers = {
-                @Server(url = "http://localhost:8080", description = "로컬 환경"),
-                @Server(url = "https://study-mate-bff-ecb080c0db60.herokuapp.com/", description = "dev")
+                @Server(url = "http://localhost:8080/api/v1", description = "로컬 환경"),
+                @Server(url = "https://study-mate-bff-ecb080c0db60.herokuapp.com/api/v1", description = "dev")
         }
 )
 @Configuration
-public class SwaggerConfig {
+public class SwaggerConfig implements WebMvcConfigurer {
 
     private static final String BEARER_TOKEN_PREFIX = "Bearer";
 
