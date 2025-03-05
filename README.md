@@ -8,7 +8,7 @@ Study mate web application bff server
 ## Endpoint
 - Prod : N
 - Stage : N
-- Dev : https://study-mate-bff-ecb080c0db60.herokuapp.com/
+- Dev : https://study-mate-bff-ecb080c0db60.herokuapp.com/ ([API 문서](https://study-mate-bff-ecb080c0db60.herokuapp.com/api/v1/swagger-ui/index.html))
 
 ## Requirements & Core Dependencies
 - jdk = 17
