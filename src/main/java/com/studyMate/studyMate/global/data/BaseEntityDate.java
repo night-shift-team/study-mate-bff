@@ -3,8 +3,11 @@ package com.studyMate.studyMate.global.data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -16,6 +19,8 @@ import java.time.LocalDateTime;
 @Getter
 @SQLRestriction("removed_dt is NULL")
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SuperBuilder
 public class BaseEntityDate {
     @CreatedDate
     @Column(updatable = false)

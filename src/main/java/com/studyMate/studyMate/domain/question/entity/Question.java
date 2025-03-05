@@ -5,23 +5,24 @@ import com.studyMate.studyMate.global.data.BaseEntityDate;
 import io.hypersistence.utils.hibernate.id.Tsid;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "questions")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "q_type")
-@Builder
+@SuperBuilder
 public class Question extends BaseEntityDate {
     @Id
     @Tsid
     @Column(name = "question_id")
     private Long questionId;
 
-    @Column(name = "question", nullable = false, columnDefinition = "LONGTEXT")
-    private String question;
+    @Column(name = "description", nullable = false, columnDefinition = "LONGTEXT")
+    private String description;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)

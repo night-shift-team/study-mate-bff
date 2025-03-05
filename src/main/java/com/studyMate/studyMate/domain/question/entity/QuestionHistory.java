@@ -1,22 +1,18 @@
 package com.studyMate.studyMate.domain.question.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.global.data.BaseEntityDate;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "question_history")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class QuestionHistory extends BaseEntityDate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
