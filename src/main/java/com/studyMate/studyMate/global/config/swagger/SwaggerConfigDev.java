@@ -1,4 +1,4 @@
-package com.studyMate.studyMate.global.config;
+package com.studyMate.studyMate.global.config.swagger;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
@@ -7,11 +7,13 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@Profile("dev")
 @OpenAPIDefinition(
         info = @Info(
                 title = "스터디 메이트 API 문서",
@@ -19,12 +21,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
                 version = "v1"
         ),
         servers = {
-                @Server(url = "http://localhost:8080/api/v1", description = "로컬 환경"),
                 @Server(url = "https://study-mate-bff-ecb080c0db60.herokuapp.com/api/v1", description = "dev")
         }
 )
 @Configuration
-public class SwaggerConfig implements WebMvcConfigurer {
+public class SwaggerConfigDev implements WebMvcConfigurer {
 
     private static final String BEARER_TOKEN_PREFIX = "Bearer";
 
@@ -33,9 +34,22 @@ public class SwaggerConfig implements WebMvcConfigurer {
         String securityName = "JWT";
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(securityName);
         Components components = new Components()
-                .addSecuritySchemes(securityName, new SecurityScheme().name(securityName).type(SecurityScheme.Type.HTTP).scheme(BEARER_TOKEN_PREFIX).bearerFormat(securityName));
+                .addSecuritySchemes(securityName, new SecurityScheme()
+                        .name(securityName)
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme(BEARER_TOKEN_PREFIX)
+                        .bearerFormat(securityName));
 
         return new OpenAPI()
                 .components(components)
                 .addSecurityItem(securityRequirement);
-    }}
+    }
+
+    @Bean
+    public GroupedOpenApi publicApi() {
+        return GroupedOpenApi.builder()
+                .group("spring")
+                .pathsToMatch("/**")
+                .build();
+    }
+}
