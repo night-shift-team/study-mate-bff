@@ -24,4 +24,6 @@ public class QuestionController {
         questionService.generateFakeQuestions();
         return true;
     }
+
+
 }

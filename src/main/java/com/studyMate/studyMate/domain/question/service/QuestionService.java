@@ -72,10 +72,23 @@ public class QuestionService {
                     .answer(i % 4 + 1) // 자식 클래스 필드
                     .build();
 
+            MAQ maqAlgorithumQuestion = MAQ.builder()
+                    .description("Test Question_" + QuestionCategory.ALGORITHUM_MAQ.name() + "-" + i)
+                    .category(QuestionCategory.ALGORITHUM_MAQ)
+                    .comment("Test Question Comment" + QuestionCategory.ALGORITHUM_MAQ.name() + "-" + i)
+                    .difficulty(i % 100 + 1)
+                    .choice1("Choice 1 for question " + i) // 자식 클래스 필드
+                    .choice2("Choice 2 for question " + i) // 자식 클래스 필드
+                    .choice3("Choice 3 for question " + i) // 자식 클래스 필드
+                    .choice4("Choice 4 for question " + i) // 자식 클래스 필드
+                    .answer(i % 4 + 1) // 자식 클래스 필드
+                    .build();
+
             maqQuestionList.add(maqDBQuestion);
             maqQuestionList.add(maqOsQuestion);
             maqQuestionList.add(maqNetworkQuestion);
             maqQuestionList.add(maqDesignQuestion);
+            maqQuestionList.add(maqAlgorithumQuestion);
         }
 
         log.info("Fake Question Generate count : {}", maqQuestionList.size());
