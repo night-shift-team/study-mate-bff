@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Profile;
 @Profile("local")
 @OpenAPIDefinition(
         info = @Info(
-                title = "스터디 메이트 API 문서",
-                description = "스터디메이트 API 서버 문서",
+                title = "스터디 메이트 BFF Server API 문서 (Local)",
+                description = "스터디메이트 BFF Server API 문서 (Local)",
                 version = "v1"
         ),
         servers = {
@@ -38,13 +38,5 @@ public class SwaggerConfigLocal {
         return new OpenAPI()
                 .components(components)
                 .addSecurityItem(securityRequirement);
-    }
-
-    @Bean
-    public GroupedOpenApi publicApi() {
-        return GroupedOpenApi.builder()
-                .group("spring")
-                .pathsToMatch("/**")
-                .build();
     }
 }

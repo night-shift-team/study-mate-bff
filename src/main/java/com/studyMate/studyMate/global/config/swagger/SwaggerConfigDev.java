@@ -16,12 +16,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Profile("dev")
 @OpenAPIDefinition(
         info = @Info(
-                title = "스터디 메이트 API 문서",
-                description = "스터디메이트 API 서버 문서",
+                title = "스터디 메이트 API 문서 (Dev)",
+                description = "스터디메이트 BFF Server API 문서 (Dev)",
                 version = "v1"
         ),
         servers = {
-                @Server(url = "https://study-mate-bff-ecb080c0db60.herokuapp.com/api/v1", description = "dev")
+                @Server(url = "https://study-mate-bff-ecb080c0db60.herokuapp.com/api/v1", description = "개발 환경")
         }
 )
 @Configuration
@@ -43,13 +43,5 @@ public class SwaggerConfigDev implements WebMvcConfigurer {
         return new OpenAPI()
                 .components(components)
                 .addSecurityItem(securityRequirement);
-    }
-
-    @Bean
-    public GroupedOpenApi publicApi() {
-        return GroupedOpenApi.builder()
-                .group("spring")
-                .pathsToMatch("/**")
-                .build();
     }
 }
