@@ -11,6 +11,8 @@ import lombok.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "q_type")
 @Builder
 public class Question extends BaseEntityDate {
     @Id

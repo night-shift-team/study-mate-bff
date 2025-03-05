@@ -5,11 +5,12 @@ import lombok.*;
 
 @Entity
 @Table(name = "maq")
+@DiscriminatorValue("MAQ")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MAQ {
+public class MAQ extends Question {
     @Id
     @Column(name = "question_id")
     private Long questionId;
