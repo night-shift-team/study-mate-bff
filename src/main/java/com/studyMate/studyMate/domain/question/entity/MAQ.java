@@ -2,14 +2,15 @@ package com.studyMate.studyMate.domain.question.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "maq")
 @DiscriminatorValue("MAQ")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class MAQ extends Question {
     @Id
     @Column(name = "question_id")
