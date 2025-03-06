@@ -2,6 +2,8 @@ package com.studyMate.studyMate.domain.question.service;
 
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
+import com.studyMate.studyMate.domain.question.entity.Question;
+import com.studyMate.studyMate.domain.question.entity.UAQ;
 import com.studyMate.studyMate.domain.question.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +20,14 @@ import java.util.List;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
+
+    public List<UAQ> findUaqAll(){
+        return questionRepository.findUaqQuestions();
+    }
+
+    public List<MAQ> findMaqAll(){
+        return questionRepository.findMaqQuestions();
+    }
 
     @Transactional
     public boolean generateFakeQuestions() {

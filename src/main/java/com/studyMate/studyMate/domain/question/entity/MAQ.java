@@ -1,5 +1,6 @@
 package com.studyMate.studyMate.domain.question.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -19,6 +20,7 @@ public class MAQ extends Question {
     @OneToOne
     @MapsId
     @JoinColumn(name = "question_id")
+    @JsonIgnore
     private Question question;
 
     @Column(name = "choice_1", nullable = false)
