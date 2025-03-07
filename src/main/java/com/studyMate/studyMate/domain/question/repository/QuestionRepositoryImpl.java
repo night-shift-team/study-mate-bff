@@ -1,5 +1,6 @@
 package com.studyMate.studyMate.domain.question.repository;
 
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import jakarta.persistence.EntityManager;
@@ -23,6 +24,7 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
         return queryFactory
                 .selectFrom(mAQ)
                 .where(mAQ.difficulty.loe(difficulty))
+                .orderBy(Expressions.numberTemplate(Double.class, "function('RAND')").asc())
                 .limit(count)
                 .fetch();
     }
