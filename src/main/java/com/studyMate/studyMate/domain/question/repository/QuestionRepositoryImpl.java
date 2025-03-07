@@ -8,8 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.studyMate.studyMate.domain.question.entity.QMAQ.*;
-import static com.studyMate.studyMate.domain.question.entity.QUAQ.*;
-
 
 @Repository
 public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
