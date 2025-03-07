@@ -1,5 +1,7 @@
 package com.studyMate.studyMate.domain.question.entity;
 
+import com.studyMate.studyMate.domain.question.data.QuestionCategory;
+import com.studyMate.studyMate.domain.user.data.LoginType;
 import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.global.data.BaseEntityDate;
 import jakarta.persistence.*;
@@ -27,12 +29,16 @@ public class QuestionHistory extends BaseEntityDate {
     @JoinColumn(name = "question_id", nullable = false)
     private Question question;
 
-    @Column(name = "selected_answer", nullable = false)
-    private Integer selectedAnswer;
+    @Column(name = "user_answer", nullable = false)
+    private String userAnswer;
+
+    @Column(name = "score", nullable = false)
+    private Integer score;
 
     @Column(name = "is_correct", nullable = false)
     private Boolean isCorrect;
 
-    @Column(name = "score_result", nullable = false)
-    private Integer scoreResult;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "qType", nullable = false)
+    private QuestionCategory qType;
 }

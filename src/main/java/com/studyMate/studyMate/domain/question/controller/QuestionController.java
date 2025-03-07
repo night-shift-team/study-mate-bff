@@ -1,11 +1,8 @@
 package com.studyMate.studyMate.domain.question.controller;
 
 import com.studyMate.studyMate.domain.question.entity.MAQ;
-import com.studyMate.studyMate.domain.question.entity.Question;
-import com.studyMate.studyMate.domain.question.entity.UAQ;
 import com.studyMate.studyMate.domain.question.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,12 +25,6 @@ public class QuestionController {
     public boolean generateFakeQuestions() {
         questionService.generateFakeQuestions();
         return true;
-    }
-
-    @GetMapping("/uaq")
-    @Operation(summary = "Questions", description = "Questions")
-    public List<UAQ> getQuestions() {
-        return questionService.findUaqAll();
     }
 
     @GetMapping("/maq")

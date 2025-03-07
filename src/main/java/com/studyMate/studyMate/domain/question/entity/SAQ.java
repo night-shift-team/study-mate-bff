@@ -6,7 +6,7 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "saq")
-@DiscriminatorValue("MAQ")
+@DiscriminatorValue("SAQ")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
