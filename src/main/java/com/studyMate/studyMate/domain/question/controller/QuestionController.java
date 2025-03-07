@@ -1,5 +1,6 @@
 package com.studyMate.studyMate.domain.question.controller;
 
+import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,5 +32,11 @@ public class QuestionController {
     @Operation(summary = "MAQ Questions", description = "MAQ Questions")
     public List<MAQ> getMaqQuestions() {
         return questionService.findMaqAll();
+    }
+
+    @GetMapping("/questions/level-test")
+    @Operation(summary = "레벨 테스트 문제 출제", description = "레벨 테스트 문제 출제")
+    public List<MaqQuestionDto> getLevelTestQuestions() {
+        return questionService.getLevelTestQuestions();
     }
 }

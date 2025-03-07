@@ -19,6 +19,15 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
     }
 
     @Override
+    public List<MAQ> findMaqQuestionsLessThanDifficultyAndCount(int difficulty, int count) {
+        return queryFactory
+                .selectFrom(mAQ)
+                .where(mAQ.difficulty.loe(difficulty))
+                .limit(count)
+                .fetch();
+    }
+
+    @Override
     public List<MAQ> findMaqQuestions() {
         return queryFactory
                 .selectFrom(mAQ)

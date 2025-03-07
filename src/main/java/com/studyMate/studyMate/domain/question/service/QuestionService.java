@@ -1,6 +1,7 @@
 package com.studyMate.studyMate.domain.question.service;
 
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
+import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.repository.QuestionRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,19 @@ import java.util.List;
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
+    private final int MAX_LEVEL_TEST_DIFFICULTY = 20;
+
 
     public List<MAQ> findMaqAll(){
         return questionRepository.findMaqQuestions();
+    }
+
+    public List<MaqQuestionDto> getLevelTestQuestions() {
+        List<MAQ> questions = this.questionRepository.findMaqQuestionsLessThanDifficultyAndCount(MAX_LEVEL_TEST_DIFFICULTY, 20);
+
+        return questions.stream()
+                .map(MaqQuestionDto::new)
+                .toList();
     }
 
     @Transactional
@@ -101,4 +112,5 @@ public class QuestionService {
 
         return true;
     }
+
 }
