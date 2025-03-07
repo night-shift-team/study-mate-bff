@@ -3,6 +3,7 @@ package com.studyMate.studyMate.domain.question.controller;
 import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.service.QuestionService;
+import com.studyMate.studyMate.global.config.RoleAuth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,7 @@ public class QuestionController {
 
     @GetMapping("/questions/level-test")
     @Operation(summary = "레벨 테스트 문제 출제", description = "레벨 테스트 문제 출제")
+    @RoleAuth
     public List<MaqQuestionDto> getLevelTestQuestions() {
         return questionService.getLevelTestQuestions();
     }
