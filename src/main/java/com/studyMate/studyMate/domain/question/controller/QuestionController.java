@@ -1,16 +1,17 @@
 package com.studyMate.studyMate.domain.question.controller;
 
+import com.studyMate.studyMate.domain.question.dto.CheckMaqQuestionRequestDto;
+import com.studyMate.studyMate.domain.question.dto.CheckMaqQuestionResponseDto;
 import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.service.QuestionService;
 import com.studyMate.studyMate.global.config.RoleAuth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpRequest;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,4 +43,14 @@ public class QuestionController {
         return questionService.getLevelTestQuestions();
     }
 
+    @PostMapping("/check/level-test")
+    @Operation(summary = "레벨 테스트 문제 결과 제출", description = "레벨 테스트에서 풀이한 문제에 대하여 정답을 체크하고, History에 기록함")
+    @RoleAuth
+    public CheckMaqQuestionResponseDto checkLevelTestQuestions(
+            HttpServletRequest request,
+            @RequestBody CheckMaqQuestionRequestDto body
+    ) {
+        long userId = (Long) request.getAttribute("userId");
+        return questionService.checkLevelTestQuestions(body.questionIds(), body.userAnswers(), userId);
+    }
 }

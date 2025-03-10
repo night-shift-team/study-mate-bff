@@ -1,5 +1,6 @@
 package com.studyMate.studyMate.domain.question.repository;
 
+import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.entity.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

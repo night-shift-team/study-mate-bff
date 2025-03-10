@@ -3,6 +3,8 @@ package com.studyMate.studyMate.domain.question.repository;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
+import com.studyMate.studyMate.domain.question.entity.QQuestion;
+import com.studyMate.studyMate.domain.question.entity.Question;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
