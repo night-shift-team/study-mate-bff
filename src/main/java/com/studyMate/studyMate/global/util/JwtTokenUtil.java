@@ -1,5 +1,7 @@
 package com.studyMate.studyMate.global.util;
 
+import com.studyMate.studyMate.global.error.CustomException;
+import com.studyMate.studyMate.global.error.ErrorCode;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
@@ -71,7 +73,7 @@ public class JwtTokenUtil {
 
             return claims.get("userId", Long.class);
         } catch (JwtException e) {
-            throw new IllegalStateException("[jwtUtil] invalid token");
+            throw new CustomException(ErrorCode.FORBIDDEN);
         }
     }
 
