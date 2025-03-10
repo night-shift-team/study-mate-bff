@@ -19,7 +19,7 @@ public class AuthInterceptor implements HandlerInterceptor {
     private final JwtTokenUtil jwtTokenUtil;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String requestURI = request.getRequestURI();
         String sessionId = request.getSession().getId();
 
