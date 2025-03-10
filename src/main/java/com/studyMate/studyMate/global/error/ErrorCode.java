@@ -32,6 +32,16 @@ public enum ErrorCode {
     INVALID_GOOGLE_AUTH_CODE(400, "invalid google auth code", "0106"),
     INVALID_GITHUB_AUTH_CODE(400, "invalid github auth code", "0107"),
 
+    INVALID_USERID(400, "invalid user id", "0108"),
+
+    /**
+     * Question Errors
+     * 0400 ~ 0499
+     */
+    INVALID_ANSWERSHEET(409, "invalid answer sheet", "0400"),
+    INVALID_QUESTION(400, "invalid question", "0401"),
+
+
     ;
     private final int status;
     private final String message;
