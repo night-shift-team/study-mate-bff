@@ -31,5 +31,5 @@ public class SAQ extends Question {
     private String keyword3;
 
     @Column(name = "answer", nullable = false)
-    private Integer answer;
+    private String answer;
 }
