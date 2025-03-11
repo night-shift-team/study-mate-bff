@@ -2,9 +2,9 @@ package com.studyMate.studyMate.domain.question.service;
 
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.domain.question.dto.CheckMaqQuestionResponseDto;
+import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
 import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
-import com.studyMate.studyMate.domain.question.entity.Question;
 import com.studyMate.studyMate.domain.question.entity.QuestionHistory;
 import com.studyMate.studyMate.domain.question.repository.QuestionHistoryRepository;
 import com.studyMate.studyMate.domain.question.repository.QuestionMaqRepository;
@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,6 +37,29 @@ public class QuestionService {
 
     public List<MAQ> findMaqAll(){
         return questionRepository.findMaqQuestions();
+    }
+
+    public GetQuestionDetailResponseDto findQuestionDetailById(Long questionId, Long userId) {
+        // TODO : 일반유저 (1 ~ 5) : 자신이 푼 문제에 대해서만 문제의 상세정보를 조회할 수 있음.
+        // TODO : 어드민 유저 (7 ~ 9) : 무엇이든 조회할 수 있음.
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
+        GetQuestionDetailResponseDto question = questionRepository.findQuestionDetailById(questionId);
+
+        // 어드민 -> 무조건 허용.
+        if(user.getRole() >= 7) {
+            return question;
+        }
+
+        // History 테이블 조회 (문제를 푼 내역이 있는지 체크)
+        List<QuestionHistory> histories = questionHistoryRepository.findQuestionHistoriesByUser_UserIdAndQuestion_QuestionId(user.getUserId(), question.questionId());
+
+        // 문제 푼 내역이 없다면, -> 접근 비허용
+        if(histories.isEmpty()) {
+            throw new CustomException(ErrorCode.NO_QUESTION_RECORDS);
+        }
+
+        // 문제 푼 내역이 있다면, -> 접근 허용
+        return question;
     }
 
     public List<MaqQuestionDto> getLevelTestQuestions() {
