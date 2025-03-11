@@ -108,7 +108,7 @@ public class UserController {
     }
 
     @GetMapping("/email/duplicate")
-    @Operation(summary = "이메일 중복체크", description = "이메일 중복체크 API")
+    @Operation(summary = "이메일 중복체크", description = "이메일 중복체크 API (true = 이미 존재함, false = 존재하지 않음)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = boolean.class))})
     })
@@ -117,7 +117,7 @@ public class UserController {
     }
 
     @GetMapping("/nickname/duplicate")
-    @Operation(summary = "닉네임 중복체크", description = "닉네임 중복체크 API")
+    @Operation(summary = "닉네임 중복체크", description = "닉네임 중복체크 API (true = 이미 존재함, false = 존재하지 않음)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = boolean.class))})
     })
