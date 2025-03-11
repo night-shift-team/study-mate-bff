@@ -40,7 +40,7 @@ public enum ErrorCode {
      */
     INVALID_ANSWERSHEET(409, "invalid answer sheet", "0400"),
     INVALID_QUESTION(400, "invalid question", "0401"),
-
+    NO_QUESTION_RECORDS(400, "no question records, retry after finish the question", "0402"),
 
     ;
     private final int status;
