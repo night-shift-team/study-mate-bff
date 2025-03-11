@@ -37,4 +37,20 @@ public class MAQ extends Question {
 
     @Column(name = "answer", nullable = false)
     private Integer answer;
+
+    @Override
+    public String toString() {
+        return "MAQ{" +
+                "questionId=" + questionId +
+                ", description='" + getDescription() + '\'' +
+                ", comment='" + getComment() + '\'' +
+                ", difficulty=" + getDifficulty() +
+                ", category=" + getCategory() +
+                ", choice1='" + choice1 + '\'' +
+                ", choice2='" + choice2 + '\'' +
+                ", choice3='" + choice3 + '\'' +
+                ", choice4='" + choice4 + '\'' +
+                ", answer=" + answer +
+                '}';
+    }
 }

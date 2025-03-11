@@ -32,4 +32,19 @@ public class SAQ extends Question {
 
     @Column(name = "answer", nullable = false)
     private String answer;
+
+    @Override
+    public String toString() {
+        return "SAQ{" +
+                "questionId=" + questionId +
+                ", description='" + getDescription() + '\'' +
+                ", comment='" + getComment() + '\'' +
+                ", difficulty=" + getDifficulty() +
+                ", category=" + getCategory() +
+                ", keyword1='" + keyword1 + '\'' +
+                ", keyword2='" + keyword2 + '\'' +
+                ", keyword3='" + keyword3 + '\'' +
+                ", answer='" + answer + '\'' +
+                '}';
+    }
 }
