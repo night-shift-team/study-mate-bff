@@ -51,7 +51,7 @@ public class UserController {
 
     @GetMapping("/")
     @RoleAuth
-    @Operation(summary = "유저정보조회 (*)", description = "유저정보를 조회하는 API")
+    @Operation(summary = "유저정보조회 (*)", description = "유저정보를 조회하는 API (User Score =0 인 경우 Level테스트 진행하지 않은 유저 | 이미 진행한 유저)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = GetUserDto.class))})
     })
