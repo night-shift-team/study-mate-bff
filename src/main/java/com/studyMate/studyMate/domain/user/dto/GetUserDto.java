@@ -17,6 +17,7 @@ public record GetUserDto(
         String profileImg,
         UserStatus status,
         int role,
+        int userScore,
         LocalDateTime registeredAt
 ) {
 }

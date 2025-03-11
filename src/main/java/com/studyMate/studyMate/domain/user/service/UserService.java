@@ -57,6 +57,7 @@ public class UserService {
                 .profileImg(user.getProfileImg())
                 .status(user.getStatus())
                 .role(user.getRole())
+                .userScore(user.getScore())
                 .registeredAt(user.getCreatedDt())
                 .build();
     }
