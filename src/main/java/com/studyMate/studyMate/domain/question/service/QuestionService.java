@@ -54,6 +54,10 @@ public class QuestionService {
             List<Integer> userChoices,
             Long userId
     ) {
+        if(questions.isEmpty()) {
+            throw new CustomException(ErrorCode.INVALID_ANSWERSHEET);
+        }
+
         // 1. Question과 user Choice의 길이 비교 (동일 체크)
         if(questions.size() != userChoices.size()){
             throw new CustomException(ErrorCode.INVALID_ANSWERSHEET);
