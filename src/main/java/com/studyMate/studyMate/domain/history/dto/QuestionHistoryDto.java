@@ -3,7 +3,7 @@ package com.studyMate.studyMate.domain.history.dto;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 
 public record QuestionHistoryDto(
-        Long hisotoryId,
+        Long historyId,
         Long userId,
         String userAnswer,
         Integer score,
