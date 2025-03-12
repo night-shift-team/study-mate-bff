@@ -37,11 +37,6 @@ public class QuestionService {
     private final int MAX_LEVEL_TEST_DIFFICULTY = 20;
     private final int LEVEL_TEST_QUESTION_COUNT = 20;
 
-
-    public List<MAQ> findMaqAll(){
-        return questionRepository.findMaqQuestions();
-    }
-
     public GetQuestionDetailResponseDto findQuestionDetailById(String questionId, String userId) {
         // TODO : 일반유저 (1 ~ 5) : 자신이 푼 문제에 대해서만 문제의 상세정보를 조회할 수 있음.
         // TODO : 어드민 유저 (7 ~ 9) : 무엇이든 조회할 수 있음.

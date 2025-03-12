@@ -37,14 +37,6 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
     }
 
     @Override
-    public List<MAQ> findMaqQuestions() {
-        return queryFactory
-                .selectFrom(mAQ)
-                .from(mAQ)
-                .fetch();
-    }
-
-    @Override
     public GetQuestionDetailResponseDto findQuestionDetailById(String questionId) {
         // Question Super Type MAQ SubType | SAQ SubType 으로 구성되어있다.
         // Question 의 qType에 따라서 answer, options 부분을 가변적으로 바꾸어 가져올 것.
