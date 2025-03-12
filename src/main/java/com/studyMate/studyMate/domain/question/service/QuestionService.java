@@ -148,7 +148,7 @@ public class QuestionService {
         // 7. 결과 반환
         return CheckMaqQuestionResponseDto.builder()
                 .percentileScore(Double.parseDouble(String.format("%.2f", percentileScore)))
-                .yourInitSore(user.getScore())
+                .yourInitScore(user.getScore())
                 .requestedQuestionCount(questions.size())
                 .correctQuestions(correctQuestion)
                 .wrongQuestions(wrongQuestion)

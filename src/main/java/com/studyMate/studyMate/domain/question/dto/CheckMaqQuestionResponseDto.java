@@ -10,7 +10,7 @@ public record CheckMaqQuestionResponseDto (
     Double percentileScore,
 
     // 배치 점수
-    Integer yourInitSore,
+    Integer yourInitScore,
 
     // 제출한 문제 수
     Integer requestedQuestionCount,
