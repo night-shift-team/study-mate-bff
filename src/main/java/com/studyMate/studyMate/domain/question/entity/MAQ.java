@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 public class MAQ extends Question {
     @Id
     @Column(name = "question_id")
-    private Long questionId;
+    private String questionId;
 
     @OneToOne
     @MapsId
@@ -35,22 +35,20 @@ public class MAQ extends Question {
     @Column(name = "choice_4", nullable = false)
     private String choice4;
 
-    @Column(name = "answer", nullable = false)
-    private Integer answer;
-
     @Override
     public String toString() {
         return "MAQ{" +
                 "questionId=" + questionId +
-                ", description='" + getDescription() + '\'' +
-                ", comment='" + getComment() + '\'' +
+                ", questionTitle='" + getQuestionTitle() + '\'' +
+                ", questionContent'" + getContent() + '\'' +
+                ", answer'" + getAnswer() + '\'' +
+                ", answerExplanation'" + getAnswerExplanation() + '\'' +
                 ", difficulty=" + getDifficulty() +
                 ", category=" + getCategory() +
                 ", choice1='" + choice1 + '\'' +
                 ", choice2='" + choice2 + '\'' +
                 ", choice3='" + choice3 + '\'' +
                 ", choice4='" + choice4 + '\'' +
-                ", answer=" + answer +
                 '}';
     }
 }

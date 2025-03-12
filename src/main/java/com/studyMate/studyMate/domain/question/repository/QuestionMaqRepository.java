@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface QuestionMaqRepository extends JpaRepository<MAQ, Long> {
-    List<MAQ> findMAQSByQuestionIdIn(List<Long> questionIds);
+    List<MAQ> findMAQSByQuestionIdIn(List<String> questionIds);
 }

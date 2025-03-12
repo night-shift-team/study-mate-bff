@@ -5,9 +5,9 @@ import com.studyMate.studyMate.domain.question.entity.MAQ;
 import lombok.Getter;
 
 public record MaqQuestionDto(
-    Long id,
-    String description,
-    String comment,
+    String id,
+    String questionTitle,
+    String content,
     Integer difficulty,
     QuestionCategory category,
     String choice1,
@@ -18,8 +18,8 @@ public record MaqQuestionDto(
     public MaqQuestionDto(MAQ maq) {
         this(
                 maq.getQuestionId(),
-                maq.getDescription(),
-                maq.getComment(),
+                maq.getQuestionTitle(),
+                maq.getContent(),
                 maq.getDifficulty(),
                 maq.getCategory(),
                 maq.getChoice1(),

@@ -5,8 +5,8 @@ import com.studyMate.studyMate.domain.question.dto.CheckMaqQuestionResponseDto;
 import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
 import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
-import com.studyMate.studyMate.domain.question.entity.QuestionHistory;
-import com.studyMate.studyMate.domain.question.repository.QuestionHistoryRepository;
+import com.studyMate.studyMate.domain.history.entity.QuestionHistory;
+import com.studyMate.studyMate.domain.history.repository.QuestionHistoryRepository;
 import com.studyMate.studyMate.domain.question.repository.QuestionMaqRepository;
 import com.studyMate.studyMate.domain.question.repository.QuestionRepository;
 import com.studyMate.studyMate.domain.user.entity.User;
@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -39,7 +40,7 @@ public class QuestionService {
         return questionRepository.findMaqQuestions();
     }
 
-    public GetQuestionDetailResponseDto findQuestionDetailById(Long questionId, Long userId) {
+    public GetQuestionDetailResponseDto findQuestionDetailById(String questionId, String userId) {
         // TODO : 일반유저 (1 ~ 5) : 자신이 푼 문제에 대해서만 문제의 상세정보를 조회할 수 있음.
         // TODO : 어드민 유저 (7 ~ 9) : 무엇이든 조회할 수 있음.
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
@@ -64,7 +65,7 @@ public class QuestionService {
 
     public List<MaqQuestionDto> getLevelTestQuestions() {
         List<MAQ> questions = this.questionRepository.findMaqQuestionsLessThanDifficultyAndCount(MAX_LEVEL_TEST_DIFFICULTY, LEVEL_TEST_QUESTION_COUNT);
-
+//        System.out.println("Check Question First question Id : " + questions.get(0).getQuestionId());
         return questions.stream()
                 .map(MaqQuestionDto::new)
                 .toList();
@@ -72,9 +73,9 @@ public class QuestionService {
 
     @Transactional
     public CheckMaqQuestionResponseDto checkLevelTestQuestions(
-            List<Long> questions,
-            List<Integer> userChoices,
-            Long userId
+            List<String> questions,
+            List<String> userChoices,
+            String userId
     ) {
         if(questions.isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_ANSWERSHEET);
@@ -90,22 +91,23 @@ public class QuestionService {
 
         // 3. Questions 의 문제들의 정답 내역을 조회
         List<MAQ> dbQuestions = questionMaqRepository.findMAQSByQuestionIdIn(questions);
+        System.out.println(dbQuestions);
 
         List<QuestionHistory> questionHistories = new ArrayList<>();
-        List<Long> correctQuestion = new ArrayList<>();
-        List<Long> wrongQuestion = new ArrayList<>();
+        List<String> correctQuestion = new ArrayList<>();
+        List<String> wrongQuestion = new ArrayList<>();
 
         int totalScore = 0;
 
         // 4. User Choice의 문제 정답 내역과 비교
         for(int i=0; i < questions.size(); i++){
             MAQ question = dbQuestions.get(i);
-            Long questionId = dbQuestions.get(i).getQuestionId();
-            int dbAnswer = dbQuestions.get(i).getAnswer();
-            int userAnswer = userChoices.get(i);
+            String questionId = dbQuestions.get(i).getQuestionId();
+            String dbAnswer = dbQuestions.get(i).getAnswer();
+            String userAnswer = userChoices.get(i);
 
             // 정답
-            if(dbAnswer == userAnswer){
+            if(Objects.equals(dbAnswer, userAnswer)){
                 correctQuestion.add(questionId);
                 questionHistories.add(QuestionHistory.builder()
                         .user(user)
@@ -152,68 +154,73 @@ public class QuestionService {
     }
 
     @Transactional
-    public boolean generateFakeQuestions() {
+    public void generateFakeQuestions() {
         // MAQ
         List<MAQ> maqQuestionList = new ArrayList<>();
         for(int i=1; i <= 100; i++) {
             MAQ maqDBQuestion = MAQ.builder()
-                    .description("Test Question_" + QuestionCategory.DB_MAQ.name() + "-" + i)
+                    .questionTitle("Test Question Title_" + QuestionCategory.DB_MAQ.name() + "-" + i)
+                    .content("Test Question Content_" + QuestionCategory.DB_MAQ.name() + "-" + i)
+                    .answerExplanation("Test Question Content Explaination" + QuestionCategory.DB_MAQ.name() + "-" + i)
                     .category(QuestionCategory.DB_MAQ)
-                    .comment("Test Question Comment" + QuestionCategory.DB_MAQ.name() + "-" + i)
                     .difficulty(i % 100 + 1)
                     .choice1("Choice 1 for question " + i) // 자식 클래스 필드
                     .choice2("Choice 2 for question " + i) // 자식 클래스 필드
                     .choice3("Choice 3 for question " + i) // 자식 클래스 필드
                     .choice4("Choice 4 for question " + i) // 자식 클래스 필드
-                    .answer(i % 4 + 1) // 자식 클래스 필드
+                    .answer(String.valueOf(i % 4 + 1)) // 자식 클래스 필드
                     .build();
 
             MAQ maqOsQuestion = MAQ.builder()
-                    .description("Test Question_" + QuestionCategory.OS_MAQ.name() + "-" + i)
+                    .questionTitle("Test Question Title_" + QuestionCategory.OS_MAQ.name() + "-" + i)
+                    .content("Test Question Content_" + QuestionCategory.OS_MAQ.name() + "-" + i)
+                    .answerExplanation("Test Question Content Explaination" + QuestionCategory.OS_MAQ.name() + "-" + i)
                     .category(QuestionCategory.OS_MAQ)
-                    .comment("Test Question Comment" + QuestionCategory.OS_MAQ.name() + "-" + i)
                     .difficulty(i % 100 + 1)
                     .choice1("Choice 1 for question " + i) // 자식 클래스 필드
                     .choice2("Choice 2 for question " + i) // 자식 클래스 필드
                     .choice3("Choice 3 for question " + i) // 자식 클래스 필드
                     .choice4("Choice 4 for question " + i) // 자식 클래스 필드
-                    .answer(i % 4 + 1) // 자식 클래스 필드
+                    .answer(String.valueOf(i % 4 + 1)) // 자식 클래스 필드
                     .build();
 
             MAQ maqNetworkQuestion = MAQ.builder()
-                    .description("Test Question_" + QuestionCategory.NETWORK_MAQ.name() + "-" + i)
+                    .questionTitle("Test Question Title_" + QuestionCategory.NETWORK_MAQ.name() + "-" + i)
+                    .content("Test Question Content_" + QuestionCategory.NETWORK_MAQ.name() + "-" + i)
+                    .answerExplanation("Test Question Content Explaination" + QuestionCategory.NETWORK_MAQ.name() + "-" + i)
                     .category(QuestionCategory.NETWORK_MAQ)
-                    .comment("Test Question Comment" + QuestionCategory.NETWORK_MAQ.name() + "-" + i)
                     .difficulty(i % 100 + 1)
                     .choice1("Choice 1 for question " + i) // 자식 클래스 필드
                     .choice2("Choice 2 for question " + i) // 자식 클래스 필드
                     .choice3("Choice 3 for question " + i) // 자식 클래스 필드
                     .choice4("Choice 4 for question " + i) // 자식 클래스 필드
-                    .answer(i % 4 + 1) // 자식 클래스 필드
+                    .answer(String.valueOf(i % 4 + 1)) // 자식 클래스 필드
                     .build();
 
             MAQ maqDesignQuestion = MAQ.builder()
-                    .description("Test Question_" + QuestionCategory.DESIGN_MAQ.name() + "-" + i)
+                    .questionTitle("Test Question Title_" + QuestionCategory.DESIGN_MAQ.name() + "-" + i)
+                    .content("Test Question Content_" + QuestionCategory.DESIGN_MAQ.name() + "-" + i)
+                    .answerExplanation("Test Question Content Explaination" + QuestionCategory.DESIGN_MAQ.name() + "-" + i)
                     .category(QuestionCategory.DESIGN_MAQ)
-                    .comment("Test Question Comment" + QuestionCategory.DESIGN_MAQ.name() + "-" + i)
                     .difficulty(i % 100 + 1)
                     .choice1("Choice 1 for question " + i) // 자식 클래스 필드
                     .choice2("Choice 2 for question " + i) // 자식 클래스 필드
                     .choice3("Choice 3 for question " + i) // 자식 클래스 필드
                     .choice4("Choice 4 for question " + i) // 자식 클래스 필드
-                    .answer(i % 4 + 1) // 자식 클래스 필드
+                    .answer(String.valueOf(i % 4 + 1)) // 자식 클래스 필드
                     .build();
 
             MAQ maqAlgorithumQuestion = MAQ.builder()
-                    .description("Test Question_" + QuestionCategory.ALGORITHUM_MAQ.name() + "-" + i)
+                    .questionTitle("Test Question Title_" + QuestionCategory.ALGORITHUM_MAQ.name() + "-" + i)
+                    .content("Test Question Content_" + QuestionCategory.ALGORITHUM_MAQ.name() + "-" + i)
+                    .answerExplanation("Test Question Content Explaination" + QuestionCategory.ALGORITHUM_MAQ.name() + "-" + i)
                     .category(QuestionCategory.ALGORITHUM_MAQ)
-                    .comment("Test Question Comment" + QuestionCategory.ALGORITHUM_MAQ.name() + "-" + i)
                     .difficulty(i % 100 + 1)
                     .choice1("Choice 1 for question " + i) // 자식 클래스 필드
                     .choice2("Choice 2 for question " + i) // 자식 클래스 필드
                     .choice3("Choice 3 for question " + i) // 자식 클래스 필드
                     .choice4("Choice 4 for question " + i) // 자식 클래스 필드
-                    .answer(i % 4 + 1) // 자식 클래스 필드
+                    .answer(String.valueOf(i % 4 + 1)) // 자식 클래스 필드
                     .build();
 
             maqQuestionList.add(maqDBQuestion);
@@ -226,8 +233,6 @@ public class QuestionService {
         log.info("Fake Question Generate count : {}", maqQuestionList.size());
 
         questionRepository.saveAll(maqQuestionList);
-
-        return true;
     }
 
 }

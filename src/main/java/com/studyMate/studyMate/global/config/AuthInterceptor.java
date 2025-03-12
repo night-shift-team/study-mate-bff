@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.UUID;
+
 @Slf4j
 @Component
 @AllArgsConstructor
@@ -42,7 +44,14 @@ public class AuthInterceptor implements HandlerInterceptor {
 
                 // JWT 검증을 거치고, -> 만약 실패시 에러
                 boolean isValid = jwtTokenUtil.validateToken(acToken);
-                long userId = jwtTokenUtil.getUserId(acToken);
+                String userId = jwtTokenUtil.getUserId(acToken);
+
+                try {
+                    UUID.fromString(userId);
+                } catch(IllegalArgumentException e) {
+                    isValid = false;
+                }
+
                 if(!isValid) {
                     throw new CustomException(ErrorCode.UNAUTHORIZED);
                 }

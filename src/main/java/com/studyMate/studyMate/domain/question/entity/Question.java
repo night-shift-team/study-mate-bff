@@ -17,20 +17,27 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Question extends BaseEntityDate {
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "question_id")
-    private Long questionId;
+    private String questionId;
 
-    @Column(name = "description", nullable = false, columnDefinition = "LONGTEXT")
-    private String description;
+    @Column(name = "question_title", nullable = false, columnDefinition = "LONGTEXT")
+    private String questionTitle;
+
+    @Column(name = "question_content", nullable = false, columnDefinition = "LONGTEXT")
+    private String content;
+
+    @Column(name = "question_answer", nullable = false, columnDefinition = "LONGTEXT")
+    private String answer;
+
+    @Column(name = "answer_explanation", nullable = false, columnDefinition = "LONGTEXT")
+    private String answerExplanation;
+
+    @Column(name = "difficulty", nullable = false)
+    private Integer difficulty;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category", nullable = false)
     private QuestionCategory category;
 
-    @Column(name = "comment", nullable = false, columnDefinition = "LONGTEXT")
-    private String comment;
-
-    @Column(name = "difficulty", nullable = false)
-    private Integer difficulty;
 }

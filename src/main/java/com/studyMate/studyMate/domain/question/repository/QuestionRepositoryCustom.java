@@ -8,5 +8,5 @@ import java.util.List;
 public interface QuestionRepositoryCustom {
     List<MAQ> findMaqQuestionsLessThanDifficultyAndCount(int difficulty, int count);
     List<MAQ> findMaqQuestions();
-    GetQuestionDetailResponseDto findQuestionDetailById(Long id);
+    GetQuestionDetailResponseDto findQuestionDetailById(String id);
 }

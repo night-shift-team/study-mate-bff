@@ -9,6 +9,7 @@ import io.jsonwebtoken.*;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.Objects;
 
 @Component
 public class JwtTokenUtil {
@@ -24,8 +25,8 @@ public class JwtTokenUtil {
     /**
      * Generate JWT Token (AC | RF)
      */
-    public String generateToken(long userId, TokenType tokenType) {
-        if(userId == 0L) {
+    public String generateToken(String userId, TokenType tokenType) {
+        if(Objects.equals(userId, "")) {
             throw new IllegalStateException("[jwtUtil] invalid user id");
         }
 
@@ -34,7 +35,7 @@ public class JwtTokenUtil {
 
         return Jwts.builder()
                 .claim("userId", userId)
-                .subject(Long.toString(userId))
+                .subject(userId)
                 .issuedAt(new Date(currentTime))
                 .expiration(new Date(expiredAt))
                 .signWith(SECRET_KEY)
@@ -63,7 +64,7 @@ public class JwtTokenUtil {
     /**
      * Token Claim 조회
      */
-    public Long getUserId(String token) {
+    public String getUserId(String token) {
         try {
             Claims claims = Jwts.parser()
                     .verifyWith(SECRET_KEY)
@@ -71,7 +72,7 @@ public class JwtTokenUtil {
                     .parseSignedClaims(token)
                     .getPayload();
 
-            return claims.get("userId", Long.class);
+            return claims.get("userId", String.class);
         } catch (JwtException e) {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }

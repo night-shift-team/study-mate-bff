@@ -45,15 +45,15 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
     }
 
     @Override
-    public GetQuestionDetailResponseDto findQuestionDetailById(Long questionId) {
+    public GetQuestionDetailResponseDto findQuestionDetailById(String questionId) {
         // Question Super Type MAQ SubType | SAQ SubType 으로 구성되어있다.
         // Question 의 qType에 따라서 answer, options 부분을 가변적으로 바꾸어 가져올 것.
         // getQUestionDetailResponseDto 값에 맞추어서 반환.
         return queryFactory
                 .select(Projections.constructor(GetQuestionDetailResponseDto.class,
                         question.questionId,
-                        question.description,
-                        question.comment,
+                        question.questionTitle,
+                        question.content,
                         question.difficulty,
                         /**
                          * options =
@@ -73,15 +73,9 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                                 )
                                 .otherwise("null")
                                 .as("options"),
-
                         question.category,
-
-                        // answer = 상황에 따라 다름. maq | saq
-                        new CaseBuilder()
-                                .when(question.instanceOf(MAQ.class)).then(mAQ.answer.stringValue())
-                                .when(question.instanceOf(SAQ.class)).then(sAQ.answer)
-                                .otherwise("null")
-                                .as("answer")
+                        question.answer,
+                        question.answerExplanation
                 ))
                 .from(question)
                 .leftJoin(mAQ).on(question.questionId.eq(mAQ.questionId)).fetchJoin()

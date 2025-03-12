@@ -25,9 +25,9 @@ import java.time.LocalDateTime;
 @SuperBuilder
 public class User extends BaseEntityDate {
     @Id
-    @Tsid
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
-    private Long userId;
+    private String userId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "login_type", nullable = false)

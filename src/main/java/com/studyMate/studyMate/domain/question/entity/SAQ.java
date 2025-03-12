@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 public class SAQ extends Question {
     @Id
     @Column(name = "question_id")
-    private Long questionId;
+    private String questionId;
 
     @OneToOne
     @MapsId
@@ -30,21 +30,19 @@ public class SAQ extends Question {
     @Column(name = "keyword_3", nullable = false)
     private String keyword3;
 
-    @Column(name = "answer", nullable = false)
-    private String answer;
-
     @Override
     public String toString() {
         return "SAQ{" +
                 "questionId=" + questionId +
-                ", description='" + getDescription() + '\'' +
-                ", comment='" + getComment() + '\'' +
+                ", questionTitle='" + getQuestionTitle() + '\'' +
+                ", questionContent'" + getContent() + '\'' +
+                ", answer'" + getAnswer() + '\'' +
+                ", answerExplanation'" + getAnswerExplanation() + '\'' +
                 ", difficulty=" + getDifficulty() +
                 ", category=" + getCategory() +
                 ", keyword1='" + keyword1 + '\'' +
                 ", keyword2='" + keyword2 + '\'' +
                 ", keyword3='" + keyword3 + '\'' +
-                ", answer='" + answer + '\'' +
                 '}';
     }
 }

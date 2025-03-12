@@ -16,8 +16,8 @@ public record CheckMaqQuestionResponseDto (
     Integer requestedQuestionCount,
 
     // 정답 문제
-    List<Long> correctQuestions,
+    List<String> correctQuestions,
 
     // 오답 문제
-    List<Long> wrongQuestions
+    List<String> wrongQuestions
 ) { }

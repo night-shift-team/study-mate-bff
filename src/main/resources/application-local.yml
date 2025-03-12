@@ -13,7 +13,7 @@ spring:
       maximum-pool-size: 5
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     open-in-view: false
     show-sql: true
     properties:

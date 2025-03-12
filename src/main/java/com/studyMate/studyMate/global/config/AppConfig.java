@@ -36,25 +36,25 @@ public class AppConfig {
     /**
      * (TODO: 문제 생성 API 생성 후, RoleAuth 적용하고 정상 작동 테스트 필요)
      */
-    @Bean
-    public AuditorAware<Long> auditorProvider() {
-        return new AuditorAware<Long>() {
-            @Override
-            public Optional<Long> getCurrentAuditor() {
-                ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-                if (attributes != null) {
-                    HttpServletRequest request = attributes.getRequest();
-                    String authHeader = request.getHeader("Authorization");
-
-                    if(authHeader != null && authHeader.startsWith("Bearer ")) {
-                        String acToken = authHeader.substring(7);
-                        Long userId = jwtTokenUtil.getUserId(acToken);
-
-                        return Optional.ofNullable(userId);
-                    }
-                }
-                return Optional.empty();
-            }
-        };
-    }
+//    @Bean
+//    public AuditorAware<Long> auditorProvider() {
+//        return new AuditorAware<Long>() {
+//            @Override
+//            public Optional<String> getCurrentAuditor() {
+//                ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+//                if (attributes != null) {
+//                    HttpServletRequest request = attributes.getRequest();
+//                    String authHeader = request.getHeader("Authorization");
+//
+//                    if(authHeader != null && authHeader.startsWith("Bearer ")) {
+//                        String acToken = authHeader.substring(7);
+//                        String userId = jwtTokenUtil.getUserId(acToken);
+//
+//                        return Optional.ofNullable(userId);
+//                    }
+//                }
+//                return Optional.empty();
+//            }
+//        };
+//    }
 }

@@ -46,7 +46,7 @@ public class UserService {
     @Value("${e.auth.github_client_secret}")
     private String GITHUB_CLIENT_SECRET;
 
-    public GetUserDto getActiveUserById(long id) {
+    public GetUserDto getActiveUserById(String id) {
         User user = userRepository.findByUserIdAndStatus(id, UserStatus.ACTIVE).orElseThrow(() ->  new CustomException(ErrorCode.NOT_ACTIVE_USER));
 
         return GetUserDto.builder()
@@ -78,7 +78,7 @@ public class UserService {
     /**
      * Token Refresh
      */
-    public SignInResponseDto refreshTokenPair(long userId, String refreshToken) {
+    public SignInResponseDto refreshTokenPair(String userId, String refreshToken) {
         boolean isValid = jwtTokenUtil.validateToken(refreshToken);
         if(!isValid) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
@@ -199,14 +199,14 @@ public class UserService {
 
 
     @Transactional
-    public long resetPasswordAdmin(String email) {
+    public String resetPasswordAdmin(String email) {
         return resetPassword(email);
     }
 
     /**
      * Token Pair 생성 (Access Token & Refresh Token)
      */
-    private SignInResponseDto createTokenPair(long userId) {
+    private SignInResponseDto createTokenPair(String userId) {
         String acToken = jwtTokenUtil.generateToken(userId, JwtTokenUtil.TokenType.ACCESS);
         String rfToken = jwtTokenUtil.generateToken(userId, JwtTokenUtil.TokenType.REFRESH);
         return SignInResponseDto.builder().accessToken(acToken).refreshToken(rfToken).build();
@@ -334,7 +334,7 @@ public class UserService {
     /**
      * Reset Password
      */
-    private long resetPassword(String email) {
+    private String resetPassword(String email) {
         User user = userRepository.findByLoginId(email).orElseThrow(() -> new CustomException(ErrorCode.INVALID_LOGINID));
 
         String encryptedUserPw = encryptionUtil.encryptBcrypt("123456");

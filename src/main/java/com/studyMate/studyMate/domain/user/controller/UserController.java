@@ -34,7 +34,7 @@ public class UserController {
     })
     @RoleAuth
     public SignInResponseDto tokenRefresh(HttpServletRequest request, @RequestBody @Validated RefreshTokenRequestDto refreshTokenRequestbody) {
-        long userId = (Long) request.getAttribute("userId");
+        String userId = (String) request.getAttribute("userId");
         return userService.refreshTokenPair(userId, refreshTokenRequestbody.refreshToken());
     }
 
@@ -56,7 +56,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = GetUserDto.class))})
     })
     public GetUserDto getUserInfo(HttpServletRequest request) {
-        long userId = (Long) request.getAttribute("userId");
+        String userId = (String) request.getAttribute("userId");
         return userService.getActiveUserById(userId);
     }
 
@@ -84,7 +84,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
     })
-    public long resetPassword (@RequestBody @Validated ResetPasswordRequestDto resetPasswordRequestBody) {
+    public String resetPassword (@RequestBody @Validated ResetPasswordRequestDto resetPasswordRequestBody) {
         return userService.resetPasswordAdmin(resetPasswordRequestBody.email());
     }
 

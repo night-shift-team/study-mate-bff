@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 
 @Builder
 public record GetUserDto(
-        long userId,
+        String userId,
         LoginType loginType,
         String loginId,
         String nickname,
         String profileImg,
         UserStatus status,
-        int role,
-        int userScore,
+        Integer role,
+        Integer userScore,
         LocalDateTime registeredAt
 ) {
 }

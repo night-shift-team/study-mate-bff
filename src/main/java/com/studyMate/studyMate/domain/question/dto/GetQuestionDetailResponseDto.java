@@ -4,30 +4,33 @@ import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import lombok.NoArgsConstructor;
 
 public record GetQuestionDetailResponseDto(
-        Long questionId,
-        String description,
-        String comment,
+        String questionId,
+        String questionTitle,
+        String content,
         Integer difficulty,
         String options,
         QuestionCategory category,
-        String answer
+        String answer,
+        String answerExplanation
 ) {
 
     public GetQuestionDetailResponseDto(
-            Long questionId,
-            String description,
-            String comment,
+            String questionId,
+            String questionTitle,
+            String content,
             Integer difficulty,
             String options,
             QuestionCategory category,
-            String answer
+            String answer,
+            String answerExplanation
     ) {
         this.questionId = questionId;
-        this.description = description;
-        this.comment = comment;
+        this.questionTitle = questionTitle;
+        this.content = content;
         this.difficulty = difficulty;
         this.options = options;
         this.category = category;
         this.answer = answer;
+        this.answerExplanation = answerExplanation;
     }
 }
