@@ -1,5 +1,7 @@
 package com.studyMate.studyMate.domain.question.service;
 
+import com.studyMate.studyMate.domain.history.dto.QuestionHistoryDto;
+import com.studyMate.studyMate.domain.history.service.QuestionHistoryService;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.domain.question.dto.CheckMaqQuestionResponseDto;
 import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
@@ -30,7 +32,7 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final QuestionMaqRepository questionMaqRepository;
-    private final QuestionHistoryRepository questionHistoryRepository;
+    private final QuestionHistoryService questionHistoryService;
     private final UserRepository userRepository;
     private final int MAX_LEVEL_TEST_DIFFICULTY = 20;
     private final int LEVEL_TEST_QUESTION_COUNT = 20;
@@ -52,7 +54,7 @@ public class QuestionService {
         }
 
         // History 테이블 조회 (문제를 푼 내역이 있는지 체크)
-        List<QuestionHistory> histories = questionHistoryRepository.findQuestionHistoriesByUser_UserIdAndQuestion_QuestionId(user.getUserId(), question.questionId());
+        List<QuestionHistoryDto> histories = questionHistoryService.findHistoriesByQuestionIdAndUserId(questionId, userId);
 
         // 문제 푼 내역이 없다면, -> 접근 비허용
         if(histories.isEmpty()) {
@@ -65,7 +67,6 @@ public class QuestionService {
 
     public List<MaqQuestionDto> getLevelTestQuestions() {
         List<MAQ> questions = this.questionRepository.findMaqQuestionsLessThanDifficultyAndCount(MAX_LEVEL_TEST_DIFFICULTY, LEVEL_TEST_QUESTION_COUNT);
-//        System.out.println("Check Question First question Id : " + questions.get(0).getQuestionId());
         return questions.stream()
                 .map(MaqQuestionDto::new)
                 .toList();
@@ -139,7 +140,8 @@ public class QuestionService {
         double percentileScore = ((double) correctQuestion.size() / questions.size()) * 100;
 
         // 5. History 반영
-        questionHistoryRepository.saveAll(questionHistories);
+        questionHistoryService.saveQuestionHistories(questionHistories);
+
         // 6. 유저 점수 반영
         user.accumulateUserScore(totalScore);
 
