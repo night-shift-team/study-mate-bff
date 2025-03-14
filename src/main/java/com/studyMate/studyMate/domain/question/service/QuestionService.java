@@ -197,12 +197,12 @@ public class QuestionService {
         questionHistoryService.saveQuestionHistories(questionHistories);
 
         // 6. 유저 점수 반영
-        user.accumulateUserScore(totalScore);
+        int userCurrentScore = user.accumulateUserScore(totalScore);
 
         // 7. 결과 반환
         return CheckMaqQuestionResponseDto.builder()
                 .percentileScore(Double.parseDouble(String.format("%.2f", percentileScore)))
-                .yourInitScore(user.getScore())
+                .yourInitScore(userCurrentScore)
                 .requestedQuestionCount(questions.size())
                 .correctQuestions(correctQuestion)
                 .wrongQuestions(wrongQuestion)
