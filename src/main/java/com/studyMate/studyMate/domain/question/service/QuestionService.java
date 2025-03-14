@@ -1,5 +1,6 @@
 package com.studyMate.studyMate.domain.question.service;
 
+import com.querydsl.core.QueryResults;
 import com.studyMate.studyMate.domain.history.dto.QuestionHistoryDto;
 import com.studyMate.studyMate.domain.history.service.QuestionHistoryService;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
@@ -8,7 +9,8 @@ import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
 import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.history.entity.QuestionHistory;
-import com.studyMate.studyMate.domain.history.repository.QuestionHistoryRepository;
+import com.studyMate.studyMate.domain.question.entity.Question;
+import com.studyMate.studyMate.domain.question.entity.SAQ;
 import com.studyMate.studyMate.domain.question.repository.QuestionMaqRepository;
 import com.studyMate.studyMate.domain.question.repository.QuestionRepository;
 import com.studyMate.studyMate.domain.user.entity.User;
@@ -20,9 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +37,35 @@ public class QuestionService {
     private final int MAX_LEVEL_TEST_DIFFICULTY = 20;
     private final int LEVEL_TEST_QUESTION_COUNT = 20;
 
+    /**
+     * Question 랜덤 출제기능 (By. Question Category)
+     * 이미 유저가 맞춘 문제에 대해서는 출제하지 않으며,
+     * 유저의 Score 를 기반으로 적절한 Difficulty에 맞는 문제를 탐색하고,
+     * 유저가 맞추지 못한 문제중 랜덤으로 문제를 1개 출제한다.
+     * @param questionCategory
+     * @param userId
+     */
+    public MaqQuestionDto findMaqQuestionsByCategory(QuestionCategory questionCategory, String userId) {
+        // 1. 유저의 적정 Difficulty를 뽑아라.
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
+        Integer userScore = user.getScore();
+        List<Integer> userProperDifficulty = getUserProperDifficulty(userScore);
+
+
+        // 2. 조건에 맞추어 조회,
+        QueryResults<MAQ> query = questionRepository.findRandMaqQuestionsByDifficultyAndCategoryAndPaging(
+                userProperDifficulty.get(0),
+                userProperDifficulty.get(1),
+                questionCategory,
+                userId,
+                1,
+                1
+        );
+
+        // 3. 리턴하라.
+        return new MaqQuestionDto(query.getResults().get(0));
+    }
+
     public GetQuestionDetailResponseDto findQuestionDetailById(String questionId, String userId) {
         // TODO : 일반유저 (1 ~ 5) : 자신이 푼 문제에 대해서만 문제의 상세정보를 조회할 수 있음.
         // TODO : 어드민 유저 (7 ~ 9) : 무엇이든 조회할 수 있음.
@@ -44,7 +73,7 @@ public class QuestionService {
         GetQuestionDetailResponseDto question = questionRepository.findQuestionDetailById(questionId);
 
         // 어드민 -> 무조건 허용.
-        if(user.getRole() >= 7) {
+        if (user.getRole() >= 7) {
             return question;
         }
 
@@ -52,7 +81,7 @@ public class QuestionService {
         List<QuestionHistoryDto> histories = questionHistoryService.findHistoriesByQuestionIdAndUserId(questionId, userId);
 
         // 문제 푼 내역이 없다면, -> 접근 비허용
-        if(histories.isEmpty()) {
+        if (histories.isEmpty()) {
             throw new CustomException(ErrorCode.NO_QUESTION_RECORDS);
         }
 
@@ -73,12 +102,12 @@ public class QuestionService {
             List<String> userChoices,
             String userId
     ) {
-        if(questions.isEmpty()) {
+        if (questions.isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_ANSWERSHEET);
         }
 
         // 1. Question과 user Choice의 길이 비교 (동일 체크)
-        if(questions.size() != userChoices.size()){
+        if (questions.size() != userChoices.size()) {
             throw new CustomException(ErrorCode.INVALID_ANSWERSHEET);
         }
 
@@ -96,14 +125,14 @@ public class QuestionService {
         int totalScore = 0;
 
         // 4. User Choice의 문제 정답 내역과 비교
-        for(int i=0; i < questions.size(); i++){
+        for (int i = 0; i < questions.size(); i++) {
             MAQ question = dbQuestions.get(i);
             String questionId = dbQuestions.get(i).getQuestionId();
             String dbAnswer = dbQuestions.get(i).getAnswer();
             String userAnswer = userChoices.get(i);
 
             // 정답
-            if(Objects.equals(dbAnswer, userAnswer)){
+            if (Objects.equals(dbAnswer, userAnswer)) {
                 correctQuestion.add(questionId);
                 questionHistories.add(QuestionHistory.builder()
                         .user(user)
@@ -154,7 +183,7 @@ public class QuestionService {
     public void generateFakeQuestions() {
         // MAQ
         List<MAQ> maqQuestionList = new ArrayList<>();
-        for(int i=1; i <= 100; i++) {
+        for (int i = 1; i <= 100; i++) {
             MAQ maqDBQuestion = MAQ.builder()
                     .questionTitle("Test Question Title_" + QuestionCategory.DB_MAQ.name() + "-" + i)
                     .content("Test Question Content_" + QuestionCategory.DB_MAQ.name() + "-" + i)
@@ -232,4 +261,51 @@ public class QuestionService {
         questionRepository.saveAll(maqQuestionList);
     }
 
+    /**
+     * 유저 점수에 맞추어 적합한 Difficulty를 뽑아라.
+     * @param userScore
+     * @return
+     */
+    private List<Integer> getUserProperDifficulty(int userScore) {
+
+        if(userScore == 0) {
+            throw new CustomException(ErrorCode.NO_LEVEL_TEST_RECORDS);
+        }
+
+        List<Integer> difficultyResult;
+
+        //      클래스      점수범위       난이도 산출
+        //        1	    1000 ~ 2000	    1 ~ 10
+        //        2	    2001 ~ 4000	    11 ~ 20
+        //        3	    4001 ~ 8000	    21 ~ 30
+        //        4	    8001 ~ 16000	31 ~ 40
+        //        5	    16001 ~ 32000	41 ~ 50
+        //        6	    32001 ~ 64000	51 ~ 60
+        //        7	    64001 ~ 128000	61 ~ 70
+        //        8	    128001 ~ 256000	71 ~ 80
+        //        9	    256001 ~ 512000	81 ~ 100
+        if(userScore <= 2000) {
+            difficultyResult = Arrays.asList(1, 10);
+        } else if (userScore <= 4000) {
+            difficultyResult = Arrays.asList(11, 20);
+        } else if (userScore <= 8000) {
+            difficultyResult = Arrays.asList(21, 30);
+        } else if (userScore <= 16000) {
+            difficultyResult = Arrays.asList(31, 40);
+        } else if (userScore <= 32000) {
+            difficultyResult = Arrays.asList(41, 50);
+        } else if (userScore <= 64000) {
+            difficultyResult = Arrays.asList(51, 60);
+        } else if (userScore <= 128000) {
+            difficultyResult = Arrays.asList(61, 70);
+        } else if (userScore <= 256000) {
+            difficultyResult = Arrays.asList(71, 80);
+        } else if (userScore <= 512000) {
+            difficultyResult = Arrays.asList(81, 100);
+        } else {
+            difficultyResult = Arrays.asList(1, 9999999);
+        }
+
+        return difficultyResult;
+    }
 }

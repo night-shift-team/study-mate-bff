@@ -1,10 +1,11 @@
 package com.studyMate.studyMate.domain.question.repository;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.entity.SAQ;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.studyMate.studyMate.domain.history.entity.QQuestionHistory.questionHistory;
 import static com.studyMate.studyMate.domain.question.entity.QMAQ.mAQ;
 import static com.studyMate.studyMate.domain.question.entity.QQuestion.*;
 import static com.studyMate.studyMate.domain.question.entity.QSAQ.*;
@@ -74,5 +76,65 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                 .leftJoin(sAQ).on(question.questionId.eq(sAQ.questionId)).fetchJoin()
                 .where(question.questionId.eq(questionId))
                 .fetchOne();
+    }
+
+    @Override
+    public QueryResults<MAQ> findRandMaqQuestionsByDifficultyAndCategoryAndPaging(
+            int minDifficulty,
+            int maxDifficulty,
+            QuestionCategory category,
+            String userId,
+            int page,
+            int size
+    ) {
+        int offset = (page - 1) * size;
+
+        return queryFactory
+                .selectFrom(mAQ)
+                .leftJoin(questionHistory).on(questionHistory.question.eq(mAQ.question)).fetchJoin()
+                .on(
+                        questionHistory.user.userId.eq(userId),
+                        questionHistory.isCorrect.isTrue(),
+                        questionHistory.question.questionId.eq(mAQ.questionId)
+                )
+                .where(
+                        mAQ.difficulty.between(minDifficulty, maxDifficulty),
+                        mAQ.category.eq(category),
+                        questionHistory.isNull()
+                )
+                .orderBy(Expressions.numberTemplate(Double.class, "function('RAND')").asc())
+                .offset(offset)
+                .limit(size)
+                .fetchResults();
+    }
+
+    @Override
+    public QueryResults<SAQ> findRandSaqQuestionsByDifficultyAndCategoryAndPaging(
+            int minDifficulty,
+            int maxDifficulty,
+            QuestionCategory category,
+            String userId,
+            int page,
+            int size
+    ) {
+        int offset = (page - 1) * size;
+
+        return queryFactory
+                .selectFrom(sAQ)
+                .leftJoin(questionHistory).on(questionHistory.question.eq(sAQ.question)).fetchJoin()
+                .on(
+                        questionHistory.user.userId.eq(userId),
+                        questionHistory.isCorrect.isTrue(),
+                        questionHistory.question.questionId.eq(sAQ.questionId)
+                )
+                .where(
+                        sAQ.difficulty.between(minDifficulty, maxDifficulty),
+                        sAQ.category.eq(category),
+                        questionHistory.isNull()
+                )
+                .orderBy(Expressions.numberTemplate(Double.class, "function('RAND')").asc())
+                .offset(offset)
+                .limit(size)
+                .fetchResults();
     }
 }

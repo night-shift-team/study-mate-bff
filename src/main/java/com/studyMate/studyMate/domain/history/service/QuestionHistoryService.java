@@ -3,6 +3,7 @@ package com.studyMate.studyMate.domain.history.service;
 import com.studyMate.studyMate.domain.history.dto.QuestionHistoryDto;
 import com.studyMate.studyMate.domain.history.repository.QuestionHistoryRepository;
 import com.studyMate.studyMate.domain.history.entity.QuestionHistory;
+import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

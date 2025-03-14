@@ -41,7 +41,8 @@ public enum ErrorCode {
     INVALID_ANSWERSHEET(409, "invalid answer sheet", "0400"),
     INVALID_QUESTION(400, "invalid question", "0401"),
     NO_QUESTION_RECORDS(400, "no question records, retry after finish the question", "0402"),
-
+    NO_LEVEL_TEST_RECORDS(400, "no level test records, retry after finish the level test", "0403"),
+    INVALID_QUESTION_CATEOGRY(400, "invalid question category", "0404"),
     ;
     private final int status;
     private final String message;
