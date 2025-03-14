@@ -29,7 +29,7 @@ public class QuestionController {
 
 
     @GetMapping("/{category}/maq")
-    @Operation(summary = "Questions 조회 (카테고리)", description = "유저가 풀지않은 문제 중, 카테고리에 맞추어, 유저 점수에 맞추어 Difficulty를 산정하여 문제를 1개 출제함.")
+    @Operation(summary = "MAQ - Questions 조회 (카테고리)", description = "유저가 풀지않은 문제 중, 카테고리에 맞추어, 유저 점수에 맞추어 Difficulty를 산정하여 문제를 1개 출제함.")
     @RoleAuth
     public MaqQuestionDto getMaqQuestionsByCategory(
             HttpServletRequest req,
@@ -48,7 +48,7 @@ public class QuestionController {
     }
 
     @GetMapping("/{category}/saq")
-    @Operation(summary = "Questions 조회 (카테고리)", description = "유저가 풀지않은 문제 중, 카테고리에 맞추어, 유저 점수에 맞추어 Difficulty를 산정하여 문제를 1개 출제함.")
+    @Operation(summary = "SAQ - Questions 조회 (카테고리)", description = "유저가 풀지않은 문제 중, 카테고리에 맞추어, 유저 점수에 맞추어 Difficulty를 산정하여 문제를 1개 출제함.")
     @RoleAuth
     public SaqQuestionDto getSaqQuestionsByCategory(
             HttpServletRequest req,
