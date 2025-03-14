@@ -79,21 +79,24 @@ public class User extends BaseEntityDate {
         this.role = role;
     }
 
+
     public int accumulateUserScore(int score) {
+        return accumulateUserScore(score, 1);
+    }
+
+    public int accumulateUserScore(int score, int weight) {
         int MAX_SCORE = 512000;
         int MIN_SCORE = 1000;
 
-        if(this.score + score > MAX_SCORE) {
+        int weightedScore = score * weight;
+
+        if(this.score + weightedScore > MAX_SCORE) {
             this.score = MAX_SCORE;
-            return this.score;
-        }
-
-        if(this.score - score < MIN_SCORE) {
+        } else if(this.score + weightedScore < MIN_SCORE) {
             this.score = MIN_SCORE;
-            return this.score;
+        } else {
+            this.score += weightedScore;
         }
-
-        this.score += score;
 
         return this.score;
     }
