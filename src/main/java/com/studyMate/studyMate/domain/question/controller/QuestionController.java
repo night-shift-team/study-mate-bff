@@ -2,10 +2,7 @@ package com.studyMate.studyMate.domain.question.controller;
 
 import com.querydsl.core.QueryResults;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
-import com.studyMate.studyMate.domain.question.dto.CheckMaqQuestionRequestDto;
-import com.studyMate.studyMate.domain.question.dto.CheckMaqQuestionResponseDto;
-import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
-import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
+import com.studyMate.studyMate.domain.question.dto.*;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.service.QuestionService;
 import com.studyMate.studyMate.global.config.RoleAuth;
@@ -47,13 +44,13 @@ public class QuestionController {
         }
 
         String userId = (String) req.getAttribute("userId");
-        return questionService.findMaqQuestionsByCategory(category, userId);
+        return questionService.findMaqQuestionsCommon(category, userId);
     }
 
     @GetMapping("/{category}/saq")
     @Operation(summary = "Questions 조회 (카테고리)", description = "유저가 풀지않은 문제 중, 카테고리에 맞추어, 유저 점수에 맞추어 Difficulty를 산정하여 문제를 1개 출제함.")
     @RoleAuth
-    public MaqQuestionDto getSaqQuestionsByCategory(
+    public SaqQuestionDto getSaqQuestionsByCategory(
             HttpServletRequest req,
             @PathVariable("category")
             @Parameter(
@@ -66,7 +63,7 @@ public class QuestionController {
         }
 
         String userId = (String) req.getAttribute("userId");
-        return questionService.findMaqQuestionsByCategory(category, userId);
+        return questionService.findSaqQuestionsCommon(category, userId);
     }
 
     @PostMapping("/generator/admin")

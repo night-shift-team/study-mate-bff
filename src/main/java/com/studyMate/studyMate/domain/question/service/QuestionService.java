@@ -7,6 +7,7 @@ import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.domain.question.dto.CheckMaqQuestionResponseDto;
 import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
 import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
+import com.studyMate.studyMate.domain.question.dto.SaqQuestionDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.history.entity.QuestionHistory;
 import com.studyMate.studyMate.domain.question.entity.Question;
@@ -45,7 +46,7 @@ public class QuestionService {
      * @param questionCategory
      * @param userId
      */
-    public MaqQuestionDto findMaqQuestionsByCategory(QuestionCategory questionCategory, String userId) {
+    public MaqQuestionDto findMaqQuestionsCommon(QuestionCategory questionCategory, String userId) {
         // 1. 유저의 적정 Difficulty를 뽑아라.
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
         Integer userScore = user.getScore();
@@ -65,6 +66,35 @@ public class QuestionService {
         // 3. 리턴하라.
         return new MaqQuestionDto(query.getResults().get(0));
     }
+
+    /**
+     * Question 랜덤 출제기능 (By. Question Category)
+     * 이미 유저가 맞춘 문제에 대해서는 출제하지 않으며,
+     * 유저의 Score 를 기반으로 적절한 Difficulty에 맞는 문제를 탐색하고,
+     * 유저가 맞추지 못한 문제중 랜덤으로 문제를 1개 출제한다.
+     * @param questionCategory
+     * @param userId
+     */
+    public SaqQuestionDto findSaqQuestionsCommon(QuestionCategory questionCategory, String userId) {
+        // 1. 유저의 적정 Difficulty를 뽑아라.
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
+        Integer userScore = user.getScore();
+        List<Integer> userProperDifficulty = getUserProperDifficulty(userScore);
+
+        // 2. 조건에 맞추어 조회,
+        QueryResults<SAQ> query = questionRepository.findRandSaqQuestionsByDifficultyAndCategoryAndPaging(
+                userProperDifficulty.get(0),
+                userProperDifficulty.get(1),
+                questionCategory,
+                userId,
+                1,
+                1
+        );
+
+        // 3. 리턴하라.
+        return new SaqQuestionDto(query.getResults().get(0));
+    }
+
 
     public GetQuestionDetailResponseDto findQuestionDetailById(String questionId, String userId) {
         // TODO : 일반유저 (1 ~ 5) : 자신이 푼 문제에 대해서만 문제의 상세정보를 조회할 수 있음.
