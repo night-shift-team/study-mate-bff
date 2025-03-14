@@ -37,6 +37,7 @@ public class QuestionService {
     private final UserRepository userRepository;
     private final int MAX_LEVEL_TEST_DIFFICULTY = 20;
     private final int LEVEL_TEST_QUESTION_COUNT = 20;
+    private final int LEVEL_TEST_SCORE_WIEGHT = 100;
 
     /**
      * Question 랜덤 출제기능 (By. Question Category)
@@ -197,7 +198,7 @@ public class QuestionService {
         questionHistoryService.saveQuestionHistories(questionHistories);
 
         // 6. 유저 점수 반영
-        int userCurrentScore = user.accumulateUserScore(totalScore);
+        int userCurrentScore = user.accumulateUserScore(totalScore, LEVEL_TEST_SCORE_WIEGHT);
 
         // 7. 결과 반환
         return CheckMaqQuestionResponseDto.builder()
