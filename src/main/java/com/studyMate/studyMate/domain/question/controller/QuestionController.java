@@ -1,9 +1,7 @@
 package com.studyMate.studyMate.domain.question.controller;
 
-import com.querydsl.core.QueryResults;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.domain.question.dto.*;
-import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.service.QuestionService;
 import com.studyMate.studyMate.global.config.RoleAuth;
 import com.studyMate.studyMate.global.error.CustomException;
@@ -20,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,6 +48,17 @@ public class QuestionController {
 
         String userId = (String) req.getAttribute("userId");
         return questionService.findMaqQuestionsCommon(category, userId);
+    }
+
+    @PostMapping("/check/maq")
+    @Operation(summary = "MAQ 문제 결과 제출", description = "MAQ Common 풀이한 문제에 대하여 정답을 체크하고, History에 기록함")
+    @RoleAuth
+    public CheckMaqQuestionResponseDto checkMaqCommonQuestions(
+            HttpServletRequest req,
+            @RequestBody CheckMaqQuestionRequestDto body
+    ) {
+        String userId = (String) req.getAttribute("userId");
+        return questionService.checkCommonMaqQuestion(body.questionId(), body.userAnswer(), userId);
     }
 
     @GetMapping("/{category}/saq")
@@ -100,9 +108,9 @@ public class QuestionController {
     @PostMapping("/check/level-test")
     @Operation(summary = "레벨 테스트 문제 결과 제출", description = "레벨 테스트에서 풀이한 문제에 대하여 정답을 체크하고, History에 기록함")
     @RoleAuth
-    public CheckMaqQuestionResponseDto checkLevelTestQuestions(
+    public CheckMaqQuestionsResponseDto checkLevelTestQuestions(
             HttpServletRequest req,
-            @RequestBody CheckMaqQuestionRequestDto body
+            @RequestBody CheckMaqQuestionsRequestDto body
     ) {
         String userId = (String) req.getAttribute("userId");
         return questionService.checkLevelTestQuestions(body.questionIds(), body.userAnswers(), userId);

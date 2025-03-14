@@ -2,15 +2,12 @@ package com.studyMate.studyMate.domain.question.service;
 
 import com.querydsl.core.QueryResults;
 import com.studyMate.studyMate.domain.history.dto.QuestionHistoryDto;
+import com.studyMate.studyMate.domain.history.repository.QuestionHistoryRepository;
 import com.studyMate.studyMate.domain.history.service.QuestionHistoryService;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
-import com.studyMate.studyMate.domain.question.dto.CheckMaqQuestionResponseDto;
-import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
-import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
-import com.studyMate.studyMate.domain.question.dto.SaqQuestionDto;
+import com.studyMate.studyMate.domain.question.dto.*;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.history.entity.QuestionHistory;
-import com.studyMate.studyMate.domain.question.entity.Question;
 import com.studyMate.studyMate.domain.question.entity.SAQ;
 import com.studyMate.studyMate.domain.question.repository.QuestionMaqRepository;
 import com.studyMate.studyMate.domain.question.repository.QuestionRepository;
@@ -38,6 +35,7 @@ public class QuestionService {
     private final int MAX_LEVEL_TEST_DIFFICULTY = 20;
     private final int LEVEL_TEST_QUESTION_COUNT = 20;
     private final int LEVEL_TEST_SCORE_WIEGHT = 100;
+    private final QuestionHistoryRepository questionHistoryRepository;
 
     /**
      * Question 랜덤 출제기능 (By. Question Category)
@@ -96,7 +94,6 @@ public class QuestionService {
         return new SaqQuestionDto(query.getResults().get(0));
     }
 
-
     public GetQuestionDetailResponseDto findQuestionDetailById(String questionId, String userId) {
         // TODO : 일반유저 (1 ~ 5) : 자신이 푼 문제에 대해서만 문제의 상세정보를 조회할 수 있음.
         // TODO : 어드민 유저 (7 ~ 9) : 무엇이든 조회할 수 있음.
@@ -128,7 +125,59 @@ public class QuestionService {
     }
 
     @Transactional
-    public CheckMaqQuestionResponseDto checkLevelTestQuestions(
+    public CheckMaqQuestionResponseDto checkCommonMaqQuestion(
+            String questionId,
+            String userAnswer,
+            String userId
+    ){
+        // 유효한 유저 & 문제 체크
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
+        MAQ dbQuestion = questionMaqRepository.findById(questionId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_QUESTION));
+
+        // 문제 정답을 맞추고..
+        boolean isCorrectAnswer = dbQuestion.getAnswer().equals(userAnswer);
+
+        // 점수 환산 후,
+        int score = 0;
+
+        if(!isCorrectAnswer) {
+            score -= dbQuestion.getDifficulty();
+        } else {
+            score += dbQuestion.getDifficulty();
+        }
+
+        int userScore = user.accumulateUserScore(score);
+
+        // History Table 기록
+        questionHistoryRepository.save(QuestionHistory
+                .builder()
+                .user(user)
+                .question(dbQuestion)
+                .userAnswer(String.valueOf(userAnswer))
+                .score(dbQuestion.getDifficulty())
+                .isCorrect(isCorrectAnswer)
+                .qType(dbQuestion.getCategory())
+                .build()
+        );
+
+
+        // 리턴
+        return CheckMaqQuestionResponseDto
+                .builder()
+                .answer(dbQuestion.getAnswer())
+                .answerExplanation(dbQuestion.getAnswerExplanation())
+                .userAnswer(userAnswer)
+                .isCorrect(isCorrectAnswer)
+                .reflectedScore(score)
+                .userScore(userScore)
+                .build();
+    }
+
+    @Transactional
+    public void checkCommonSaqQuestion(){}
+
+    @Transactional
+    public CheckMaqQuestionsResponseDto checkLevelTestQuestions(
             List<String> questions,
             List<String> userChoices,
             String userId
@@ -201,7 +250,7 @@ public class QuestionService {
         int userCurrentScore = user.accumulateUserScore(totalScore, LEVEL_TEST_SCORE_WIEGHT);
 
         // 7. 결과 반환
-        return CheckMaqQuestionResponseDto.builder()
+        return CheckMaqQuestionsResponseDto.builder()
                 .percentileScore(Double.parseDouble(String.format("%.2f", percentileScore)))
                 .yourInitScore(userCurrentScore)
                 .requestedQuestionCount(questions.size())
