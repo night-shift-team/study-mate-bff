@@ -83,6 +83,17 @@ public class QuestionController {
         return questionService.findSaqQuestionsCommon(category, userId);
     }
 
+    @PostMapping("/check/saq")
+    @Operation(summary = "SAQ 문제 결과 제출", description = "SAQ Common 풀이한 문제에 대하여 정답을 체크하고, History에 기록함")
+    @RoleAuth
+    public CheckSaqQuestionResponseDto checkSaqCommonQuestions(
+            HttpServletRequest req,
+            @RequestBody CheckMaqQuestionRequestDto body
+    ) {
+        String userId = (String) req.getAttribute("userId");
+        return questionService.checkCommonSaqQuestion(body.questionId(), body.userAnswer(), userId);
+    }
+
     @PostMapping("/generator/admin")
     @Operation(summary = "Question 가라데이터 생성기 (테스트 전용)", description = "Question 가라데이터 생성 API")
     public boolean generateFakeQuestions() {

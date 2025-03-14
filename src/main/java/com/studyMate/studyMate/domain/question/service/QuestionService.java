@@ -11,6 +11,7 @@ import com.studyMate.studyMate.domain.history.entity.QuestionHistory;
 import com.studyMate.studyMate.domain.question.entity.SAQ;
 import com.studyMate.studyMate.domain.question.repository.QuestionMaqRepository;
 import com.studyMate.studyMate.domain.question.repository.QuestionRepository;
+import com.studyMate.studyMate.domain.question.repository.QuestionSaqRepository;
 import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.domain.user.repository.UserRepository;
 import com.studyMate.studyMate.global.error.CustomException;
@@ -30,6 +31,7 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final QuestionMaqRepository questionMaqRepository;
+    private final QuestionSaqRepository questionSaqRepository;
     private final QuestionHistoryService questionHistoryService;
     private final UserRepository userRepository;
     private final int MAX_LEVEL_TEST_DIFFICULTY = 20;
@@ -174,7 +176,45 @@ public class QuestionService {
     }
 
     @Transactional
-    public void checkCommonSaqQuestion(){}
+    public CheckSaqQuestionResponseDto checkCommonSaqQuestion(
+            String questionId,
+            String userAnswer,
+            String userId
+    ){
+        // 유효한 유저 & 문제 체크
+        User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
+        SAQ dbQuestion = questionSaqRepository.findById(questionId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_QUESTION));
+
+        // 정답체크
+        int score = checkSaqScore(userAnswer, dbQuestion);
+
+        // 점수반영
+        int userScore = user.accumulateUserScore(score);
+
+        // History Table 기록 (2개 키워드값 이상 맞출 경우 정답으로 간주함, 1개인 경우 오답)
+        questionHistoryRepository.save(QuestionHistory
+                .builder()
+                .user(user)
+                .question(dbQuestion)
+                .userAnswer(userAnswer)
+                .score(score)
+                .isCorrect(score >= dbQuestion.getDifficulty() / 2)
+                .qType(dbQuestion.getCategory())
+                .build()
+        );
+
+        return CheckSaqQuestionResponseDto
+                .builder()
+                .keyword1(dbQuestion.getKeyword1())
+                .keyword2(dbQuestion.getKeyword2())
+                .keyword3(dbQuestion.getKeyword3())
+                .modelAnswer(dbQuestion.getAnswer())
+                .answerExplanation(dbQuestion.getAnswerExplanation())
+                .userAnswer(userAnswer)
+                .reflectedScore(score)
+                .userScore(userScore)
+                .build();
+    }
 
     @Transactional
     public CheckMaqQuestionsResponseDto checkLevelTestQuestions(
@@ -388,4 +428,39 @@ public class QuestionService {
 
         return difficultyResult;
     }
+
+
+    private int checkSaqScore(String userAnswer, SAQ dbQuestion) {
+        String keyword1 = dbQuestion.getKeyword1().toLowerCase();
+        String keyword2 = dbQuestion.getKeyword2().toLowerCase();
+        String keyword3 = dbQuestion.getKeyword3().toLowerCase();
+
+        String userAnswerLower = userAnswer.toLowerCase();
+
+        int containsCnt = 0;
+
+        if(userAnswer.contains(keyword1)) {
+            containsCnt += 1;
+        }
+
+        if(userAnswer.contains(keyword2)) {
+            containsCnt += 1;
+        }
+
+        if(userAnswer.contains(keyword3)) {
+            containsCnt += 1;
+        }
+
+
+        int score = switch (containsCnt) {
+            case 0 -> -dbQuestion.getDifficulty();
+            case 1 -> dbQuestion.getDifficulty() / 3;
+            case 2 -> dbQuestion.getDifficulty() / 2;
+            case 3 -> dbQuestion.getDifficulty();
+            default -> 0;
+        };
+
+        return score;
+    }
+
 }
