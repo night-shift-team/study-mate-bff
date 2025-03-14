@@ -79,11 +79,17 @@ public class User extends BaseEntityDate {
         this.role = role;
     }
 
-
+    /**
+     * 일반적으로 점수 누적시 사용
+     */
     public int accumulateUserScore(int score) {
         return accumulateUserScore(score, 1);
     }
 
+    /**
+     * Level Test, Contest 등 점수 가중치가 필요할 때 사용
+     * @param weight 가중치 배수 (default = 1)
+     */
     public int accumulateUserScore(int score, int weight) {
         int MAX_SCORE = 512000;
         int MIN_SCORE = 1000;
