@@ -10,7 +10,10 @@ import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +33,9 @@ public class QuestionController {
 
     @GetMapping("/{category}/maq")
     @Operation(summary = "MAQ - Questions 조회 (카테고리)", description = "유저가 풀지않은 문제 중, 카테고리에 맞추어, 유저 점수에 맞추어 Difficulty를 산정하여 문제를 1개 출제함.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = MaqQuestionDto.class))})
+    })
     @RoleAuth
     public MaqQuestionDto getMaqQuestionsByCategory(
             HttpServletRequest req,
@@ -49,6 +55,9 @@ public class QuestionController {
 
     @GetMapping("/{category}/saq")
     @Operation(summary = "SAQ - Questions 조회 (카테고리)", description = "유저가 풀지않은 문제 중, 카테고리에 맞추어, 유저 점수에 맞추어 Difficulty를 산정하여 문제를 1개 출제함.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SaqQuestionDto.class))})
+    })
     @RoleAuth
     public SaqQuestionDto getSaqQuestionsByCategory(
             HttpServletRequest req,
