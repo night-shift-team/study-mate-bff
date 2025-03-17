@@ -79,7 +79,6 @@ public class UserController {
     }
 
     @PostMapping("/reset-password/admin")
-    @RoleAuth(requiredRole = 7)
     @Operation(summary = "비밀번호 초기화 (어드민 전용)", description = "비밀번호 초기화 API (123456)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
