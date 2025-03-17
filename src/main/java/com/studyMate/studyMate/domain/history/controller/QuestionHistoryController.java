@@ -21,7 +21,7 @@ public class QuestionHistoryController {
     private final QuestionHistoryService questionHistoryService;
 
     @GetMapping("/{month-before}/monthly")
-    @Operation(summary = "유저 문제 풀이 히스토리 내역 조회", description = "Page는 0부터 시작하며, 페이지를 의미함 // size는 가져올 로우 숫자를 의미함.")
+    @Operation(summary = "유저 문제 풀이 히스토리 내역 조회", description = "Page는 0부터 시작하며, 페이지를 의미함 (Default = 0)// size는 가져올 로우 숫자를 의미함. (Default = 10)")
     @RoleAuth
     public QuestionHistoryPageDto getMonthlyQuestionHistoriesByUser(
             HttpServletRequest req,
