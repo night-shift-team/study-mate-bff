@@ -18,6 +18,8 @@ import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,20 +54,19 @@ public class QuestionService {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
         Integer userScore = user.getScore();
         List<Integer> userProperDifficulty = getUserProperDifficulty(userScore);
-
+        PageRequest pageReq = PageRequest.of(0, 1);
 
         // 2. 조건에 맞추어 조회,
-        QueryResults<MAQ> query = questionRepository.findRandMaqQuestionsByDifficultyAndCategoryAndPaging(
+        Page<MAQ> query = questionRepository.findRandMaqQuestionsByDifficultyAndCategoryAndPaging(
                 userProperDifficulty.get(0),
                 userProperDifficulty.get(1),
                 questionCategory,
                 userId,
-                1,
-                1
+                pageReq
         );
 
         // 3. 리턴하라.
-        return new MaqQuestionDto(query.getResults().get(0));
+        return new MaqQuestionDto(query.getContent().get(0));
     }
 
     /**

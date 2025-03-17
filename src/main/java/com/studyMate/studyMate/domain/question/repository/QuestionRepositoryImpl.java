@@ -10,6 +10,9 @@ import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.entity.SAQ;
 import jakarta.persistence.EntityManager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -79,17 +82,14 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
     }
 
     @Override
-    public QueryResults<MAQ> findRandMaqQuestionsByDifficultyAndCategoryAndPaging(
+    public Page<MAQ> findRandMaqQuestionsByDifficultyAndCategoryAndPaging(
             int minDifficulty,
             int maxDifficulty,
             QuestionCategory category,
             String userId,
-            int page,
-            int size
+            Pageable pageable
     ) {
-        int offset = (page - 1) * size;
-
-        return queryFactory
+        QueryResults<MAQ> content = queryFactory
                 .selectFrom(mAQ)
                 .leftJoin(questionHistory).on(questionHistory.question.eq(mAQ.question)).fetchJoin()
                 .on(
@@ -103,9 +103,15 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                         questionHistory.isNull()
                 )
                 .orderBy(Expressions.numberTemplate(Double.class, "function('RAND')").asc())
-                .offset(offset)
-                .limit(size)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
                 .fetchResults();
+
+        return new PageImpl<>(
+                content.getResults(),
+                pageable,
+                content.getTotal()
+        );
     }
 
     @Override
