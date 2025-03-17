@@ -4,6 +4,7 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
@@ -89,7 +90,7 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
             String userId,
             Pageable pageable
     ) {
-        QueryResults<MAQ> content = queryFactory
+        List<MAQ> contents = queryFactory
                 .selectFrom(mAQ)
                 .leftJoin(questionHistory).on(questionHistory.question.eq(mAQ.question)).fetchJoin()
                 .on(
@@ -105,27 +106,39 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                 .orderBy(Expressions.numberTemplate(Double.class, "function('RAND')").asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .fetchResults();
+                .fetch();
+
+        Long cnt = queryFactory
+                .select(mAQ.count())
+                .from(mAQ)
+                .leftJoin(questionHistory).on(questionHistory.question.eq(mAQ.question)).fetchJoin()
+                .on(
+                        questionHistory.user.userId.eq(userId),
+                        questionHistory.isCorrect.isTrue(),
+                        questionHistory.question.questionId.eq(mAQ.questionId)
+                )
+                .where(
+                        mAQ.difficulty.between(minDifficulty, maxDifficulty),
+                        mAQ.category.eq(category),
+                        questionHistory.isNull()
+                ).fetchOne();
 
         return new PageImpl<>(
-                content.getResults(),
-                pageable,
-                content.getTotal()
+            contents,
+            pageable,
+            cnt != null ? cnt : 0
         );
     }
 
     @Override
-    public QueryResults<SAQ> findRandSaqQuestionsByDifficultyAndCategoryAndPaging(
+    public Page<SAQ> findRandSaqQuestionsByDifficultyAndCategoryAndPaging(
             int minDifficulty,
             int maxDifficulty,
             QuestionCategory category,
             String userId,
-            int page,
-            int size
+            Pageable pageable
     ) {
-        int offset = (page - 1) * size;
-
-        return queryFactory
+        List<SAQ> content = queryFactory
                 .selectFrom(sAQ)
                 .leftJoin(questionHistory).on(questionHistory.question.eq(sAQ.question)).fetchJoin()
                 .on(
@@ -139,8 +152,30 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                         questionHistory.isNull()
                 )
                 .orderBy(Expressions.numberTemplate(Double.class, "function('RAND')").asc())
-                .offset(offset)
-                .limit(size)
-                .fetchResults();
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long cnt = queryFactory
+                .select(sAQ.count())
+                .from(sAQ)
+                .leftJoin(questionHistory).on(questionHistory.question.eq(sAQ.question)).fetchJoin()
+                .on(
+                        questionHistory.user.userId.eq(userId),
+                        questionHistory.isCorrect.isTrue(),
+                        questionHistory.question.questionId.eq(sAQ.questionId)
+                )
+                .where(
+                        sAQ.difficulty.between(minDifficulty, maxDifficulty),
+                        sAQ.category.eq(category),
+                        questionHistory.isNull()
+                )
+                .fetchOne();
+
+        return new PageImpl<>(
+                content,
+                pageable,
+                cnt != null ? cnt : 0
+        );
     }
 }
