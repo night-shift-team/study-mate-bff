@@ -108,8 +108,16 @@ public class QuestionService {
                 pageReq
         );
 
+        SaqQuestionDto result;
+
+        if(query.getContent().isEmpty()) {
+            result = null;
+        } else {
+            result = new SaqQuestionDto(query.getContent().get(0));
+        }
+
         // 3. 리턴하라.
-        return new SaqQuestionDto(query.getContent().get(0));
+        return result;
     }
 
     public GetQuestionDetailResponseDto findQuestionDetailById(String questionId, String userId) {
