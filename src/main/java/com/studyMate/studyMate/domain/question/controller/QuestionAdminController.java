@@ -1,9 +1,6 @@
 package com.studyMate.studyMate.domain.question.controller;
 
-import com.studyMate.studyMate.domain.question.dto.CreateMaqQuestionRequestDto;
-import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
-import com.studyMate.studyMate.domain.question.dto.MaqQuestionPageDto;
-import com.studyMate.studyMate.domain.question.dto.SaqQuestionPageDto;
+import com.studyMate.studyMate.domain.question.dto.*;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.service.QuestionService;
 import com.studyMate.studyMate.global.config.RoleAuth;
@@ -52,6 +49,15 @@ public class QuestionAdminController {
             @RequestBody @Valid CreateMaqQuestionRequestDto requestDto
     ) {
         return questionService.createMaqQuestion(requestDto);
+    }
+
+    @PostMapping(value = "/saq")
+    @Operation(summary = "Admin Page SAQ Question 생성", description = "SAQ Question 생성")
+    public String getMaqQuestionsLatest(
+            HttpServletRequest req,
+            @RequestBody @Valid CreateSaqQuestionRequestDto requestDto
+    ) {
+        return questionService.createSaqQuestion(requestDto);
     }
 
     @PostMapping("/generator/maq")

@@ -77,6 +77,26 @@ public class QuestionService {
         return maq.getQuestionId();
     }
 
+    @Transactional
+    public String createSaqQuestion(CreateSaqQuestionRequestDto requestDto) {
+
+        SAQ saq = questionSaqRepository.save(
+                SAQ.builder()
+                        .questionTitle(requestDto.getQuestionTitle())
+                        .content(requestDto.getQuestionContent())
+                        .answer(requestDto.getAnswer())
+                        .answerExplanation(requestDto.getAnswerExplanation())
+                        .difficulty(requestDto.getDifficulty())
+                        .category(requestDto.getCategory())
+                        .keyword1(requestDto.getKeyword1())
+                        .keyword2(requestDto.getKeyword2())
+                        .keyword3(requestDto.getKeyword3())
+                        .build()
+        );
+
+        return saq.getQuestionId();
+    }
+
     /**
      * Question 랜덤 출제기능 (By. Question Category)
      * 이미 유저가 맞춘 문제에 대해서는 출제하지 않으며,
