@@ -56,6 +56,27 @@ public class QuestionService {
         return new SaqQuestionPageDto(query);
     }
 
+    @Transactional
+    public String createMaqQuestion(CreateMaqQuestionRequestDto requestDto) {
+
+        MAQ maq = questionMaqRepository.save(
+                MAQ.builder()
+                        .questionTitle(requestDto.getQuestionTitle())
+                        .content(requestDto.getQuestionContent())
+                        .answer(requestDto.getAnswer())
+                        .answerExplanation(requestDto.getAnswerExplanation())
+                        .difficulty(requestDto.getDifficulty())
+                        .category(requestDto.getCategory())
+                        .choice1(requestDto.getChoice1())
+                        .choice2(requestDto.getChoice2())
+                        .choice3(requestDto.getChoice3())
+                        .choice4(requestDto.getChoice4())
+                        .build()
+        );
+
+        return maq.getQuestionId();
+    }
+
     /**
      * Question 랜덤 출제기능 (By. Question Category)
      * 이미 유저가 맞춘 문제에 대해서는 출제하지 않으며,

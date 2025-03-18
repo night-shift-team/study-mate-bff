@@ -1,5 +1,6 @@
 package com.studyMate.studyMate.domain.question.controller;
 
+import com.studyMate.studyMate.domain.question.dto.CreateMaqQuestionRequestDto;
 import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
 import com.studyMate.studyMate.domain.question.dto.MaqQuestionPageDto;
 import com.studyMate.studyMate.domain.question.dto.SaqQuestionPageDto;
@@ -8,8 +9,11 @@ import com.studyMate.studyMate.domain.question.service.QuestionService;
 import com.studyMate.studyMate.global.config.RoleAuth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,6 +42,16 @@ public class QuestionAdminController {
             @PathVariable("limit") Integer limit
     ) {
         return questionService.findSaqQuestionsLatest(page, limit);
+    }
+
+
+    @PostMapping(value = "/maq")
+    @Operation(summary = "Admin Page MAQ Question 생성", description = "MAQ Question 생성")
+    public String getMaqQuestionsLatest(
+            HttpServletRequest req,
+            @RequestBody @Valid CreateMaqQuestionRequestDto requestDto
+    ) {
+        return questionService.createMaqQuestion(requestDto);
     }
 
     @PostMapping("/generator/maq")
