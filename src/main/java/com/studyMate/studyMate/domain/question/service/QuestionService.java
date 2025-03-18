@@ -58,6 +58,10 @@ public class QuestionService {
 
     @Transactional
     public String createMaqQuestion(CreateMaqQuestionRequestDto requestDto) {
+        boolean isExist = questionMaqRepository.existsByQuestionTitle(requestDto.getQuestionTitle());
+        if (isExist) {
+            throw new CustomException(ErrorCode.DUP_QUESTION);
+        }
 
         MAQ maq = questionMaqRepository.save(
                 MAQ.builder()
@@ -79,6 +83,10 @@ public class QuestionService {
 
     @Transactional
     public String createSaqQuestion(CreateSaqQuestionRequestDto requestDto) {
+        boolean isExist = questionSaqRepository.existsByQuestionTitle(requestDto.getQuestionTitle());
+        if (isExist) {
+            throw new CustomException(ErrorCode.DUP_QUESTION);
+        }
 
         SAQ saq = questionSaqRepository.save(
                 SAQ.builder()
