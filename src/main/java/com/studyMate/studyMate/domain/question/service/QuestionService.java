@@ -50,6 +50,12 @@ public class QuestionService {
         return new MaqQuestionPageDto(query);
     }
 
+    public SaqQuestionPageDto findSaqQuestionsLatest(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDt"));
+        Page<SAQ> query = questionSaqRepository.findAll(pageRequest);
+        return new SaqQuestionPageDto(query);
+    }
+
     /**
      * Question 랜덤 출제기능 (By. Question Category)
      * 이미 유저가 맞춘 문제에 대해서는 출제하지 않으며,

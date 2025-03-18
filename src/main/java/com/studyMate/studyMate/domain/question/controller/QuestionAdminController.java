@@ -2,6 +2,7 @@ package com.studyMate.studyMate.domain.question.controller;
 
 import com.studyMate.studyMate.domain.question.dto.MaqQuestionDto;
 import com.studyMate.studyMate.domain.question.dto.MaqQuestionPageDto;
+import com.studyMate.studyMate.domain.question.dto.SaqQuestionPageDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.service.QuestionService;
 import com.studyMate.studyMate.global.config.RoleAuth;
@@ -22,12 +23,21 @@ public class QuestionAdminController {
     private final QuestionService questionService;
 
     @GetMapping(value = "/{page}/{limit}/maq")
-    @Operation(summary = "Admin Page MAQ Question 조회 (최신순)", description = "Question 전체 내역 조회")
-    public MaqQuestionPageDto getQuestionsLatest(
+    @Operation(summary = "Admin Page MAQ Question 조회 (최신순)", description = "MAQ Question 전체 내역 조회")
+    public MaqQuestionPageDto getMaqQuestionsLatest(
         @PathVariable("page") Integer page,
         @PathVariable("limit") Integer limit
     ) {
         return questionService.findMaqQuestionsLatest(page, limit);
+    }
+
+    @GetMapping(value = "/{page}/{limit}/saq")
+    @Operation(summary = "Admin Page SAQ Question 조회 (최신순)", description = "SAQ Question 전체 내역 조회")
+    public SaqQuestionPageDto getSaqQuestionsLatest(
+            @PathVariable("page") Integer page,
+            @PathVariable("limit") Integer limit
+    ) {
+        return questionService.findSaqQuestionsLatest(page, limit);
     }
 
     @PostMapping("/generator/maq")
