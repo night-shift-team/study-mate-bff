@@ -27,6 +27,13 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
+    @GetMapping("/{questionId}")
+    @Operation(summary = "Question 상세 정보 조회", description = "Question 상세정보 조회 API (MAQ | SAQ 공통사용) (*일반유저는 자신이 풀었던 내역에 대해서만 조회할 수 있음 | 어드민은 무조건 조회)")
+    @RoleAuth
+    public GetQuestionDetailResponseDto getQuestionDetail(HttpServletRequest req, @PathVariable("questionId") String questionId) {
+        String userId = (String) req.getAttribute("userId");
+        return questionService.findQuestionDetailById(questionId, userId);
+    }
 
     @GetMapping("/{category}/maq")
     @Operation(summary = "MAQ - Questions 조회 (카테고리)", description = "유저가 풀지않은 문제 중, 카테고리에 맞추어, 유저 점수에 맞추어 Difficulty를 산정하여 문제를 1개 출제함.")
@@ -92,21 +99,6 @@ public class QuestionController {
     ) {
         String userId = (String) req.getAttribute("userId");
         return questionService.checkCommonSaqQuestion(body.questionId(), body.userAnswer(), userId);
-    }
-
-    @PostMapping("/generator/admin")
-    @Operation(summary = "Question 가라데이터 생성기 (테스트 전용)", description = "Question 가라데이터 생성 API")
-    public boolean generateFakeQuestions() {
-        questionService.generateFakeQuestions();
-        return true;
-    }
-
-    @GetMapping("/{questionId}")
-    @Operation(summary = "Question 상세 정보 조회", description = "Question 상세정보 조회 API (MAQ | SAQ 공통사용) (*일반유저는 자신이 풀었던 내역에 대해서만 조회할 수 있음 | 어드민은 무조건 조회)")
-    @RoleAuth
-    public GetQuestionDetailResponseDto getQuestionDetail(HttpServletRequest req, @PathVariable("questionId") String questionId) {
-        String userId = (String) req.getAttribute("userId");
-        return questionService.findQuestionDetailById(questionId, userId);
     }
 
     @GetMapping("/level-test")

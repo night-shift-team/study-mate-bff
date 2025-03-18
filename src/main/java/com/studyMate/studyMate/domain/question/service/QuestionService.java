@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,10 +37,18 @@ public class QuestionService {
     private final QuestionSaqRepository questionSaqRepository;
     private final QuestionHistoryService questionHistoryService;
     private final UserRepository userRepository;
+
     private final int MAX_LEVEL_TEST_DIFFICULTY = 20;
     private final int LEVEL_TEST_QUESTION_COUNT = 20;
     private final int LEVEL_TEST_SCORE_WIEGHT = 100;
+
     private final QuestionHistoryRepository questionHistoryRepository;
+
+    public MaqQuestionPageDto findMaqQuestionsLatest(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDt"));
+        Page<MAQ> query = questionMaqRepository.findAll(pageRequest);
+        return new MaqQuestionPageDto(query);
+    }
 
     /**
      * Question 랜덤 출제기능 (By. Question Category)
