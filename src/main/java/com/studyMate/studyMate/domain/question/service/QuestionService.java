@@ -129,6 +129,11 @@ public class QuestionService {
                 pageReq
         );
 
+        if(query.getContent().isEmpty()) {
+            log.info("no avaliable MAQ Questions Category : {} || Difficulty : {}", userProperDifficulty, questionCategory);
+            throw new CustomException(ErrorCode.NO_AVAILIABLE_QEUSTION);
+        }
+
         // 3. 리턴하라.
         return new MaqQuestionDto(query.getContent().get(0));
     }
@@ -160,13 +165,12 @@ public class QuestionService {
         SaqQuestionDto result;
 
         if(query.getContent().isEmpty()) {
-            result = null;
-        } else {
-            result = new SaqQuestionDto(query.getContent().get(0));
+            log.info("no avaliable SAQ Questions Category : {} || Difficulty : {}", userProperDifficulty, questionCategory);
+            throw new CustomException(ErrorCode.NO_AVAILIABLE_QEUSTION);
         }
 
         // 3. 리턴하라.
-        return result;
+        return new SaqQuestionDto(query.getContent().get(0));
     }
 
     public GetQuestionDetailResponseDto findQuestionDetailById(String questionId, String userId) {

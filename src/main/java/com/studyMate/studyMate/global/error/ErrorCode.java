@@ -44,6 +44,7 @@ public enum ErrorCode {
     NO_LEVEL_TEST_RECORDS(400, "no level test records, retry after finish the level test", "0403"),
     INVALID_QUESTION_CATEOGRY(400, "invalid question category", "0404"),
     DUP_QUESTION(400, "question already exist (question title)", "0405"),
+    NO_AVAILIABLE_QEUSTION(404, "no available question", "0406"),
     ;
     private final int status;
     private final String message;
