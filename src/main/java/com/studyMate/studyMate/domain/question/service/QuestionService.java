@@ -105,6 +105,52 @@ public class QuestionService {
         return saq.getQuestionId();
     }
 
+
+    @Transactional
+    public String updateMaqQuestion(
+            String questionId,
+            CreateMaqQuestionRequestDto requestDto
+    ) {
+        MAQ maq = questionMaqRepository.findByQuestionId(questionId).orElseThrow(
+                () -> new CustomException(ErrorCode.INVALID_QUESTION)
+        );
+
+        maq.getQuestion().setQuestionTitle(requestDto.getQuestionTitle());
+        maq.getQuestion().setContent(requestDto.getQuestionContent());
+        maq.getQuestion().setAnswer(requestDto.getAnswer());
+        maq.getQuestion().setAnswerExplanation(requestDto.getAnswerExplanation());
+        maq.getQuestion().setDifficulty(requestDto.getDifficulty());
+        maq.getQuestion().setCategory(requestDto.getCategory());
+        maq.setChoice1(requestDto.getChoice1());
+        maq.setChoice2(requestDto.getChoice2());
+        maq.setChoice3(requestDto.getChoice3());
+        maq.setChoice4(requestDto.getChoice4());
+
+        return maq.getQuestionId();
+    }
+
+    @Transactional
+    public String updateSaqQuestion(
+            String questionId,
+            CreateSaqQuestionRequestDto requestDto
+    ) {
+        SAQ saq = questionSaqRepository.findByQuestionId(questionId).orElseThrow(
+                () -> new CustomException(ErrorCode.INVALID_QUESTION)
+        );
+
+        saq.getQuestion().setQuestionTitle(requestDto.getQuestionTitle());
+        saq.getQuestion().setContent(requestDto.getQuestionContent());
+        saq.getQuestion().setAnswer(requestDto.getAnswer());
+        saq.getQuestion().setAnswerExplanation(requestDto.getAnswerExplanation());
+        saq.getQuestion().setDifficulty(requestDto.getDifficulty());
+        saq.getQuestion().setCategory(requestDto.getCategory());
+        saq.setKeyword1(requestDto.getKeyword1());
+        saq.setKeyword2(requestDto.getKeyword2());
+        saq.setKeyword3(requestDto.getKeyword3());
+
+        return saq.getQuestionId();
+    }
+
     /**
      * Question 랜덤 출제기능 (By. Question Category)
      * 이미 유저가 맞춘 문제에 대해서는 출제하지 않으며,

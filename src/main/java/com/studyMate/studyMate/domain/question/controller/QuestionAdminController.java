@@ -60,6 +60,26 @@ public class QuestionAdminController {
         return questionService.createSaqQuestion(requestDto);
     }
 
+    @PatchMapping(value = "/{question-id}/maq")
+    @Operation(summary = "Admin Page MAQ Question 수정", description = "MAQ Question 수정")
+    public String updateMaqQuestion(
+            HttpServletRequest req,
+            @PathVariable("question-id") String questionId,
+            @RequestBody @Valid CreateMaqQuestionRequestDto requestDto
+    ) {
+        return questionService.updateMaqQuestion(questionId, requestDto);
+    }
+
+    @PatchMapping(value = "/{question-id}/saq")
+    @Operation(summary = "Admin Page SAQ Question 수정", description = "SAQ Question 수정")
+    public String updateSaqQuestion(
+            HttpServletRequest req,
+            @PathVariable("question-id") String questionId,
+            @RequestBody @Valid CreateSaqQuestionRequestDto requestDto
+    ) {
+        return questionService.updateSaqQuestion(questionId, requestDto);
+    }
+
     @PostMapping("/generator/maq")
     @Operation(summary = "MAQ Question 가라데이터 생성기 (테스트 전용)", description = "Question 가라데이터 생성 API")
 //    @RoleAuth(requiredRole = 7)

@@ -10,6 +10,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "questions")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.JOINED)

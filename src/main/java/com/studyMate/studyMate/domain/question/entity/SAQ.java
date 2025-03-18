@@ -8,6 +8,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "saq")
 @DiscriminatorValue("SAQ")
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @SuperBuilder

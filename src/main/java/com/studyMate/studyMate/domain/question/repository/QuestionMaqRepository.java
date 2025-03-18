@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface QuestionMaqRepository extends JpaRepository<MAQ, String> {
     List<MAQ> findMAQSByQuestionIdIn(List<String> questionIds);
     boolean existsByQuestionTitle(String questionTitle);
+    Optional<MAQ> findByQuestionId(String questionId);
 }
