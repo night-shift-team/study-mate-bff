@@ -12,6 +12,7 @@ import com.studyMate.studyMate.global.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +61,12 @@ public class UserService {
                 .userScore(user.getScore())
                 .registeredAt(user.getCreatedDt())
                 .build();
+    }
+
+    public GetUserRankingResponseDto findUserRanking(String userId, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        System.out.println("Check UserId");
+        return userRepository.findUsersAndRanking(userId, pageRequest);
     }
 
     /**

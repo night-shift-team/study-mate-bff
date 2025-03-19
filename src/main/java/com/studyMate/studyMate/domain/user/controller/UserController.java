@@ -27,6 +27,18 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
+    @GetMapping("/{page}/{limit}/rank")
+    @Operation(summary = "유저 랭킹 정보확인", description = "유저 랭킹 정보 확인 API")
+    @RoleAuth
+    public GetUserRankingResponseDto getUserRanking(
+            HttpServletRequest request,
+            @PathVariable("page") Integer page,
+            @PathVariable("limit") Integer limit
+    ) {
+        String userId = (String) request.getAttribute("userId");
+        return userService.findUserRanking(userId, page, limit);
+    }
+
     @PostMapping("/refresh")
     @Operation(summary = "Token 리프레쉬(*)", description = "토큰 리프레시 API")
     @ApiResponses(value = {
@@ -37,7 +49,6 @@ public class UserController {
         String userId = (String) request.getAttribute("userId");
         return userService.refreshTokenPair(userId, refreshTokenRequestbody.refreshToken());
     }
-
 
     @GetMapping("/oauth/parameters/admin")
 //    @RoleAuth(requiredRole = 7)
