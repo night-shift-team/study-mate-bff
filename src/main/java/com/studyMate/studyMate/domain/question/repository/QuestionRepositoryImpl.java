@@ -213,4 +213,38 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                 cnt != null ? cnt : 0
         );
     }
+
+    @Override
+    public Page<SAQ> findSaqQuestionsByKeyword(String keyword, Pageable pageable) {
+        String likeKeyword = "%" + keyword + "%";
+
+        // Keyword가 question_title에 Like 해당하는것
+        // Keyword가 question_content에 Like 해당하는것
+        // Keyword가 answer에 Like에 Like 해당하는것
+        // Keyword가 answer_explanation에 Like 해당하는 것
+        BooleanExpression keywordCondition = sAQ.questionTitle.like(likeKeyword)
+                .or(sAQ.question.content.like(likeKeyword))
+                .or(sAQ.question.answer.like(likeKeyword))
+                .or(sAQ.question.answerExplanation.like(likeKeyword));
+
+        List<SAQ> query = queryFactory
+                .selectFrom(sAQ)
+                .where(keywordCondition)
+                .orderBy(sAQ.question.createdDt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long cnt = queryFactory
+                .select(sAQ.count())
+                .from(sAQ)
+                .where(keywordCondition)
+                .fetchOne();
+
+        return new PageImpl<>(
+                query,
+                pageable,
+                cnt != null ? cnt : 0
+        );
+    }
 }

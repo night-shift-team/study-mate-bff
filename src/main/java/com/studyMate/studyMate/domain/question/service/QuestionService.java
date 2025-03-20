@@ -50,6 +50,12 @@ public class QuestionService {
         return new MaqQuestionPageDto(query);
     }
 
+    public SaqQuestionPageDto searchSaqBykeyword(String keyword, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<SAQ> query = questionRepository.findSaqQuestionsByKeyword(keyword, pageRequest);
+        return new SaqQuestionPageDto(query);
+    }
+
     public MaqQuestionPageDto findMaqQuestionsLatest(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDt"));
         Page<MAQ> query = questionMaqRepository.findAll(pageRequest);
