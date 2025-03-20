@@ -15,4 +15,5 @@ public interface QuestionRepositoryCustom {
     GetQuestionDetailResponseDto findQuestionDetailById(String id);
     Page<MAQ> findRandMaqQuestionsByDifficultyAndCategoryAndPaging(int minDifficulty, int maxDifficulty, QuestionCategory category, String userId, Pageable pageable);
     Page<SAQ> findRandSaqQuestionsByDifficultyAndCategoryAndPaging(int minDifficulty, int maxDifficulty, QuestionCategory category, String userId, Pageable pageable);
+    Page<MAQ> findMaqQuestionsByKeyword(String keyword, Pageable pageable);
 }

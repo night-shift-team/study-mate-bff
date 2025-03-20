@@ -2,6 +2,7 @@ package com.studyMate.studyMate.domain.question.repository;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -174,6 +175,40 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
 
         return new PageImpl<>(
                 content,
+                pageable,
+                cnt != null ? cnt : 0
+        );
+    }
+
+    @Override
+    public Page<MAQ> findMaqQuestionsByKeyword(String keyword, Pageable pageable) {
+        String likeKeyword = "%" + keyword + "%";
+
+        // Keyword가 question_title에 Like 해당하는것
+        // Keyword가 question_content에 Like 해당하는것
+        // Keyword가 answer에 Like에 Like 해당하는것
+        // Keyword가 answer_explanation에 Like 해당하는 것
+        BooleanExpression keywordCondition = mAQ.questionTitle.like(likeKeyword)
+                .or(mAQ.question.content.like(likeKeyword))
+                .or(mAQ.question.answer.like(likeKeyword))
+                .or(mAQ.question.answerExplanation.like(likeKeyword));
+
+        List<MAQ> query = queryFactory
+                .selectFrom(mAQ)
+                .where(keywordCondition)
+                .orderBy(mAQ.question.createdDt.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        Long cnt = queryFactory
+                .select(mAQ.count())
+                .from(mAQ)
+                .where(keywordCondition)
+                .fetchOne();
+
+        return new PageImpl<>(
+                query,
                 pageable,
                 cnt != null ? cnt : 0
         );

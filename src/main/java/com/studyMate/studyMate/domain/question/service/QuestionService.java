@@ -44,6 +44,12 @@ public class QuestionService {
 
     private final QuestionHistoryRepository questionHistoryRepository;
 
+    public MaqQuestionPageDto searchMaqBykeyword(String keyword, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<MAQ> query = questionRepository.findMaqQuestionsByKeyword(keyword, pageRequest);
+        return new MaqQuestionPageDto(query);
+    }
+
     public MaqQuestionPageDto findMaqQuestionsLatest(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDt"));
         Page<MAQ> query = questionMaqRepository.findAll(pageRequest);

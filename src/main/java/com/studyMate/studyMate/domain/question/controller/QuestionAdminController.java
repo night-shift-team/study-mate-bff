@@ -23,6 +23,17 @@ public class QuestionAdminController {
 
     private final QuestionService questionService;
 
+    @GetMapping(value = "/search-maq")
+    @Operation(summary = "Admin Page MAQ 문제 검색 기능", description = "MAQ Question 문제 검색 (문제이름, 문제내용, 정답, 정답해설 내용에 키워드가 포함된 내용을 검색함 <최신순>)")
+    @RoleAuth(requiredRole = 7)
+    public MaqQuestionPageDto getMaqQuestionsLatest(
+            @RequestParam("page") Integer page,
+            @RequestParam("limit") Integer limit,
+            @RequestParam(value = "keyword", required = false) String keyword
+    ) {
+        return questionService.searchMaqBykeyword(keyword, page, limit);
+    }
+
     @GetMapping(value = "/{page}/{limit}/maq")
     @Operation(summary = "Admin Page MAQ Question 조회 (최신순)", description = "MAQ Question 전체 내역 조회")
     @RoleAuth(requiredRole = 7)
