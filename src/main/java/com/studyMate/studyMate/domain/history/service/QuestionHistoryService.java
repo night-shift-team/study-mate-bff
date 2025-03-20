@@ -2,19 +2,17 @@ package com.studyMate.studyMate.domain.history.service;
 
 import com.studyMate.studyMate.domain.history.dto.QuestionHistoryDto;
 import com.studyMate.studyMate.domain.history.dto.QuestionHistoryPageDto;
+import com.studyMate.studyMate.domain.history.dto.SolveStatsResponseDto;
 import com.studyMate.studyMate.domain.history.repository.QuestionHistoryRepository;
 import com.studyMate.studyMate.domain.history.entity.QuestionHistory;
-import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,6 +23,13 @@ import java.util.List;
 public class QuestionHistoryService {
 
     private final QuestionHistoryRepository questionHistoryRepository;
+
+    /**
+     * 유저의 잔디를 뿌리기위해 날짜별로, 1년간 일자별로 몇개의 문제를 풀었는지 내역
+     */
+    public SolveStatsResponseDto getSolveStatsByUserId(String userId){
+        return questionHistoryRepository.getQuestionSolveStatsInYear(userId);
+    }
 
     /**
      * 유저의 문제풀이 히스토리 내역을 1년 내 기록을 페이징으로 가져온다.

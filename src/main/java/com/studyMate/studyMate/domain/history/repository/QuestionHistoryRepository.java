@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface QuestionHistoryRepository extends JpaRepository<QuestionHistory, Long> {
+public interface QuestionHistoryRepository extends JpaRepository<QuestionHistory, Long>, QuestionHistoryRepositoryCustom {
     Page<QuestionHistory> findQuestionHistoriesByUser_UserIdAndCreatedDtAfter(String userId, LocalDateTime createdDtAfter, Pageable pageable);
     List<QuestionHistory>findQuestionHistoriesByUser_UserIdAndQuestion_QuestionId(String userId, String questionId);
 }

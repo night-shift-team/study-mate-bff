@@ -1,6 +1,7 @@
 package com.studyMate.studyMate.domain.history.controller;
 
 import com.studyMate.studyMate.domain.history.dto.QuestionHistoryPageDto;
+import com.studyMate.studyMate.domain.history.dto.SolveStatsResponseDto;
 import com.studyMate.studyMate.domain.history.service.QuestionHistoryService;
 import com.studyMate.studyMate.global.config.RoleAuth;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,5 +29,16 @@ public class QuestionHistoryController {
     ) {
         String userId = (String) req.getAttribute("userId");
         return questionHistoryService.findMonthlyHistoriesByUserId(userId, monthBefore, page, size);
+    }
+
+    // 날짜 별로 몇개 문제 풀었냐.
+    @GetMapping("/solve-stats")
+    @Operation(summary = "잔디밭용 날짜 별 문제풀이 기록 (1년간 기록)", description = "날짜 별 문제풀이 수 기록 확인 (1년간 기록)")
+    @RoleAuth
+    public SolveStatsResponseDto getRecentSolveStats(
+            HttpServletRequest req
+    ) {
+        String userId = (String) req.getAttribute("userId");
+        return questionHistoryService.getSolveStatsByUserId(userId);
     }
 }
