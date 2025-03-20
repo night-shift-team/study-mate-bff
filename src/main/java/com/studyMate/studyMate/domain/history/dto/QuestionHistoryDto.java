@@ -5,6 +5,7 @@ import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 
 public record QuestionHistoryDto(
         Long historyId,
+        String questionId,
         String userId,
         String userAnswer,
         Integer score,
@@ -15,6 +16,7 @@ public record QuestionHistoryDto(
     public QuestionHistoryDto(QuestionHistory questionHistory) {
         this(
                 questionHistory.getId(),
+                questionHistory.getQuestion().getQuestionId(),
                 questionHistory.getUser().getUserId(),
                 questionHistory.getQuestion().getAnswer(),
                 questionHistory.getScore(),
