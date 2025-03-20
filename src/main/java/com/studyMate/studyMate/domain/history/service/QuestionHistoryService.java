@@ -5,6 +5,7 @@ import com.studyMate.studyMate.domain.history.dto.QuestionHistoryPageDto;
 import com.studyMate.studyMate.domain.history.dto.SolveStatsResponseDto;
 import com.studyMate.studyMate.domain.history.repository.QuestionHistoryRepository;
 import com.studyMate.studyMate.domain.history.entity.QuestionHistory;
+import com.studyMate.studyMate.domain.question.entity.Question;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -58,7 +59,7 @@ public class QuestionHistoryService {
      * @param questionId 문제의 아이디 값
      * @return List<QuestionHistoryDto>
      */
-    public List<QuestionHistoryDto> findHistoriesByQuestionIdAndUserId(String userId, String questionId) {
+    public List<QuestionHistoryDto> findHistoriesByQuestionIdAndUserId(String questionId, String userId) {
         return questionHistoryRepository
                 .findQuestionHistoriesByUser_UserIdAndQuestion_QuestionId(userId, questionId)
                 .stream()
