@@ -51,7 +51,7 @@ public class UserController {
     }
 
     @GetMapping("/oauth/parameters/admin")
-//    @RoleAuth(requiredRole = 7)
+    @RoleAuth(requiredRole = 7)
     @Operation(summary = "OAuth 인자 확인 (어드민 전용)", description = "OAuth 인자확인 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = GetOAuthParametersResponseDto.class))})
