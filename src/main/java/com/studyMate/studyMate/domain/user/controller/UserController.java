@@ -1,7 +1,6 @@
 package com.studyMate.studyMate.domain.user.controller;
 
 import com.studyMate.studyMate.domain.user.dto.*;
-import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.domain.user.service.UserService;
 import com.studyMate.studyMate.global.config.RoleAuth;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,8 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +84,17 @@ public class UserController {
     })
     public SignInResponseDto signIn (@RequestBody @Validated SignInRequestDto signInRequestBody) {
         return userService.signInLocal(signInRequestBody);
+    }
+
+    @PatchMapping("/nickname")
+    @Operation(summary = "유저 닉네임 변경", description = "닉네임 변경 API")
+    @RoleAuth
+    public String updateUserNickname(
+            HttpServletRequest request,
+            @RequestBody UpdateUserNicknameRequestDto updateUserNicknameRequestDto
+    ) {
+        String userId = (String) request.getAttribute("userId");
+        return userService.updateUserNickname(userId, updateUserNicknameRequestDto.getNickname());
     }
 
     @PostMapping("/reset-password/admin")

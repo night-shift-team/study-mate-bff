@@ -33,6 +33,8 @@ public enum ErrorCode {
     INVALID_GITHUB_AUTH_CODE(400, "invalid github auth code", "0107"),
 
     INVALID_USERID(400, "invalid user id", "0108"),
+    DUP_NICKNAME(400, "nickname already exist", "0109"),
+
 
     /**
      * Question Errors

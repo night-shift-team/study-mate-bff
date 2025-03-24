@@ -137,6 +137,20 @@ public class UserService {
         return createTokenPair(user.getUserId());
     }
 
+    @Transactional
+    public String updateUserNickname(String userId, String nickname) {
+        User user = userRepository.findByUserIdAndStatus(userId, UserStatus.ACTIVE).orElseThrow(() -> new CustomException(ErrorCode.NOT_ACTIVE_USER));
+        if(
+                user.getNickname().equals(nickname) ||
+                checkDuplicateNickname(nickname)
+        ){
+            throw new CustomException(ErrorCode.DUP_NICKNAME);
+        }
+
+        user.setNewNickname(nickname);
+        return user.getUserId();
+    }
+
     /**
      * 구글 로그인 - 유저 호출 api 메소드
      */
