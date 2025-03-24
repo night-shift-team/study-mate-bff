@@ -35,6 +35,8 @@ public class UserService {
     private final String GITHUB_GET_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token";
     private final String GITHUB_GET_USERINFO_BASE_URL = "https://api.github.com/user";
 
+    private final String DEFAULT_PROFILE_IMAGE = "https://qwrujioanlzrqiiyxser.supabase.co/storage/v1/object/public/study-mate//default_profile.jpg";
+
     @Value("${e.auth.google_client_id}")
     private String GOOGLE_CLIENT_ID;
     @Value("${e.auth.google_client_secret}")
@@ -118,7 +120,7 @@ public class UserService {
         String encryptedUserPw = encryptionUtil.encryptBcrypt(signUpRequestDto.loginPw());
 
         // 3. 유저 생성
-        User newUser = createUser(LoginType.LOCAL, signUpRequestDto.loginId(), encryptedUserPw, signUpRequestDto.nickname(), "default", 0);
+        User newUser = createUser(LoginType.LOCAL, signUpRequestDto.loginId(), encryptedUserPw, signUpRequestDto.nickname(), DEFAULT_PROFILE_IMAGE, 0);
 
         return new SignUpResponseDto(newUser.getUserId(), newUser.getLoginId());
     }
