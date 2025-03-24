@@ -7,9 +7,10 @@ import com.studyMate.studyMate.domain.user.dto.SignInResponseDto;
 import com.studyMate.studyMate.domain.user.dto.SignUpRequestDto;
 import com.studyMate.studyMate.domain.user.dto.SignUpResponseDto;
 import com.studyMate.studyMate.domain.user.entity.User;
-import com.studyMate.studyMate.domain.user.repository.UserRepository;
 import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
+import com.studyMate.studyMate.global.util.EncryptionUtil;
+import com.studyMate.studyMate.global.util.JwtTokenUtil;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,13 @@ class UserServiceTest {
     private EntityManager em;
 
     @Autowired
-    private UserService userService;
+    private JwtTokenUtil jwtTokenUtil;
+
     @Autowired
-    private UserRepository userRepository;
+    private EncryptionUtil encryptionUtil;
+
+    @Autowired
+    private UserService userService;
 
     User user1 = User.builder()
             .loginType(LoginType.LOCAL)
@@ -116,5 +121,19 @@ class UserServiceTest {
         });
 
         assertEquals(ErrorCode.DUP_USER_ID.getMessage(),exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("[로컬 로그인] 성공 테스트")
+    void signInLocal_withValidRequest_shouldSignInUser() {
+        String LOGIN_ID = "userTest@studymate.com";
+        String LOGIN_PW = "123456";
+        SignUpResponseDto resp = userService.signUpLocal(new SignUpRequestDto(LOGIN_ID, LOGIN_PW, "TEST"));
+
+        SignInRequestDto requestDto = new SignInRequestDto(LOGIN_ID, LOGIN_PW);
+        SignInResponseDto responseDto = userService.signInLocal(requestDto);
+
+        assertNotNull(responseDto.accessToken());
+        assertNotNull(responseDto.refreshToken());
     }
 }
