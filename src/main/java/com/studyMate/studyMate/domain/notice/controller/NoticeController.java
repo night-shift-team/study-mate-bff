@@ -2,19 +2,14 @@ package com.studyMate.studyMate.domain.notice.controller;
 
 import com.studyMate.studyMate.domain.notice.dto.GetNoticePagingDto;
 import com.studyMate.studyMate.domain.notice.dto.GetNoticeWithMaintenanceDto;
-import com.studyMate.studyMate.domain.notice.entity.Notice;
 import com.studyMate.studyMate.domain.notice.service.NoticeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,7 +25,6 @@ public class NoticeController {
             @RequestParam("page") int page,
             @RequestParam("limit") int limit
     ) {
-        System.out.println("Get Notices By Pagenation Controller");
         return noticeService.findNoticesByPagenation(page, limit);
     }
 

@@ -6,7 +6,6 @@ import com.studyMate.studyMate.domain.notice.entity.Notice;
 import com.studyMate.studyMate.domain.notice.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
