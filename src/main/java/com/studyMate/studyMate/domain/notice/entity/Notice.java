@@ -1,5 +1,6 @@
 package com.studyMate.studyMate.domain.notice.entity;
 
+import com.studyMate.studyMate.domain.notice.data.NoticeCategory;
 import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.global.data.BaseEntityDate;
 import com.studyMate.studyMate.global.error.CustomException;
@@ -19,7 +20,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Notice extends BaseEntityDate {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notice_id")
     private Long id;
 
@@ -27,6 +28,9 @@ public class Notice extends BaseEntityDate {
     private String title;
     private String content;
     private String purpose;
+
+    @Enumerated(EnumType.STRING)
+    private NoticeCategory noticeType;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
