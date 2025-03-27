@@ -28,6 +28,12 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
+    @GetMapping("/category/info")
+    @Operation(summary = "문제 카테고리 정보 조회", description = "문제 카테고리 정보 조회")
+    public List<GetQuestionCategoryInfoResponseDto> getQuestionCategories() {
+        return this.questionService.findQuestionCategoryInfo();
+    }
+
     @GetMapping("/{questionId}")
     @Operation(summary = "Question 상세 정보 조회", description = "Question 상세정보 조회 API (MAQ | SAQ 공통사용) (*일반유저는 자신이 풀었던 내역에 대해서만 조회할 수 있음 | 어드민은 무조건 조회)")
     @RoleAuth

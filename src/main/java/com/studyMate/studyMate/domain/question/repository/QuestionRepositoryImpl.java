@@ -8,6 +8,7 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
+import com.studyMate.studyMate.domain.question.dto.GetQuestionCategoryInfoResponseDto;
 import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.entity.SAQ;
@@ -246,5 +247,18 @@ public class QuestionRepositoryImpl implements QuestionRepositoryCustom {
                 pageable,
                 cnt != null ? cnt : 0
         );
+    }
+
+    @Override
+    public List<GetQuestionCategoryInfoResponseDto> findQuestionCategoryInfo() {
+        // 카테고리 목록을 distinct로 추출 및 각 카테고리 별 문제 갯수 표시하기
+        return queryFactory
+                .select(Projections.constructor(GetQuestionCategoryInfoResponseDto.class,
+                        question.category.as("questionCategory"),
+                        question.count().as("questionCount")
+                    ))
+                .from(question)
+                .groupBy(question.category)
+                .fetch();
     }
 }

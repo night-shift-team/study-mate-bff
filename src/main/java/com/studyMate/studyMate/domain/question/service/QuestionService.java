@@ -68,6 +68,10 @@ public class QuestionService {
         return new SaqQuestionPageDto(query);
     }
 
+    public List<GetQuestionCategoryInfoResponseDto> findQuestionCategoryInfo() {
+        return questionRepository.findQuestionCategoryInfo();
+    }
+
     @Transactional
     public String createMaqQuestion(CreateMaqQuestionRequestDto requestDto) {
         boolean isExist = questionMaqRepository.existsByQuestionTitle(requestDto.getQuestionTitle());

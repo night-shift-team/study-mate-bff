@@ -2,6 +2,7 @@ package com.studyMate.studyMate.domain.question.repository;
 
 import com.querydsl.core.QueryResults;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
+import com.studyMate.studyMate.domain.question.dto.GetQuestionCategoryInfoResponseDto;
 import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;
 import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.entity.SAQ;
@@ -17,4 +18,5 @@ public interface QuestionRepositoryCustom {
     Page<SAQ> findRandSaqQuestionsByDifficultyAndCategoryAndPaging(int minDifficulty, int maxDifficulty, QuestionCategory category, String userId, Pageable pageable);
     Page<MAQ> findMaqQuestionsByKeyword(String keyword, Pageable pageable);
     Page<SAQ> findSaqQuestionsByKeyword(String keyword, Pageable pageable);
+    List<GetQuestionCategoryInfoResponseDto> findQuestionCategoryInfo();
 }
