@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 public class NoticeDto {
+    private Long noticeId;
     private String noticeTitle;
     private String noticeContent;
     private NoticeCategory noticeCategory;
@@ -24,6 +25,7 @@ public class NoticeDto {
     private LocalDateTime maintenanceEndTime;
 
     public NoticeDto(Notice notice) {
+        this.noticeId = notice.getId();
         this.noticeTitle = notice.getTitle();
         this.noticeContent = notice.getContent();
         this.noticeCategory = notice.getNoticeType();
