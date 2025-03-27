@@ -21,7 +21,7 @@ public class NoticeController {
     private final NoticeService noticeService;
     // 공지사항 조회 (페이징 최신순 조회)
     @GetMapping("")
-    @Operation(summary = "공지사항 전체 내역 조회 (페이징)", description = "공지사항 전체 내역 조회 - 페이지네이션 적용")
+    @Operation(summary = "공지사항 전체 내역 조회 (페이징)", description = "공지사항 전체 내역 조회 (생성일 최신순) - 페이지네이션 적용")
     public GetNoticePagingDto getNoticesByPagenation(
             @RequestParam("page") int page,
             @RequestParam("limit") int limit
