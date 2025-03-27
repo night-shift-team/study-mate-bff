@@ -47,6 +47,12 @@ public enum ErrorCode {
     INVALID_QUESTION_CATEOGRY(400, "invalid question category", "0404"),
     DUP_QUESTION(400, "question already exist (question title)", "0405"),
     NO_AVAILIABLE_QEUSTION(404, "no available question", "0406"),
+
+    /**
+     * Notice Errors
+     * 0500 ~ 0599
+     */
+    INVALID_NOTICE_ID(400, "invalid notice id", "0500"),
     ;
     private final int status;
     private final String message;

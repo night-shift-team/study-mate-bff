@@ -2,14 +2,12 @@ package com.studyMate.studyMate.domain.notice.controller;
 
 import com.studyMate.studyMate.domain.notice.dto.GetNoticePagingDto;
 import com.studyMate.studyMate.domain.notice.dto.GetNoticeWithMaintenanceDto;
+import com.studyMate.studyMate.domain.notice.dto.NoticeDto;
 import com.studyMate.studyMate.domain.notice.service.NoticeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,7 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class NoticeController {
 
     private final NoticeService noticeService;
-    // 공지사항 조회 (페이징 최신순 조회)
+
+    @GetMapping("{noticeId}")
+    @Operation(summary = "공지사항 상세 조회 ID", description = "공지사항 상세 조회 ID")
+    public NoticeDto getNoticesByPagenation(
+            @PathVariable Long noticeId
+    ) {
+        return noticeService.findNoticeDetailById(noticeId);
+    }
+
+
     @GetMapping("")
     @Operation(summary = "공지사항 전체 내역 조회 (페이징)", description = "공지사항 전체 내역 조회 (생성일 최신순) - 페이지네이션 적용")
     public GetNoticePagingDto getNoticesByPagenation(

@@ -2,8 +2,11 @@ package com.studyMate.studyMate.domain.notice.service;
 
 import com.studyMate.studyMate.domain.notice.dto.GetNoticePagingDto;
 import com.studyMate.studyMate.domain.notice.dto.GetNoticeWithMaintenanceDto;
+import com.studyMate.studyMate.domain.notice.dto.NoticeDto;
 import com.studyMate.studyMate.domain.notice.entity.Notice;
 import com.studyMate.studyMate.domain.notice.repository.NoticeRepository;
+import com.studyMate.studyMate.global.error.CustomException;
+import com.studyMate.studyMate.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +25,10 @@ import java.util.List;
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
+
+    public NoticeDto findNoticeDetailById(Long id) {
+        return new NoticeDto(noticeRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.INVALID_NOTICE_ID)));
+    }
 
     public GetNoticePagingDto findNoticesByPagenation(int page, int limit){
         PageRequest pageRequest = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "createdDt"));
