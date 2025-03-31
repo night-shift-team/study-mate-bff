@@ -18,6 +18,8 @@ public class NoticeDto {
     private NoticeCategory noticeCategory;
     private String noticePurpose;
     private String pulbisherName;
+    private String backgroundImage;
+
 
     private LocalDateTime displayStartTime;
     private LocalDateTime displayEndTime;
@@ -31,6 +33,7 @@ public class NoticeDto {
         this.noticeCategory = notice.getNoticeType();
         this.noticePurpose = notice.getPurpose();
         this.pulbisherName = notice.getPublisher().getNickname();
+        this.backgroundImage = notice.getBackgroundImage();
         this.displayStartTime = notice.getDisplayStartTime();
         this.displayEndTime = notice.getDisplayEndTime();
         this.maintenanceStartTime = notice.getMaintenanceStartTime();

@@ -29,6 +29,9 @@ public class Notice extends BaseEntityDate {
     private String content;
     private String purpose;
 
+    @Column(name = "background_image")
+    private String backgroundImage;
+
     @Enumerated(EnumType.STRING)
     private NoticeCategory noticeType;
 
