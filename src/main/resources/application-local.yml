@@ -30,6 +30,30 @@ springdoc:
   paths-to-match:
     - /**
 
+management:
+  # Info 정보 사용 설정
+  info:
+    java:
+      enabled: true
+    os:
+      enabled: true
+    env:
+      enabled: true
+    # Git 정보 사용 설정
+    git:
+      mode: full
+  endpoint:
+    shutdown:
+      enabled: true
+    # Health 정보 사용 설정
+    health:
+      show-details: always
+  #      show-components: always # 간소화 노출
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
 e:
   auth:
     google_client_id: ${GOOGLE_CLIENT_ID}
