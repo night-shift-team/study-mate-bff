@@ -16,6 +16,7 @@ import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.domain.user.repository.UserRepository;
 import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
+import com.studyMate.studyMate.global.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -282,6 +283,18 @@ public class QuestionService {
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
         MAQ dbQuestion = questionMaqRepository.findById(questionId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_QUESTION));
 
+        // TODO (HD) : 유저는 정답 10개 이상 문제를 제출할 수 없다. (풀 수 없다) 제한을 추가
+        int userCorrectQuestionCount = countTodayUserRecordsOfQuestion(user.getUserId(), dbQuestion.getCategory());
+
+        if(userCorrectQuestionCount >= 10) {
+            LogUtil.infoLog(
+                    "checkCommonMaqQuestion",
+                    user.getUserId(),
+                    "Excced Daily Question Limit (category = " + dbQuestion.getCategory() + ")"
+            );
+            throw new CustomException(ErrorCode.EXCEED_DAILY_QUESTION_LIMIT);
+        }
+
         // 문제 정답을 맞추고..
         boolean isCorrectAnswer = dbQuestion.getAnswer().equals(userAnswer);
 
@@ -330,6 +343,17 @@ public class QuestionService {
         // 유효한 유저 & 문제 체크
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
         SAQ dbQuestion = questionSaqRepository.findById(questionId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_QUESTION));
+
+        int userCorrectQuestionCount = countTodayUserRecordsOfQuestion(user.getUserId(), dbQuestion.getCategory());
+
+        if(userCorrectQuestionCount >= 10) {
+            LogUtil.infoLog(
+                    "checkCommonSaqQuestion",
+                    user.getUserId(),
+                    "Excced Daily Question Limit (category = " + dbQuestion.getCategory() + ")"
+            );
+            throw new CustomException(ErrorCode.EXCEED_DAILY_QUESTION_LIMIT);
+        }
 
         // 정답체크
         int score = checkSaqScore(userAnswer, dbQuestion);
@@ -525,6 +549,19 @@ public class QuestionService {
         log.info("Fake Question Generate count : {}", maqQuestionList.size());
 
         questionRepository.saveAll(maqQuestionList);
+    }
+
+
+    private int countTodayUserRecordsOfQuestion(String userId, QuestionCategory questionCategory) {
+        // TODO (HD) : 유저는 정답 10개 이상 문제를 제출할 수 없다. (풀 수 없다) 제한을 추가
+        List<QuestionHistoryDto> userCorrectHistory = this.questionHistoryService.findTodayQuestionHistoriesByCategory(
+                        userId,
+                        questionCategory
+                ).stream()
+                .filter(history -> !history.getIsCorrect())
+                .toList();
+
+        return userCorrectHistory.size();
     }
 
     /**
