@@ -193,7 +193,12 @@ public class QuestionService {
         );
 
         if(query.getContent().isEmpty()) {
-            log.info("no avaliable MAQ Questions Category : {} || Difficulty : {}", userProperDifficulty, questionCategory);
+            LogUtil.warnLog(
+                    "findSaqQuestionsCommon",
+                    userId,
+                    "No available SAQ Question " + "Category : " + questionCategory + "Difficulty :" + userProperDifficulty.get(0) + "~" + userProperDifficulty.get(1)
+            );
+
             throw new CustomException(ErrorCode.NO_AVAILIABLE_QEUSTION);
         }
 
@@ -228,7 +233,12 @@ public class QuestionService {
         SaqQuestionDto result;
 
         if(query.getContent().isEmpty()) {
-            log.info("no avaliable SAQ Questions Category : {} || Difficulty : {}", userProperDifficulty, questionCategory);
+            LogUtil.warnLog(
+                    "findSaqQuestionsCommon",
+                    userId,
+                    "No available SAQ Question " + "Category : " + questionCategory + "Difficulty :" + userProperDifficulty.get(0) + "~" + userProperDifficulty.get(1)
+            );
+
             throw new CustomException(ErrorCode.NO_AVAILIABLE_QEUSTION);
         }
 
