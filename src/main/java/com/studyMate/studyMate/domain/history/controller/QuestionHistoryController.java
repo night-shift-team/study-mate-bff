@@ -25,7 +25,7 @@ public class QuestionHistoryController {
     private final QuestionHistoryService questionHistoryService;
 
     @GetMapping("{category}/category/today")
-    @Operation(summary = "유저의 금일 카테고리별 문제 풀이 내역 조회", description = "유저의 금일 문제풀이 내역을 카테고리 별로 조회하여 어떤 문제를, 몇개 풀었는지 알 수 있다.")
+    @Operation(summary = "유저의 금일 카테고리별 문제 풀이 내역 조회", description = "유저의 금일 문제풀이 내역을 카테고리 별로 조회하여 어떤 문제를 풀었는지 알 수 있다. (정답, 오답 모두 포함)")
     @RoleAuth
     public List<QuestionHistoryDto> getTodayQuestionHistoriesByUserAndCategory(
             HttpServletRequest req,

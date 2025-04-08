@@ -71,7 +71,7 @@ public class QuestionHistoryRepositoryImpl implements QuestionHistoryRepositoryC
         condition.and(questionHistory.qType.eq(questionType));
         condition.and(questionHistory.user.userId.eq(userId));
         condition.and(questionHistory.createdDt.goe(timeAfter));
-        condition.and(questionHistory.isCorrect.eq(true));
+//        condition.and(questionHistory.isCorrect.eq(true));
 
         return queryFactory.
                 select(Projections.fields(
