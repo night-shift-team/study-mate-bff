@@ -265,12 +265,19 @@ public class QuestionService {
                 .toList();
     }
 
+    /**
+     * MAQ 문제 정답 체크 기능
+     * @param questionId 문제 ID
+     * @param userAnswer 유저의 정답 제출
+     * @param userId 유저의 아이디
+     * @return CheckMaqQuestionResponseDto
+     */
     @Transactional
     public CheckMaqQuestionResponseDto checkCommonMaqQuestion(
             String questionId,
             String userAnswer,
             String userId
-    ){
+    ) {
         // 유효한 유저 & 문제 체크
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
         MAQ dbQuestion = questionMaqRepository.findById(questionId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_QUESTION));
@@ -295,7 +302,7 @@ public class QuestionService {
                 .user(user)
                 .question(dbQuestion)
                 .userAnswer(String.valueOf(userAnswer))
-                .score(dbQuestion.getDifficulty())
+                .score(score)
                 .isCorrect(isCorrectAnswer)
                 .qType(dbQuestion.getCategory())
                 .build()
@@ -568,7 +575,6 @@ public class QuestionService {
         return difficultyResult;
     }
 
-
     private int checkSaqScore(String userAnswer, SAQ dbQuestion) {
         String keyword1 = dbQuestion.getKeyword1().toLowerCase();
         String keyword2 = dbQuestion.getKeyword2().toLowerCase();
@@ -601,5 +607,4 @@ public class QuestionService {
 
         return score;
     }
-
 }
