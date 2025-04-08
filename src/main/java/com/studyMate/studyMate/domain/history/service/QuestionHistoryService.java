@@ -5,6 +5,7 @@ import com.studyMate.studyMate.domain.history.dto.QuestionHistoryPageDto;
 import com.studyMate.studyMate.domain.history.dto.SolveStatsResponseDto;
 import com.studyMate.studyMate.domain.history.repository.QuestionHistoryRepository;
 import com.studyMate.studyMate.domain.history.entity.QuestionHistory;
+import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.domain.question.entity.Question;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,10 +69,22 @@ public class QuestionHistoryService {
     }
 
     /**
+     * 유저가 오늘 특정 카테고리에서 문제를 풀었던 내역을 가져옴.
+     * @param userId 유저의 아이디 값
+     * @param questionType 문제의 카테고리
+     * @return List<QuestionHistoryDto>
+     */
+    public List<QuestionHistoryDto> findTodayQuestionHistoriesByCategory(String userId, QuestionCategory questionType) {
+        LocalDateTime startOfToday = LocalDateTime.now().toLocalDate().atStartOfDay();
+        return questionHistoryRepository.getQuestionHistoryByUserIdAndQTypeAndDateAfter(userId, questionType, startOfToday);
+    }
+
+    /**
      * Question History 목록을 저장하는 메소드
      * @param questionHistories 문제 내역
      * @return List<QuestionHistoryDto>
      */
+    @Transactional
     public List<QuestionHistoryDto> saveQuestionHistories(List<QuestionHistory> questionHistories) {
         return questionHistoryRepository.saveAll(questionHistories)
                 .stream()

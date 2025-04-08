@@ -2,17 +2,24 @@ package com.studyMate.studyMate.domain.history.dto;
 
 import com.studyMate.studyMate.domain.history.entity.QuestionHistory;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record QuestionHistoryDto(
-        Long historyId,
-        String questionId,
-        String questionTitle,
-        String userId,
-        String userAnswer,
-        Integer score,
-        Boolean isCorrect,
-        QuestionCategory questionType
-) {
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Builder
+public class QuestionHistoryDto {
+    private Long historyId;
+    private String questionId;
+    private String questionTitle;
+    private String userId;
+    private String userAnswer;
+    private Integer score;
+    private Boolean isCorrect;
+    private QuestionCategory questionType;
 
     public QuestionHistoryDto(QuestionHistory questionHistory) {
         this(
