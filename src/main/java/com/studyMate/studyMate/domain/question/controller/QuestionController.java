@@ -30,8 +30,10 @@ public class QuestionController {
 
     @GetMapping("/category/info")
     @Operation(summary = "문제 카테고리 정보 조회", description = "문제 카테고리 정보 조회")
-    public List<GetQuestionCategoryInfoResponseDto> getQuestionCategories() {
-        return this.questionService.findQuestionCategoryInfo();
+    @RoleAuth
+    public GetQuestionCategoryInfoResponseDto getQuestionCategories(HttpServletRequest req) {
+        String userId = (String) req.getAttribute("userId");
+        return this.questionService.findQuestionCategoryInfo(userId);
     }
 
     @GetMapping("/{questionId}")

@@ -1,14 +1,12 @@
 package com.studyMate.studyMate.domain.question.dto;
 
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class GetQuestionCategoryInfoResponseDto {

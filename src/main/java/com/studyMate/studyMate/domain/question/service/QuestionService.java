@@ -2,6 +2,7 @@ package com.studyMate.studyMate.domain.question.service;
 
 import com.querydsl.core.QueryResults;
 import com.studyMate.studyMate.domain.history.dto.QuestionHistoryDto;
+import com.studyMate.studyMate.domain.history.dto.UserQuestionHistorySolveCountDto;
 import com.studyMate.studyMate.domain.history.repository.QuestionHistoryRepository;
 import com.studyMate.studyMate.domain.history.service.QuestionHistoryService;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -70,8 +72,42 @@ public class QuestionService {
         return new SaqQuestionPageDto(query);
     }
 
-    public List<GetQuestionCategoryInfoResponseDto> findQuestionCategoryInfo() {
-        return questionRepository.findQuestionCategoryInfo();
+    public GetQuestionCategoryInfoResponseDto findQuestionCategoryInfo(String userId) {
+        GetQuestionCategoryInfoResponseDto result = new GetQuestionCategoryInfoResponseDto();
+        LocalDateTime startOfToday = LocalDateTime.now().toLocalDate().atStartOfDay();
+
+        // 총 카테고리 리스트 조회
+        List<QuestionCategory> categoryList = QuestionCategory.getQuestionCategoryList();
+
+        // 유저가 풀었던 내역 카테고리 별 조회
+        List<UserQuestionHistorySolveCountDto> userSolveHistory = questionHistoryRepository.getTodayUserQuestionHistorySolveCount(userId, startOfToday);
+        System.out.println("=== User Solve History ===");
+
+        // Result 생성
+        result.setTotalCategoryCount(categoryList.size());
+
+        List<CategoryDetailDto> detailDtoList = new ArrayList<>();
+
+        for(QuestionCategory category : categoryList) {
+            Long solveCount = userSolveHistory.stream()
+                    .filter(v -> v.getQuestionCategory() == category)
+                    .map(UserQuestionHistorySolveCountDto::getSolveCount)
+                    .findFirst()
+                    .orElse(0L);
+
+            CategoryDetailDto detailDto = CategoryDetailDto.builder()
+                    .categoryOriginName(category)
+                    .categoryViewName(QuestionCategory.getQuestionCategoryViewName(category))
+                    .userSolvingCount(solveCount.intValue())
+                    .solvingLimit(QUESTION_SOLVE_DAILY_LIMIT)
+                    .build();
+
+            detailDtoList.add(detailDto);
+        }
+
+        result.setDetail(detailDtoList);
+
+        return result;
     }
 
     @Transactional
