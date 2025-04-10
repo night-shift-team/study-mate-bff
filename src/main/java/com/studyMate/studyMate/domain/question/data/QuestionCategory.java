@@ -53,16 +53,18 @@ public enum QuestionCategory {
      */
     public static String getQuestionCategoryViewName(QuestionCategory originalCategory) {
         return switch(originalCategory) {
-            case ALGORITHUM_MAQ -> "알고리즘 (객관식)";
-            case ALGORITHUM_SAQ -> "알고리즘 (객관식)";
-            case OS_MAQ -> "운영체제 (객관식)";
-            case OS_SAQ -> "운영체제 (주관식)";
-            case DB_MAQ -> "데이터베이스 (객관식)";
-            case DB_SAQ -> "데이터베이스 (주관식)";
-            case DESIGN_MAQ -> "디자인패턴 (객관식)";
-            case DESIGN_SAQ -> "디자인패턴 (주관식)";
-            case LEVEL_TEST -> "레벨테스트";
-            default -> "미등록 카테고리";
+            case ALGORITHUM_MAQ -> "알고리즘-객관식";
+            case ALGORITHUM_SAQ -> "알고리즘-객관식";
+            case OS_MAQ -> "운영체제-객관식";
+            case OS_SAQ -> "운영체제-주관식";
+            case DB_MAQ -> "데이터베이스-객관식";
+            case DB_SAQ -> "데이터베이스-주관식";
+            case NETWORK_MAQ -> "네트워크-객관식";
+            case NETWORK_SAQ -> "네트워크-주관식";
+            case DESIGN_MAQ -> "디자인패턴-객관식";
+            case DESIGN_SAQ -> "디자인패턴-주관식";
+            case LEVEL_TEST -> "레벨-테스트";
+            default -> "미등록-카테고리";
         };
     }
 }
