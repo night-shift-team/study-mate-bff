@@ -1,12 +1,15 @@
 package com.studyMate.studyMate.domain.history.repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.studyMate.studyMate.domain.history.dto.QuestionHistoryDto;
 import com.studyMate.studyMate.domain.history.dto.SolveStatsDto;
 import com.studyMate.studyMate.domain.history.dto.SolveStatsResponseDto;
+import com.studyMate.studyMate.domain.history.dto.UserQuestionHistorySolveCountDto;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
@@ -88,5 +91,27 @@ public class QuestionHistoryRepositoryImpl implements QuestionHistoryRepositoryC
                 .from(questionHistory)
                 .where(condition)
                 .fetch();
+    }
+
+    @Override
+    public List<UserQuestionHistorySolveCountDto> getTodayUserQuestionHistorySolveCount(String userId, LocalDateTime todayStartTime) {
+        // 유저의 오늘 문제 풀었던 내역을 Group By Question Category 별로 조회하라.
+        BooleanBuilder condition = new BooleanBuilder();
+        condition.and(questionHistory.user.userId.eq(userId));
+        condition.and(questionHistory.createdDt.goe(todayStartTime));
+        condition.and(questionHistory.isCorrect.eq(true));
+
+        List<UserQuestionHistorySolveCountDto> fetch = queryFactory
+                .select(Projections.constructor(
+                        UserQuestionHistorySolveCountDto.class,
+                        questionHistory.question.category.as("questionCategory"),
+                        questionHistory.count().as("solveCount")
+                ))
+                .from(questionHistory)
+                .where(condition)
+                .groupBy(questionHistory.question.category)
+                .fetch();
+
+        return fetch;
     }
 }
