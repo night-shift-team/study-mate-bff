@@ -42,6 +42,7 @@ public class QuestionService {
     private final int MAX_LEVEL_TEST_DIFFICULTY = 20;
     private final int LEVEL_TEST_QUESTION_COUNT = 20;
     private final int LEVEL_TEST_SCORE_WIEGHT = 100;
+    private final int QUESTION_SOLVE_DAILY_LIMIT = 10;
 
     private final QuestionHistoryRepository questionHistoryRepository;
 
@@ -296,7 +297,7 @@ public class QuestionService {
         // TODO (HD) : 유저는 정답 10개 이상 문제를 제출할 수 없다. (풀 수 없다) 제한을 추가
         int userCorrectQuestionCount = countTodayUserRecordsOfQuestion(user.getUserId(), dbQuestion.getCategory());
 
-        if(userCorrectQuestionCount >= 10) {
+        if(userCorrectQuestionCount >= QUESTION_SOLVE_DAILY_LIMIT) {
             LogUtil.infoLog(
                     "checkCommonMaqQuestion",
                     user.getUserId(),
@@ -356,7 +357,7 @@ public class QuestionService {
 
         int userCorrectQuestionCount = countTodayUserRecordsOfQuestion(user.getUserId(), dbQuestion.getCategory());
 
-        if(userCorrectQuestionCount >= 10) {
+        if(userCorrectQuestionCount >= QUESTION_SOLVE_DAILY_LIMIT) {
             LogUtil.infoLog(
                     "checkCommonSaqQuestion",
                     user.getUserId(),
