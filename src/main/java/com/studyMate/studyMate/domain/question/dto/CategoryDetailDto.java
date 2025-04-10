@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 public class CategoryDetailDto {
     private QuestionCategory categoryOriginName;
     private String categoryViewName;
-    private Integer categoryQuestionCount;
     private Integer userSolvingCount;
     private Integer solvingLimit;
 }
