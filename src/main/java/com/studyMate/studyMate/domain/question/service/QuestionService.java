@@ -43,8 +43,10 @@ public class QuestionService {
 
     private final int MAX_LEVEL_TEST_DIFFICULTY = 20;
     private final int LEVEL_TEST_QUESTION_COUNT = 20;
-    private final int LEVEL_TEST_SCORE_WIEGHT = 100;
     private final int QUESTION_SOLVE_DAILY_LIMIT = 10;
+
+    private final int LEVEL_TEST_SCORE_WIEGHT = 200;
+    private final int SCORE_WEIGHT_K = 100;
 
     private final QuestionHistoryRepository questionHistoryRepository;
 
@@ -349,9 +351,9 @@ public class QuestionService {
         int score = 0;
 
         if(!isCorrectAnswer) {
-            score -= dbQuestion.getDifficulty();
+            score -= SCORE_WEIGHT_K / dbQuestion.getDifficulty();
         } else {
-            score += dbQuestion.getDifficulty();
+            score += dbQuestion.getDifficulty() * SCORE_WEIGHT_K;
         }
 
         int userScore = user.accumulateUserScore(score);
@@ -688,6 +690,12 @@ public class QuestionService {
             case 3 -> dbQuestion.getDifficulty();
             default -> 0;
         };
+
+        if (score > 0) {
+            score = score * SCORE_WEIGHT_K;
+        } else {
+            score = SCORE_WEIGHT_K / score;
+        }
 
         return score;
     }
