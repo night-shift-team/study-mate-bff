@@ -27,9 +27,6 @@ public class QuestionFavoriteService {
 
     @Transactional
     public boolean toggleQuestionFavorite(String questionId, String userId) {
-
-        System.out.println("Question ID : " + questionId);
-        System.out.println("USer ID :" + userId);
         Question question = questionRepository.findByQuestionId(questionId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_QUESTION));
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
 
