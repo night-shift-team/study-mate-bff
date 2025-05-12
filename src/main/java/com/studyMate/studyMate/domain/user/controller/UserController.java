@@ -24,13 +24,13 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
-    @GetMapping("/{page}/{limit}/rank")
+    @GetMapping("rank")
     @Operation(summary = "유저 랭킹 정보확인", description = "유저 랭킹 정보 확인 API")
     @RoleAuth
     public GetUserRankingResponseDto getUserRanking(
             HttpServletRequest request,
-            @PathVariable("page") Integer page,
-            @PathVariable("limit") Integer limit
+            @RequestParam("page") Integer page,
+            @RequestParam("limit") Integer limit
     ) {
         String userId = (String) request.getAttribute("userId");
         return userService.findUserRanking(userId, page, limit);

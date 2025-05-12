@@ -1,7 +1,6 @@
 package com.studyMate.studyMate.domain.question.controller;
 
 import com.studyMate.studyMate.domain.question.dto.*;
-import com.studyMate.studyMate.domain.question.entity.MAQ;
 import com.studyMate.studyMate.domain.question.service.QuestionService;
 import com.studyMate.studyMate.global.config.RoleAuth;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,11 +8,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,22 +41,22 @@ public class QuestionAdminController {
         return questionService.searchSaqBykeyword(keyword, page, limit);
     }
 
-    @GetMapping(value = "/{page}/{limit}/maq")
+    @GetMapping(value = "maq")
     @Operation(summary = "Admin Page MAQ Question 조회 (최신순)", description = "MAQ Question 전체 내역 조회")
     @RoleAuth(requiredRole = 7)
     public MaqQuestionPageDto getMaqQuestionsLatest(
-        @PathVariable("page") Integer page,
-        @PathVariable("limit") Integer limit
+            @RequestParam("page") Integer page,
+            @RequestParam("limit") Integer limit
     ) {
         return questionService.findMaqQuestionsLatest(page, limit);
     }
 
-    @GetMapping(value = "/{page}/{limit}/saq")
+    @GetMapping(value = "/saq")
     @Operation(summary = "Admin Page SAQ Question 조회 (최신순)", description = "SAQ Question 전체 내역 조회")
     @RoleAuth(requiredRole = 7)
     public SaqQuestionPageDto getSaqQuestionsLatest(
-            @PathVariable("page") Integer page,
-            @PathVariable("limit") Integer limit
+            @RequestParam("page") Integer page,
+            @RequestParam("limit") Integer limit
     ) {
         return questionService.findSaqQuestionsLatest(page, limit);
     }
