@@ -10,15 +10,13 @@ import java.util.stream.Collectors;
  */
 public enum QuestionCategory {
     ALGORITHUM_MAQ(Type.MAQ),
-    OS_MAQ(Type.MAQ),
-    NETWORK_MAQ(Type.MAQ),
-    DB_MAQ(Type.MAQ),
-    DESIGN_MAQ(Type.MAQ),
     ALGORITHUM_SAQ(Type.SAQ),
+    OS_MAQ(Type.MAQ),
     OS_SAQ(Type.SAQ),
+    NETWORK_MAQ(Type.MAQ),
     NETWORK_SAQ(Type.SAQ),
+    DB_MAQ(Type.MAQ),
     DB_SAQ(Type.SAQ),
-    DESIGN_SAQ(Type.SAQ),
     LEVEL_TEST(Type.NONE)
     ;
 
@@ -61,8 +59,6 @@ public enum QuestionCategory {
             case DB_SAQ -> "데이터베이스-주관식";
             case NETWORK_MAQ -> "네트워크-객관식";
             case NETWORK_SAQ -> "네트워크-주관식";
-            case DESIGN_MAQ -> "디자인패턴-객관식";
-            case DESIGN_SAQ -> "디자인패턴-주관식";
             case LEVEL_TEST -> "레벨-테스트";
             default -> "미등록-카테고리";
         };

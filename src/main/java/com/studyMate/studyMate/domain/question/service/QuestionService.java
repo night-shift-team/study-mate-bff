@@ -562,19 +562,6 @@ public class QuestionService {
                     .answer(String.valueOf(i % 4 + 1)) // 자식 클래스 필드
                     .build();
 
-            MAQ maqDesignQuestion = MAQ.builder()
-                    .questionTitle("Test Question Title_" + QuestionCategory.DESIGN_MAQ.name() + "-" + i)
-                    .content("Test Question Content_" + QuestionCategory.DESIGN_MAQ.name() + "-" + i)
-                    .answerExplanation("Test Question Content Explaination" + QuestionCategory.DESIGN_MAQ.name() + "-" + i)
-                    .category(QuestionCategory.DESIGN_MAQ)
-                    .difficulty(i % 100 + 1)
-                    .choice1("Choice 1 for question " + i) // 자식 클래스 필드
-                    .choice2("Choice 2 for question " + i) // 자식 클래스 필드
-                    .choice3("Choice 3 for question " + i) // 자식 클래스 필드
-                    .choice4("Choice 4 for question " + i) // 자식 클래스 필드
-                    .answer(String.valueOf(i % 4 + 1)) // 자식 클래스 필드
-                    .build();
-
             MAQ maqAlgorithumQuestion = MAQ.builder()
                     .questionTitle("Test Question Title_" + QuestionCategory.ALGORITHUM_MAQ.name() + "-" + i)
                     .content("Test Question Content_" + QuestionCategory.ALGORITHUM_MAQ.name() + "-" + i)
@@ -591,7 +578,6 @@ public class QuestionService {
             maqQuestionList.add(maqDBQuestion);
             maqQuestionList.add(maqOsQuestion);
             maqQuestionList.add(maqNetworkQuestion);
-            maqQuestionList.add(maqDesignQuestion);
             maqQuestionList.add(maqAlgorithumQuestion);
         }
 
@@ -599,7 +585,6 @@ public class QuestionService {
 
         questionRepository.saveAll(maqQuestionList);
     }
-
 
     private int countTodayUserRecordsOfQuestion(String userId, QuestionCategory questionCategory) {
         // TODO (HD) : 유저는 정답 10개 이상 문제를 제출할 수 없다. (풀 수 없다) 제한을 추가
