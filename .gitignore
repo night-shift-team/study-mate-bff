@@ -36,3 +36,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### Environment Variables ###
+src/main/resources/.env.dev
+src/main/resources/.env.local
