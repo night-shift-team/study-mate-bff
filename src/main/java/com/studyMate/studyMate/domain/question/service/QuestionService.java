@@ -1,6 +1,5 @@
 package com.studyMate.studyMate.domain.question.service;
 
-import com.querydsl.core.QueryResults;
 import com.studyMate.studyMate.domain.history.dto.QuestionHistoryDto;
 import com.studyMate.studyMate.domain.history.dto.UserQuestionHistorySolveCountDto;
 import com.studyMate.studyMate.domain.history.repository.QuestionHistoryRepository;

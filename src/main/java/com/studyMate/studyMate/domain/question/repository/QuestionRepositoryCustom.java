@@ -1,6 +1,5 @@
 package com.studyMate.studyMate.domain.question.repository;
 
-import com.querydsl.core.QueryResults;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.domain.question.dto.GetQuestionCategoryInfoResponseDto;
 import com.studyMate.studyMate.domain.question.dto.GetQuestionDetailResponseDto;

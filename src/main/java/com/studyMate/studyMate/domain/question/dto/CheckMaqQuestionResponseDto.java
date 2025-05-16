@@ -1,14 +1,19 @@
 package com.studyMate.studyMate.domain.question.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public record CheckMaqQuestionResponseDto(
-    String answer,
-    String answerExplanation,
-    String userAnswer,
-    Boolean isCorrect,
-    Integer reflectedScore,
-    Integer userScore
-) {
+public class CheckMaqQuestionResponseDto {
+    private String answer;
+    private String answerExplanation;
+    private String userAnswer;
+    private Boolean isCorrect;
+    private Integer reflectedScore;
+    private Integer userScore;
 }

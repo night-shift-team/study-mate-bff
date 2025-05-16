@@ -1,7 +1,6 @@
 package com.studyMate.studyMate.domain.question.dto;
 
 import com.studyMate.studyMate.domain.question.entity.SAQ;
-import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 

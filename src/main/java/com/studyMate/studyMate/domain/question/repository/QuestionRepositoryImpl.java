@@ -1,11 +1,9 @@
 package com.studyMate.studyMate.domain.question.repository;
 
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
-import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.domain.question.dto.GetQuestionCategoryInfoResponseDto;

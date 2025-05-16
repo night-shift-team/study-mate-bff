@@ -1,7 +1,5 @@
 package com.studyMate.studyMate.domain.question.controller;
 
-import com.studyMate.studyMate.domain.question.dto.CheckMaqQuestionRequestDto;
-import com.studyMate.studyMate.domain.question.dto.CheckMaqQuestionResponseDto;
 import com.studyMate.studyMate.domain.question.dto.QuestionDetailDto;
 import com.studyMate.studyMate.domain.question.service.QuestionFavoriteService;
 import com.studyMate.studyMate.global.config.RoleAuth;

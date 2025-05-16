@@ -1,36 +1,20 @@
 package com.studyMate.studyMate.domain.question.dto;
 
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-public record GetQuestionDetailResponseDto(
-        String questionId,
-        String questionTitle,
-        String content,
-        Integer difficulty,
-        String options,
-        QuestionCategory category,
-        String answer,
-        String answerExplanation
-) {
-
-    public GetQuestionDetailResponseDto(
-            String questionId,
-            String questionTitle,
-            String content,
-            Integer difficulty,
-            String options,
-            QuestionCategory category,
-            String answer,
-            String answerExplanation
-    ) {
-        this.questionId = questionId;
-        this.questionTitle = questionTitle;
-        this.content = content;
-        this.difficulty = difficulty;
-        this.options = options;
-        this.category = category;
-        this.answer = answer;
-        this.answerExplanation = answerExplanation;
-    }
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class GetQuestionDetailResponseDto {
+    private String questionId;
+    private String questionTitle;
+    private String content;
+    private Integer difficulty;
+    private String options;
+    private QuestionCategory category;
+    private String answer;
+    private String answerExplanation;
 }

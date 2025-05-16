@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -74,7 +73,7 @@ public class QuestionController {
             @RequestBody CheckMaqQuestionRequestDto body
     ) {
         String userId = (String) req.getAttribute("userId");
-        return questionService.checkCommonMaqQuestion(body.questionId(), body.userAnswer(), userId);
+        return questionService.checkCommonMaqQuestion(body.getQuestionId(), body.getUserAnswer(), userId);
     }
 
     @GetMapping("/{category}/saq")
@@ -107,7 +106,7 @@ public class QuestionController {
             @RequestBody CheckMaqQuestionRequestDto body
     ) {
         String userId = (String) req.getAttribute("userId");
-        return questionService.checkCommonSaqQuestion(body.questionId(), body.userAnswer(), userId);
+        return questionService.checkCommonSaqQuestion(body.getQuestionId(), body.getUserAnswer(), userId);
     }
 
     @GetMapping("/level-test")
@@ -125,6 +124,6 @@ public class QuestionController {
             @RequestBody CheckMaqQuestionsRequestDto body
     ) {
         String userId = (String) req.getAttribute("userId");
-        return questionService.checkLevelTestQuestions(body.questionIds(), body.userAnswers(), userId);
+        return questionService.checkLevelTestQuestions(body.getQuestionIds(), body.getUserAnswers(), userId);
     }
 }
