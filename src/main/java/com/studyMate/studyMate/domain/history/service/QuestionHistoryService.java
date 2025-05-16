@@ -6,7 +6,6 @@ import com.studyMate.studyMate.domain.history.dto.SolveStatsResponseDto;
 import com.studyMate.studyMate.domain.history.repository.QuestionHistoryRepository;
 import com.studyMate.studyMate.domain.history.entity.QuestionHistory;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
-import com.studyMate.studyMate.domain.question.entity.Question;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -45,7 +44,7 @@ public class QuestionHistoryService {
         PageRequest pageable = PageRequest.of(page, size, Sort.by("createdDt").descending());
         Page<QuestionHistory> content = questionHistoryRepository.findQuestionHistoriesByUser_UserIdAndCreatedDtAfter(userId, oneYearAgo, pageable);
 
-        return QuestionHistoryPageDto.from(
+        return new QuestionHistoryPageDto(
                 content.getContent(),
                 content.getTotalPages(),
                 content.getNumber(),

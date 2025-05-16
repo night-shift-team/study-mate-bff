@@ -8,7 +8,6 @@ import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.global.config.RoleAuth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
