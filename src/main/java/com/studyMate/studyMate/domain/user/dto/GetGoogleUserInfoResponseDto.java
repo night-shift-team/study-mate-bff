@@ -1,12 +1,20 @@
 package com.studyMate.studyMate.domain.user.dto;
 
-public record GetGoogleUserInfoResponseDto(
-        String id,
-        String email,
-        boolean verified_email,
-        String name,
-        String given_name,
-        String family_name,
-        String picture
-) {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class GetGoogleUserInfoResponseDto {
+    private String id;
+    private String email;
+    private boolean verified_email;
+    private String name;
+    private String given_name;
+    private String family_name;
+    private String picture;
 }

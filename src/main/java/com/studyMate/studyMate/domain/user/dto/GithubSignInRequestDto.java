@@ -1,6 +1,14 @@
 package com.studyMate.studyMate.domain.user.dto;
 
-public record GithubSignInRequestDto(
-        String githubCode
-) {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class GithubSignInRequestDto {
+    private String githubCode;
 }

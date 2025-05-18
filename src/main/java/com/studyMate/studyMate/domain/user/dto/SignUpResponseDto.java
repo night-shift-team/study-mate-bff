@@ -1,9 +1,13 @@
 package com.studyMate.studyMate.domain.user.dto;
 
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record SignUpResponseDto(
-        String id,
-        String userId
-) {
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+public class SignUpResponseDto {
+    private String id;
+    private String userId;
 }

@@ -2,10 +2,7 @@ package com.studyMate.studyMate.domain.user.service;
 
 import com.studyMate.studyMate.domain.user.data.LoginType;
 import com.studyMate.studyMate.domain.user.data.UserStatus;
-import com.studyMate.studyMate.domain.user.dto.SignInRequestDto;
-import com.studyMate.studyMate.domain.user.dto.SignInResponseDto;
-import com.studyMate.studyMate.domain.user.dto.SignUpRequestDto;
-import com.studyMate.studyMate.domain.user.dto.SignUpResponseDto;
+import com.studyMate.studyMate.domain.user.dto.*;
 import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
@@ -98,7 +95,7 @@ class UserServiceTest {
         SignUpResponseDto resp = userService.signUpLocal(user1);
 
         assertNotNull(resp);
-        assertEquals(resp.userId(), user1.loginId());
+        assertEquals(resp.getUserId(), user1.getLoginId());
     }
 
     @Test
@@ -133,7 +130,7 @@ class UserServiceTest {
         SignInRequestDto requestDto = new SignInRequestDto(LOGIN_ID, LOGIN_PW);
         SignInResponseDto responseDto = userService.signInLocal(requestDto);
 
-        assertNotNull(responseDto.accessToken());
-        assertNotNull(responseDto.refreshToken());
+        assertNotNull(responseDto.getAccessToken());
+        assertNotNull(responseDto.getRefreshToken());
     }
 }

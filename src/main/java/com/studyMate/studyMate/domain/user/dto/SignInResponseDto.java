@@ -1,11 +1,15 @@
 package com.studyMate.studyMate.domain.user.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
+@Getter
 @Builder
-public record SignInResponseDto (
-        String accessToken,
-        String refreshToken
-){ }
+@NoArgsConstructor
+@AllArgsConstructor
+public class SignInResponseDto {
+    private String accessToken;
+    private String refreshToken;
+}
