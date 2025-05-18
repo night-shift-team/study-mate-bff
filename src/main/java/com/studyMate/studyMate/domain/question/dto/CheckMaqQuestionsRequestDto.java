@@ -1,11 +1,18 @@
 package com.studyMate.studyMate.domain.question.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 
-public record CheckMaqQuestionsRequestDto(
-    List<String> questionIds,
-    List<String> userAnswers
-) {
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Builder
+public class CheckMaqQuestionsRequestDto {
+    private List<String> questionIds;
+    private List<String> userAnswers;
 }
-

@@ -100,37 +100,37 @@ public class UserService {
 
     /**
      * 로컬 회원가입 메소드
-     * @param signUpRequestDto
+     * @param SignUpRequestDto
      * @return signUpResponseDto
      */
     @Transactional
-    public SignUpResponseDto signUpLocal(SignUpRequestDto signUpRequestDto) {
+    public SignUpResponseDto signUpLocal(SignUpRequestDto SignUpRequestDto) {
         // 1. 중복확인
-        boolean isLoginIdValid = checkDuplicateEmail(signUpRequestDto.loginId());
+        boolean isLoginIdValid = checkDuplicateEmail(SignUpRequestDto.getLoginId());
         if(isLoginIdValid){
             throw new CustomException(ErrorCode.DUP_USER_ID);
         }
 
-        boolean isNicknameValid = checkDuplicateNickname(signUpRequestDto.nickname());
+        boolean isNicknameValid = checkDuplicateNickname(SignUpRequestDto.getNickname());
         if(isNicknameValid){
             throw new CustomException(ErrorCode.DUP_USER_NICKNAME);
         }
 
         // 2. 비밀번호 암호화
-        String encryptedUserPw = encryptionUtil.encryptBcrypt(signUpRequestDto.loginPw());
+        String encryptedUserPw = encryptionUtil.encryptBcrypt(SignUpRequestDto.getLoginPw());
 
         // 3. 유저 생성
-        User newUser = createUser(LoginType.LOCAL, signUpRequestDto.loginId(), encryptedUserPw, signUpRequestDto.nickname(), DEFAULT_PROFILE_IMAGE, 0);
+        User newUser = createUser(LoginType.LOCAL, SignUpRequestDto.getLoginId(), encryptedUserPw, SignUpRequestDto.getNickname(), DEFAULT_PROFILE_IMAGE, 0);
 
         return new SignUpResponseDto(newUser.getUserId(), newUser.getLoginId());
     }
 
-    public SignInResponseDto signInLocal(SignInRequestDto signInRequestDto) {
+    public SignInResponseDto signInLocal(SignInRequestDto SignInRequestDto) {
         // 1. Login Id로 유저 확인
-        User user = userRepository.findByLoginId(signInRequestDto.loginId()).orElseThrow(() -> new CustomException(ErrorCode.INVALID_LOGINID));
+        User user = userRepository.findByLoginId(SignInRequestDto.getLoginId()).orElseThrow(() -> new CustomException(ErrorCode.INVALID_LOGINID));
 
         // 2. 비밀번호 검증 비교
-        boolean isValidPw = encryptionUtil.compareBcrypt(signInRequestDto.loginPw(), user.getLoginPw());
+        boolean isValidPw = encryptionUtil.compareBcrypt(SignInRequestDto.getLoginPw(), user.getLoginPw());
         if(!isValidPw){
             throw new CustomException(ErrorCode.INVALID_LOGINPW);
         }
@@ -166,14 +166,14 @@ public class UserService {
             GetGoogleUserInfoResponseDto userInfo = getGoogleUserInfo(gAccessToken);
 
             // 3.1 DB 유저 존재확인 -> 있으면 해당 유저 사용
-            User user = userRepository.findByLoginId(userInfo.email()).orElseGet(() -> {
+            User user = userRepository.findByLoginId(userInfo.getEmail()).orElseGet(() -> {
                 // 3.2 없으면, 새로운 유저 생성
                 return this.createUser(
                         LoginType.GOOGLE,
-                        userInfo.email(),
+                        userInfo.getEmail(),
                         "google",
-                        userInfo.name(),
-                        userInfo.picture(),
+                        userInfo.getName(),
+                        userInfo.getPicture(),
                         0
                 );
             });
@@ -200,14 +200,14 @@ public class UserService {
             GetGithubUserInfoResponseDto userInfo = getGithubUserInfo(gAccessToken);
 
             // 3.1 DB 유저 존재확인 -> 있으면 해당 유저 사용
-            User user = userRepository.findByLoginId(userInfo.email()).orElseGet(() -> {
+            User user = userRepository.findByLoginId(userInfo.getEmail()).orElseGet(() -> {
                 // 3.2 없으면, 새로운 유저 생성
                 return this.createUser(
                         LoginType.GITHUB,
-                        userInfo.email(),
+                        userInfo.getEmail(),
                         "github",
-                        userInfo.login(),
-                        userInfo.avatar_url(),
+                        userInfo.getLogin(),
+                        userInfo.getAvatar_url(),
                         0
                 );
             });
@@ -270,7 +270,7 @@ public class UserService {
             );
 
             // 4. response 에서 access token 추출 리턴
-            return Objects.requireNonNull(response.getBody()).access_token();
+            return Objects.requireNonNull(response.getBody()).getAccess_token();
         } catch(Exception e) {
             e.getMessage();
             throw new IllegalArgumentException("fail to get google access token");
@@ -317,7 +317,7 @@ public class UserService {
             );
 
             // 4. response 에서 access token 추출 리턴
-            return Objects.requireNonNull(response.getBody()).access_token();
+            return Objects.requireNonNull(response.getBody()).getAccess_token();
         } catch(Exception e) {
             e.getMessage();
             throw new IllegalArgumentException("fail to get github access token");

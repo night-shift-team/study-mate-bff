@@ -1,8 +1,13 @@
 package com.studyMate.studyMate.domain.question.dto;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record CheckMaqQuestionRequestDto(
-        String questionId,
-        String userAnswer
-) { }
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class CheckMaqQuestionRequestDto {
+    private String questionId;
+    private String userAnswer;
+}

@@ -1,7 +1,7 @@
 package com.studyMate.studyMate.domain.question.service;
 
-import com.querydsl.core.QueryResults;
 import com.studyMate.studyMate.domain.history.dto.QuestionHistoryDto;
+import com.studyMate.studyMate.domain.history.dto.UserQuestionHistorySolveCountDto;
 import com.studyMate.studyMate.domain.history.repository.QuestionHistoryRepository;
 import com.studyMate.studyMate.domain.history.service.QuestionHistoryService;
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
@@ -16,6 +16,7 @@ import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.domain.user.repository.UserRepository;
 import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
+import com.studyMate.studyMate.global.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -24,6 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -40,7 +42,10 @@ public class QuestionService {
 
     private final int MAX_LEVEL_TEST_DIFFICULTY = 20;
     private final int LEVEL_TEST_QUESTION_COUNT = 20;
-    private final int LEVEL_TEST_SCORE_WIEGHT = 100;
+    private final int QUESTION_SOLVE_DAILY_LIMIT = 10;
+
+    private final int LEVEL_TEST_SCORE_WIEGHT = 200;
+    private final int SCORE_WEIGHT_K = 100;
 
     private final QuestionHistoryRepository questionHistoryRepository;
 
@@ -66,6 +71,44 @@ public class QuestionService {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdDt"));
         Page<SAQ> query = questionSaqRepository.findAll(pageRequest);
         return new SaqQuestionPageDto(query);
+    }
+
+    public GetQuestionCategoryInfoResponseDto findQuestionCategoryInfo(String userId) {
+        GetQuestionCategoryInfoResponseDto result = new GetQuestionCategoryInfoResponseDto();
+        LocalDateTime startOfToday = LocalDateTime.now().toLocalDate().atStartOfDay();
+
+        // 총 카테고리 리스트 조회
+        List<QuestionCategory> categoryList = QuestionCategory.getQuestionCategoryList();
+
+        // 유저가 풀었던 내역 카테고리 별 조회
+        List<UserQuestionHistorySolveCountDto> userSolveHistory = questionHistoryRepository.getTodayUserQuestionHistorySolveCount(userId, startOfToday);
+        System.out.println("=== User Solve History ===");
+
+        // Result 생성
+        result.setTotalCategoryCount(categoryList.size());
+
+        List<CategoryDetailDto> detailDtoList = new ArrayList<>();
+
+        for(QuestionCategory category : categoryList) {
+            Long solveCount = userSolveHistory.stream()
+                    .filter(v -> v.getQuestionCategory() == category)
+                    .map(UserQuestionHistorySolveCountDto::getSolveCount)
+                    .findFirst()
+                    .orElse(0L);
+
+            CategoryDetailDto detailDto = CategoryDetailDto.builder()
+                    .categoryOriginName(category)
+                    .categoryViewName(QuestionCategory.getQuestionCategoryViewName(category))
+                    .userSolvingCount(solveCount.intValue())
+                    .solvingLimit(QUESTION_SOLVE_DAILY_LIMIT)
+                    .build();
+
+            detailDtoList.add(detailDto);
+        }
+
+        result.setDetail(detailDtoList);
+
+        return result;
     }
 
     @Transactional
@@ -188,7 +231,12 @@ public class QuestionService {
         );
 
         if(query.getContent().isEmpty()) {
-            log.info("no avaliable MAQ Questions Category : {} || Difficulty : {}", userProperDifficulty, questionCategory);
+            LogUtil.warnLog(
+                    "findSaqQuestionsCommon",
+                    userId,
+                    "No available SAQ Question " + "Category : " + questionCategory + "Difficulty :" + userProperDifficulty.get(0) + "~" + userProperDifficulty.get(1)
+            );
+
             throw new CustomException(ErrorCode.NO_AVAILIABLE_QEUSTION);
         }
 
@@ -223,7 +271,12 @@ public class QuestionService {
         SaqQuestionDto result;
 
         if(query.getContent().isEmpty()) {
-            log.info("no avaliable SAQ Questions Category : {} || Difficulty : {}", userProperDifficulty, questionCategory);
+            LogUtil.warnLog(
+                    "findSaqQuestionsCommon",
+                    userId,
+                    "No available SAQ Question " + "Category : " + questionCategory + "Difficulty :" + userProperDifficulty.get(0) + "~" + userProperDifficulty.get(1)
+            );
+
             throw new CustomException(ErrorCode.NO_AVAILIABLE_QEUSTION);
         }
 
@@ -261,15 +314,34 @@ public class QuestionService {
                 .toList();
     }
 
+    /**
+     * MAQ 문제 정답 체크 기능
+     * @param questionId 문제 ID
+     * @param userAnswer 유저의 정답 제출
+     * @param userId 유저의 아이디
+     * @return CheckMaqQuestionResponseDto
+     */
     @Transactional
     public CheckMaqQuestionResponseDto checkCommonMaqQuestion(
             String questionId,
             String userAnswer,
             String userId
-    ){
+    ) {
         // 유효한 유저 & 문제 체크
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
         MAQ dbQuestion = questionMaqRepository.findById(questionId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_QUESTION));
+
+        // TODO (HD) : 유저는 정답 10개 이상 문제를 제출할 수 없다. (풀 수 없다) 제한을 추가
+        int userCorrectQuestionCount = countTodayUserRecordsOfQuestion(user.getUserId(), dbQuestion.getCategory());
+
+        if(userCorrectQuestionCount >= QUESTION_SOLVE_DAILY_LIMIT) {
+            LogUtil.infoLog(
+                    "checkCommonMaqQuestion",
+                    user.getUserId(),
+                    "Excced Daily Question Limit (category = " + dbQuestion.getCategory() + ")"
+            );
+            throw new CustomException(ErrorCode.EXCEED_DAILY_QUESTION_LIMIT);
+        }
 
         // 문제 정답을 맞추고..
         boolean isCorrectAnswer = dbQuestion.getAnswer().equals(userAnswer);
@@ -278,9 +350,9 @@ public class QuestionService {
         int score = 0;
 
         if(!isCorrectAnswer) {
-            score -= dbQuestion.getDifficulty();
+            score -= SCORE_WEIGHT_K / dbQuestion.getDifficulty();
         } else {
-            score += dbQuestion.getDifficulty();
+            score += dbQuestion.getDifficulty() * SCORE_WEIGHT_K;
         }
 
         int userScore = user.accumulateUserScore(score);
@@ -291,7 +363,7 @@ public class QuestionService {
                 .user(user)
                 .question(dbQuestion)
                 .userAnswer(String.valueOf(userAnswer))
-                .score(dbQuestion.getDifficulty())
+                .score(score)
                 .isCorrect(isCorrectAnswer)
                 .qType(dbQuestion.getCategory())
                 .build()
@@ -319,6 +391,17 @@ public class QuestionService {
         // 유효한 유저 & 문제 체크
         User user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
         SAQ dbQuestion = questionSaqRepository.findById(questionId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_QUESTION));
+
+        int userCorrectQuestionCount = countTodayUserRecordsOfQuestion(user.getUserId(), dbQuestion.getCategory());
+
+        if(userCorrectQuestionCount >= QUESTION_SOLVE_DAILY_LIMIT) {
+            LogUtil.infoLog(
+                    "checkCommonSaqQuestion",
+                    user.getUserId(),
+                    "Excced Daily Question Limit (category = " + dbQuestion.getCategory() + ")"
+            );
+            throw new CustomException(ErrorCode.EXCEED_DAILY_QUESTION_LIMIT);
+        }
 
         // 정답체크
         int score = checkSaqScore(userAnswer, dbQuestion);
@@ -478,19 +561,6 @@ public class QuestionService {
                     .answer(String.valueOf(i % 4 + 1)) // 자식 클래스 필드
                     .build();
 
-            MAQ maqDesignQuestion = MAQ.builder()
-                    .questionTitle("Test Question Title_" + QuestionCategory.DESIGN_MAQ.name() + "-" + i)
-                    .content("Test Question Content_" + QuestionCategory.DESIGN_MAQ.name() + "-" + i)
-                    .answerExplanation("Test Question Content Explaination" + QuestionCategory.DESIGN_MAQ.name() + "-" + i)
-                    .category(QuestionCategory.DESIGN_MAQ)
-                    .difficulty(i % 100 + 1)
-                    .choice1("Choice 1 for question " + i) // 자식 클래스 필드
-                    .choice2("Choice 2 for question " + i) // 자식 클래스 필드
-                    .choice3("Choice 3 for question " + i) // 자식 클래스 필드
-                    .choice4("Choice 4 for question " + i) // 자식 클래스 필드
-                    .answer(String.valueOf(i % 4 + 1)) // 자식 클래스 필드
-                    .build();
-
             MAQ maqAlgorithumQuestion = MAQ.builder()
                     .questionTitle("Test Question Title_" + QuestionCategory.ALGORITHUM_MAQ.name() + "-" + i)
                     .content("Test Question Content_" + QuestionCategory.ALGORITHUM_MAQ.name() + "-" + i)
@@ -507,13 +577,24 @@ public class QuestionService {
             maqQuestionList.add(maqDBQuestion);
             maqQuestionList.add(maqOsQuestion);
             maqQuestionList.add(maqNetworkQuestion);
-            maqQuestionList.add(maqDesignQuestion);
             maqQuestionList.add(maqAlgorithumQuestion);
         }
 
         log.info("Fake Question Generate count : {}", maqQuestionList.size());
 
         questionRepository.saveAll(maqQuestionList);
+    }
+
+    private int countTodayUserRecordsOfQuestion(String userId, QuestionCategory questionCategory) {
+        // TODO (HD) : 유저는 정답 10개 이상 문제를 제출할 수 없다. (풀 수 없다) 제한을 추가
+        List<QuestionHistoryDto> userCorrectHistory = this.questionHistoryService.findTodayQuestionHistoriesByCategory(
+                        userId,
+                        questionCategory
+                ).stream()
+                .filter(history -> !history.getIsCorrect())
+                .toList();
+
+        return userCorrectHistory.size();
     }
 
     /**
@@ -564,7 +645,6 @@ public class QuestionService {
         return difficultyResult;
     }
 
-
     private int checkSaqScore(String userAnswer, SAQ dbQuestion) {
         String keyword1 = dbQuestion.getKeyword1().toLowerCase();
         String keyword2 = dbQuestion.getKeyword2().toLowerCase();
@@ -595,7 +675,12 @@ public class QuestionService {
             default -> 0;
         };
 
+        if (score > 0) {
+            score = score * SCORE_WEIGHT_K;
+        } else {
+            score = SCORE_WEIGHT_K / score;
+        }
+
         return score;
     }
-
 }

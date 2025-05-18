@@ -24,13 +24,13 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
-    @GetMapping("/{page}/{limit}/rank")
+    @GetMapping("rank")
     @Operation(summary = "유저 랭킹 정보확인", description = "유저 랭킹 정보 확인 API")
     @RoleAuth
     public GetUserRankingResponseDto getUserRanking(
             HttpServletRequest request,
-            @PathVariable("page") Integer page,
-            @PathVariable("limit") Integer limit
+            @RequestParam("page") Integer page,
+            @RequestParam("limit") Integer limit
     ) {
         String userId = (String) request.getAttribute("userId");
         return userService.findUserRanking(userId, page, limit);
@@ -44,7 +44,7 @@ public class UserController {
     @RoleAuth
     public SignInResponseDto tokenRefresh(HttpServletRequest request, @RequestBody @Validated RefreshTokenRequestDto refreshTokenRequestbody) {
         String userId = (String) request.getAttribute("userId");
-        return userService.refreshTokenPair(userId, refreshTokenRequestbody.refreshToken());
+        return userService.refreshTokenPair(userId, refreshTokenRequestbody.getRefreshToken());
     }
 
     @GetMapping("/oauth/parameters/admin")
@@ -103,7 +103,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
     })
     public String resetPassword (@RequestBody @Validated ResetPasswordRequestDto resetPasswordRequestBody) {
-        return userService.resetPasswordAdmin(resetPasswordRequestBody.email());
+        return userService.resetPasswordAdmin(resetPasswordRequestBody.getEmail());
     }
 
     @PostMapping("/sign-in/google")
@@ -112,7 +112,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
     })
     public SignInResponseDto googleSignIn (@RequestBody @Validated GoogleSignInRequestDto googleSignInRequestBody) {
-        return userService.signInGoogle(googleSignInRequestBody.googleCode());
+        return userService.signInGoogle(googleSignInRequestBody.getGoogleCode());
     }
 
 
@@ -122,7 +122,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
     })
     public SignInResponseDto githubSignIn (@RequestBody @Validated GithubSignInRequestDto githubSignINRequestBody) {
-        return userService.signInGithub(githubSignINRequestBody.githubCode());
+        return userService.signInGithub(githubSignINRequestBody.getGithubCode());
     }
 
     @GetMapping("/email/duplicate")

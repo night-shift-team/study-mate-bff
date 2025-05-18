@@ -1,10 +1,17 @@
 package com.studyMate.studyMate.domain.user.dto;
 
 import jakarta.validation.constraints.Email;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-public record SignInRequestDto(
-        @Email(message = "invalid email")
-        String loginId,
-        String loginPw
-) {
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SignInRequestDto {
+    @Email(message = "invalid email")
+    private String loginId;
+    private String loginPw;
 }

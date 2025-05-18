@@ -1,13 +1,18 @@
 package com.studyMate.studyMate.domain.user.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
 @Builder
-public record GetOAuthParametersResponseDto(
-        String googleClientId,
-        String googleClientSecret,
-        String googleRedirectUrl,
-        String githubClientId,
-        String githubClientSecret
-){
+@NoArgsConstructor
+@AllArgsConstructor
+public class GetOAuthParametersResponseDto {
+    private String googleClientId;
+    private String googleClientSecret;
+    private String googleRedirectUrl;
+    private String githubClientId;
+    private String githubClientSecret;
 }

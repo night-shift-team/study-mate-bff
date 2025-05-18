@@ -1,6 +1,14 @@
 package com.studyMate.studyMate.domain.user.dto;
 
-public record ResetPasswordRequestDto(
-        String email
-) {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ResetPasswordRequestDto {
+    private String email;
 }

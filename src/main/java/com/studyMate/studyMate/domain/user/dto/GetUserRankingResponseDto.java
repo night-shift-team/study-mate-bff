@@ -2,9 +2,8 @@ package com.studyMate.studyMate.domain.user.dto;
 
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.data.domain.Pageable;
-
 import java.util.List;
+
 @Builder
 @Getter
 public class GetUserRankingResponseDto {

@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +26,14 @@ import java.util.List;
 public class QuestionController {
 
     private final QuestionService questionService;
+
+    @GetMapping("/category/info")
+    @Operation(summary = "문제 카테고리 정보 조회", description = "문제 카테고리 정보 조회")
+    @RoleAuth
+    public GetQuestionCategoryInfoResponseDto getQuestionCategories(HttpServletRequest req) {
+        String userId = (String) req.getAttribute("userId");
+        return this.questionService.findQuestionCategoryInfo(userId);
+    }
 
     @GetMapping("/{questionId}")
     @Operation(summary = "Question 상세 정보 조회", description = "Question 상세정보 조회 API (MAQ | SAQ 공통사용) (*일반유저는 자신이 풀었던 내역에 대해서만 조회할 수 있음 | 어드민은 무조건 조회)")
@@ -66,7 +73,7 @@ public class QuestionController {
             @RequestBody CheckMaqQuestionRequestDto body
     ) {
         String userId = (String) req.getAttribute("userId");
-        return questionService.checkCommonMaqQuestion(body.questionId(), body.userAnswer(), userId);
+        return questionService.checkCommonMaqQuestion(body.getQuestionId(), body.getUserAnswer(), userId);
     }
 
     @GetMapping("/{category}/saq")
@@ -99,7 +106,7 @@ public class QuestionController {
             @RequestBody CheckMaqQuestionRequestDto body
     ) {
         String userId = (String) req.getAttribute("userId");
-        return questionService.checkCommonSaqQuestion(body.questionId(), body.userAnswer(), userId);
+        return questionService.checkCommonSaqQuestion(body.getQuestionId(), body.getUserAnswer(), userId);
     }
 
     @GetMapping("/level-test")
@@ -117,6 +124,6 @@ public class QuestionController {
             @RequestBody CheckMaqQuestionsRequestDto body
     ) {
         String userId = (String) req.getAttribute("userId");
-        return questionService.checkLevelTestQuestions(body.questionIds(), body.userAnswers(), userId);
+        return questionService.checkLevelTestQuestions(body.getQuestionIds(), body.getUserAnswers(), userId);
     }
 }

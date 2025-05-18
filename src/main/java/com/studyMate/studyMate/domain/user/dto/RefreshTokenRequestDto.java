@@ -1,6 +1,14 @@
 package com.studyMate.studyMate.domain.user.dto;
 
-public record RefreshTokenRequestDto (
-        String refreshToken
-) {
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class RefreshTokenRequestDto {
+    private String refreshToken;
 }
