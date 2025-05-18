@@ -166,14 +166,14 @@ public class UserService {
             GetGoogleUserInfoResponseDto userInfo = getGoogleUserInfo(gAccessToken);
 
             // 3.1 DB 유저 존재확인 -> 있으면 해당 유저 사용
-            User user = userRepository.findByLoginId(userInfo.email()).orElseGet(() -> {
+            User user = userRepository.findByLoginId(userInfo.getEmail()).orElseGet(() -> {
                 // 3.2 없으면, 새로운 유저 생성
                 return this.createUser(
                         LoginType.GOOGLE,
-                        userInfo.email(),
+                        userInfo.getEmail(),
                         "google",
-                        userInfo.name(),
-                        userInfo.picture(),
+                        userInfo.getName(),
+                        userInfo.getPicture(),
                         0
                 );
             });
@@ -200,14 +200,14 @@ public class UserService {
             GetGithubUserInfoResponseDto userInfo = getGithubUserInfo(gAccessToken);
 
             // 3.1 DB 유저 존재확인 -> 있으면 해당 유저 사용
-            User user = userRepository.findByLoginId(userInfo.email()).orElseGet(() -> {
+            User user = userRepository.findByLoginId(userInfo.getEmail()).orElseGet(() -> {
                 // 3.2 없으면, 새로운 유저 생성
                 return this.createUser(
                         LoginType.GITHUB,
-                        userInfo.email(),
+                        userInfo.getEmail(),
                         "github",
-                        userInfo.login(),
-                        userInfo.avatar_url(),
+                        userInfo.getLogin(),
+                        userInfo.getAvatar_url(),
                         0
                 );
             });
