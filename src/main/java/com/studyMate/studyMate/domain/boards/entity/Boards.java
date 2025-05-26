@@ -4,6 +4,8 @@ import com.studyMate.studyMate.domain.boards.data.BoardCategory;
 import com.studyMate.studyMate.domain.boards.data.BoardStatus;
 import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.global.data.BaseEntityDate;
+import com.studyMate.studyMate.global.error.CustomException;
+import com.studyMate.studyMate.global.error.ErrorCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,12 +35,19 @@ public class Boards extends BaseEntityDate {
     @Column(columnDefinition = "LONGTEXT")
     private String content;
 
-    @Column
+    @Column(nullable = false)
     private BoardCategory category;
 
-    @Column
-    private BoardStatus status;
+    @Enumerated(EnumType.STRING)
+    private BoardStatus status = BoardStatus.RECEIVED;
 
-    @Column
+    @Column(nullable = false)
     private Integer view;
+
+    @PrePersist
+    @PreUpdate
+    private void defaultValue() {
+        if(view == null) view = 0;
+        if(status == null) status = BoardStatus.RECEIVED;
+    }
 }
