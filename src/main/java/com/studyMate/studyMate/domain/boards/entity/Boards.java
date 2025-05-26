@@ -29,7 +29,8 @@ public class Boards extends BaseEntityDate {
     @Column
     private String title;
 
-    @Column
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 
     @Column

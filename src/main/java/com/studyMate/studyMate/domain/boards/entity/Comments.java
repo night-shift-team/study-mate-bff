@@ -23,6 +23,7 @@ public class Comments extends BaseEntityDate {
     @JoinColumn(name = "board_id", nullable = false)
     private Boards board;
 
-    @Column
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String content;
 }
