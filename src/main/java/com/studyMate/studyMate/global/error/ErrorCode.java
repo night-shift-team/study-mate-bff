@@ -54,7 +54,16 @@ public enum ErrorCode {
      * 0500 ~ 0599
      */
     INVALID_NOTICE_ID(400, "invalid notice id", "0500"),
+
+
+    /**
+     * Notice Errors
+     * 0600 ~ 0699
+     */
+    INVALID_BOARD_ID(400, "invalid board id", "0500")
+
     ;
+
     private final int status;
     private final String message;
     private final String eCode;

@@ -5,6 +5,7 @@ import com.studyMate.studyMate.domain.boards.dto.PagingResponseDto;
 import com.studyMate.studyMate.domain.boards.dto.SaveBoardRequestDto;
 import com.studyMate.studyMate.domain.boards.service.BoardService;
 import com.studyMate.studyMate.global.config.RoleAuth;
+import com.sun.jdi.LongValue;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +20,14 @@ import org.springframework.web.bind.annotation.*;
 public class BoardController {
 
     private final BoardService boardService;
+
+    @GetMapping("/{id}")
+    @Operation(summary = "QnA 게시글 조회", description = "QnA 게시글 id로 조회")
+    public BoardDto getBoardById(
+            @PathVariable("id") Long id
+    ) {
+        return this.boardService.getBoardById(id);
+    }
 
     @GetMapping("qna")
     @Operation(summary = "QnA 게시글 목록 조회", description = "QnA 게시글 목록을 조회")

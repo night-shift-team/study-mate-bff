@@ -29,6 +29,12 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
 
+    public BoardDto getBoardById(Long boardId){
+        Boards board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_BOARD_ID));
+        return new BoardDto(board);
+    }
+
+
     public PagingResponseDto<BoardDto> getQNABoardsPaging(Integer page, Integer limit) {
         PageRequest pageRequest = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "createdDt"));
 

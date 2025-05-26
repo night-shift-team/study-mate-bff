@@ -2,6 +2,7 @@ package com.studyMate.studyMate.domain.user.dto;
 
 import com.studyMate.studyMate.domain.user.data.LoginType;
 import com.studyMate.studyMate.domain.user.data.UserStatus;
+import com.studyMate.studyMate.domain.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,4 +24,16 @@ public class GetUserDto {
     private Integer role;
     private Integer userScore;
     private LocalDateTime registeredAt;
+
+    public GetUserDto(User user) {
+        this.userId = user.getUserId();
+        this.loginType = user.getLoginType();
+        this.loginId = user.getLoginId();
+        this.nickname = user.getNickname();
+        this.profileImg = user.getProfileImg();
+        this.status = user.getStatus();
+        this.role = user.getRole();
+        this.userScore = user.getScore();
+        this.registeredAt = user.getCreatedDt();
+    }
 }
