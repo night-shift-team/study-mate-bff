@@ -1,7 +1,6 @@
 package com.studyMate.studyMate.domain.boards.service;
 
 import com.studyMate.studyMate.domain.boards.data.BoardCategory;
-import com.studyMate.studyMate.domain.boards.data.BoardStatus;
 import com.studyMate.studyMate.domain.boards.dto.BoardDto;
 import com.studyMate.studyMate.domain.boards.dto.PagingResponseDto;
 import com.studyMate.studyMate.domain.boards.entity.Boards;
@@ -18,8 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -33,7 +30,6 @@ public class BoardService {
         Boards board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_BOARD_ID));
         return new BoardDto(board);
     }
-
 
     public PagingResponseDto<BoardDto> getQNABoardsPaging(Integer page, Integer limit) {
         PageRequest pageRequest = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "createdDt"));

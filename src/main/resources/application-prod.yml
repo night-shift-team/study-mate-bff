@@ -18,6 +18,13 @@ spring:
     properties:
       hibernate:
         default_batch_fetch_size: 100
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: 6379
+      username: ${REDIS_USERNAME}
+      password: ${REDIS_PASSWORD}
+      timeout: 5000
 e:
   auth:
     google_client_id: ${GOOGLE_CLIENT_ID}
