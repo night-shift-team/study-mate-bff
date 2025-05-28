@@ -50,4 +50,9 @@ public class Boards extends BaseEntityDate {
         if(view == null) view = 0;
         if(status == null) status = BoardStatus.RECEIVED;
     }
+
+    public Integer updateView() {
+        this.view += 1;
+        return this.view;
+    }
 }

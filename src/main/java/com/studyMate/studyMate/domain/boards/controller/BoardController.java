@@ -21,12 +21,15 @@ public class BoardController {
 
     private final BoardService boardService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}/qna")
     @Operation(summary = "QnA 게시글 조회", description = "QnA 게시글 id로 조회")
+    @RoleAuth
     public BoardDto getBoardById(
+            HttpServletRequest req,
             @PathVariable("id") Long id
     ) {
-        return this.boardService.getBoardById(id);
+        String userId = (String) req.getAttribute("userId");
+        return this.boardService.getQnaBoardById(id, userId);
     }
 
     @GetMapping("qna")

@@ -9,6 +9,8 @@ import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.domain.user.repository.UserRepository;
 import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
+import com.studyMate.studyMate.global.redis.RedisKeyFactory;
+import com.studyMate.studyMate.global.redis.RedisService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,9 +29,22 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UserRepository userRepository;
+    private final RedisService redisService;
+    private final int BOARD_VIEW_TTL_HOURS = 24; // 게시물 조회 수 중복누적 방지 유효시간
 
-    public BoardDto getBoardById(Long boardId){
-        Boards board = boardRepository.findById(boardId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_BOARD_ID));
+    @Transactional
+    public BoardDto getQnaBoardById(Long boardId, String userId){
+        Boards board = boardRepository.findByIdAndCategory(boardId, BoardCategory.QNA)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_BOARD_ID));
+
+        String key = RedisKeyFactory.viewedBoard(boardId, userId);
+
+        boolean isAlreadyView = redisService.hasKey(key);
+        if(!isAlreadyView){
+            redisService.setValue(key, "1", Duration.ofHours(BOARD_VIEW_TTL_HOURS));
+            board.updateView();
+        }
+
         return new BoardDto(board);
     }
 
