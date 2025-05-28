@@ -13,4 +13,8 @@ public class RedisKeyFactory {
     public static String viewedBoard(Long boardId, Long userId) {
         return String.format("viewed:board:%d:user:%s", boardId, userId);
     }
+
+    public static String viewedBoard(Long boardId, String userId) {
+        return String.format("viewed:board:%d:user:%s", boardId, userId);
+    }
 }
