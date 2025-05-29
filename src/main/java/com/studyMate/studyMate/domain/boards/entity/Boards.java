@@ -12,6 +12,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "boards")
 @Getter
@@ -43,6 +46,9 @@ public class Boards extends BaseEntityDate {
 
     @Column(nullable = false)
     private Integer view;
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Comments> comments = new ArrayList<>();
 
     @PrePersist
     @PreUpdate

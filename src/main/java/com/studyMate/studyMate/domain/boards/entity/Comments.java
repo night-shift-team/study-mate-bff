@@ -1,5 +1,6 @@
 package com.studyMate.studyMate.domain.boards.entity;
 
+import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.global.data.BaseEntityDate;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,6 +23,10 @@ public class Comments extends BaseEntityDate {
     @ManyToOne
     @JoinColumn(name = "board_id", nullable = false)
     private Boards board;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Lob
     @Column(columnDefinition = "LONGTEXT")
