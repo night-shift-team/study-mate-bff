@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,6 +24,7 @@ public class BoardDto {
     private BoardCategory category;
     private BoardStatus status;
     private Integer view;
+    private List<CommentDto> comments;
 
     public BoardDto(Boards board) {
         this.id = board.getId();
@@ -31,5 +34,6 @@ public class BoardDto {
         this.category = board.getCategory();
         this.status = board.getStatus();
         this.view = board.getView();
+        this.comments = board.getComments().stream().map(CommentDto::new).toList();
     }
 }
