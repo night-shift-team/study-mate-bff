@@ -11,6 +11,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -25,6 +27,7 @@ public class BoardDto {
     private BoardStatus status;
     private Integer view;
     private List<CommentDto> comments;
+    private LocalDateTime createdDt;
 
     public BoardDto(Boards board) {
         this.id = board.getId();
@@ -34,6 +37,7 @@ public class BoardDto {
         this.category = board.getCategory();
         this.status = board.getStatus();
         this.view = board.getView();
+        this.createdDt = board.getCreatedDt();
         this.comments = board.getComments().stream().map(CommentDto::new).toList();
     }
 }
