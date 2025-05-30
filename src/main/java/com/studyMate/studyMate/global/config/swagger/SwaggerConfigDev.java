@@ -21,7 +21,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
                 version = "v1"
         ),
         servers = {
-                @Server(url = "https://study-mate-bff-ecb080c0db60.herokuapp.com/api/v1", description = "개발 환경")
+                @Server(url = "https://https://api-dev.study-mate.academy/api/v1", description = "개발 환경")
         }
 )
 @Configuration
