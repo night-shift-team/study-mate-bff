@@ -11,7 +11,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Where;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+@Where(clause = "removed_dt IS NULL")
 public class Boards extends BaseEntityDate {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,6 +53,9 @@ public class Boards extends BaseEntityDate {
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Comments> comments = new ArrayList<>();
 
+    @Column(name = "removed_dt")
+    private LocalDateTime removedDt;
+
     @PrePersist
     @PreUpdate
     private void defaultValue() {
@@ -60,5 +66,9 @@ public class Boards extends BaseEntityDate {
     public Integer updateView() {
         this.view += 1;
         return this.view;
+    }
+
+    public void deleteBoard() {
+        this.removedDt = LocalDateTime.now();
     }
 }
