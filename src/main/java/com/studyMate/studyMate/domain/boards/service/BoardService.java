@@ -97,4 +97,26 @@ public class BoardService {
 
         return newBoard.getId();
     }
+
+    @Transactional
+    public boolean deleteBoard(Long boardId, String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
+
+        Boards board = boardRepository.findByIdAndCategory(boardId, BoardCategory.QNA)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_BOARD_ID));
+
+
+        if(
+                user.getRole() < 7 && // User Role이 어드민이 아님.
+                board.getUser().getUserId() != user.getUserId() // User가 Writer가 아님.
+        ){
+            throw new CustomException(ErrorCode.UNAUTHORIZED_USER);
+        }
+
+        // TODO (HD) : Slack 공식 채널 추가 후, 알림 추가.
+        board.deleteBoard();
+
+        return true;
+    }
 }

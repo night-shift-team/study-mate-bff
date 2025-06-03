@@ -60,7 +60,8 @@ public enum ErrorCode {
      * Notice Errors
      * 0600 ~ 0699
      */
-    INVALID_BOARD_ID(400, "invalid board id", "0500")
+    INVALID_BOARD_ID(400, "invalid board id", "0500"),
+    UNAUTHORIZED_USER(400, "not writer or admin", "0500")
 
     ;
 

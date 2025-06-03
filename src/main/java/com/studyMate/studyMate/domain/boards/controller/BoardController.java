@@ -51,4 +51,14 @@ public class BoardController {
         String userId = (String) req.getAttribute("userId");
         return this.boardService.createQNABoard(requestDto.getTitle(), requestDto.getContent(), userId);
     }
+
+    @DeleteMapping("/{id}")
+    @RoleAuth
+    public boolean deleteByBoardId(
+            HttpServletRequest req,
+            @PathVariable("id") Long id
+    ) {
+        String userId = (String) req.getAttribute("userId");
+        return this.boardService.deleteBoard(id, userId);
+    }
 }
