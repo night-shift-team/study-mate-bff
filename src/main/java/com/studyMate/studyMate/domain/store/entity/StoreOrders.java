@@ -47,6 +47,6 @@ public class StoreOrders extends BaseEntityDate {
     @Column(name = "pay_date")
     private LocalDateTime payDate;
 
-    @Column(name = "payapp_raw")
+    @Column(name = "payapp_raw", nullable = false, columnDefinition = "LONGTEXT")
     private String payAppRaw;
 }
