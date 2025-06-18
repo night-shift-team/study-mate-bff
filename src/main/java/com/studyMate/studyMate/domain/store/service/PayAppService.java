@@ -43,7 +43,7 @@ public class PayAppService {
         StoreItems item = storeItemsRepository.findByItemId(dto.getItemId())
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_ITEM_ID));
 
-        MultiValueMap<String, String> payAppRequest = createPayAppPayParam(item.getItemId());
+        MultiValueMap<String, String> payAppRequest = createPayAppPayParam(item.getItemId(), user.getUserId());
 
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -92,7 +92,10 @@ public class PayAppService {
         return "test";
     }
 
-    private MultiValueMap<String, String> createPayAppPayParam(String itemId) {
+    private MultiValueMap<String, String> createPayAppPayParam(
+            String itemId,
+            String buyerId
+    ) {
         StoreItems item = storeItemsRepository.findById(itemId)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_ITEM_ID));
 
@@ -103,7 +106,8 @@ public class PayAppService {
         params.add("price", String.valueOf(item.getPriceKrw()));
         params.add("recvphone", "01000000000");
         params.add("smsuse", "n");
-        params.add("callback", PAYAPP_CALLBACK_URL);
+        params.add("feedbackurl", PAYAPP_CALLBACK_URL);
+        params.add("buyerid", buyerId);
 
         return params;
     };
