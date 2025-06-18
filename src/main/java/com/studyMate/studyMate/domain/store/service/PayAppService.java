@@ -89,6 +89,7 @@ public class PayAppService {
         }
     }
 
+    @Transactional
     public String handlePayAppCallback(HttpServletRequest request) {
         String rawData = request.getParameterMap().entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + String.join(",", entry.getValue()))
