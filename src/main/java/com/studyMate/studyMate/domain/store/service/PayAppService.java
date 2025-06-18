@@ -12,13 +12,17 @@ import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -31,16 +35,22 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+@Slf4j
 public class PayAppService {
-    private static final Logger log = LoggerFactory.getLogger(PayAppService.class);
     private final RestTemplate restTemplate = new RestTemplate();
+
     private final StoreItemsRepository storeItemsRepository;
     private final StoreOrdersRepository storeOrdersRepository;
     private final UserRepository userRepository;
 
+    @Value("${e.payapp.user_phone}")
+    private String PAYAPP_PHONE;
+
     private final String PAYAPP_URL = "https://api.payapp.kr/oapi/apiLoad.html";
     private final String PAYAPP_CALLBACK_URL = "https://api-dev.study-mate.academy/api/v1/store/payment/callback";
+
 
     public String requestPayAppPay(PayAppRequestDto dto, String userId) {
         User user = userRepository.findById(userId)
@@ -123,7 +133,7 @@ public class PayAppService {
         params.add("userid", "blockmonkey");
         params.add("goodname", item.getName());
         params.add("price", String.valueOf(item.getPriceKrw()));
-        params.add("recvphone", "01000000000");
+        params.add("recvphone", PAYAPP_PHONE);
         params.add("smsuse", "n");
         params.add("feedbackurl", PAYAPP_CALLBACK_URL);
         params.add("buyerid", buyerId);

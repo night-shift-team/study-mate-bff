@@ -40,3 +40,5 @@ e:
     redirect_url: ${FRONT_AUTH_REDIRECT}
     github_client_id: ${GITHUB_CLIENT_ID}
     github_client_secret: ${GITHUB_CLIENT_SECRET}
+  payapp:
+    user_phone: ${PAY_USER_PHONE}
