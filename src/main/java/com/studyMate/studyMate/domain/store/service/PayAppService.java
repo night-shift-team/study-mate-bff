@@ -30,6 +30,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -106,14 +107,15 @@ public class PayAppService {
         User user = userRepository.findById(buyer)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         StoreOrders order = storeOrdersRepository.save(StoreOrders.builder()
                 .user(user)
                 .payAppOrderId(payAppOrderId)
                 .status(payState)
                 .paidPrice(Integer.parseInt(paidPrice))
                 .paymentMethod(payMethod)
-                .payReqDate(LocalDateTime.parse(reqDate))
-                .payDate(LocalDateTime.parse(payDate))
+                .payReqDate(LocalDateTime.parse(reqDate, formatter))
+                .payDate(LocalDateTime.parse(payDate, formatter))
                 .payAppRaw(rawData)
                 .build()
         );
