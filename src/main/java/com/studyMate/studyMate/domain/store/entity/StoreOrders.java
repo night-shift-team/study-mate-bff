@@ -41,6 +41,15 @@ public class StoreOrders extends BaseEntityDate {
     @Column(name = "payment_method")
     private String paymentMethod;
 
+    @Column(name = "item_name")
+    private String itemName;
+
+    @Column(name = "cancel_memo", nullable = true)
+    private String cancelMemo;
+
+    @Column(name = "cancel_date", nullable = true)
+    private LocalDateTime cancelDate;
+
     @Column(name = "pay_req_date")
     private LocalDateTime payReqDate;
 

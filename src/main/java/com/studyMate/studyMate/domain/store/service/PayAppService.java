@@ -89,6 +89,7 @@ public class PayAppService {
         }
     }
 
+    // TODO : (결제, 취소) 분기 처리 필
     @Transactional
     public String handlePayAppCallback(HttpServletRequest request) {
         String rawData = request.getParameterMap().entrySet().stream()
@@ -105,6 +106,9 @@ public class PayAppService {
         String reqDate = request.getParameter("reqdate"); // 결제 요청 시작일
         String payDate = request.getParameter("pay_date"); // 결제일
 
+        String goodName = request.getParameter("goodname"); // 구매한 상품명
+
+
         User user = userRepository.findById(buyer)
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
 
@@ -117,6 +121,19 @@ public class PayAppService {
         String cleanedReqDate = reqDate.replaceAll("\\s+", " ").trim();
         String cleanedPayDate = payDate.replaceAll("\\s+", " ").trim();
 
+        /**
+         * 상품 취소시
+         */
+        String cancelMemo = null;
+        String cancelDate = null;
+
+        if(
+                payState == PaymentStatus.PAY_ALL_CANCELLED ||
+                payState == PaymentStatus.PAY_PARTIAL_CANCELLED
+        ) {
+            cancelMemo = request.getParameter("cancelmemo");
+            cancelDate = request.getParameter("canceldate");
+        }
         StoreOrders order = storeOrdersRepository.save(StoreOrders.builder()
                 .user(user)
                 .payAppOrderId(payAppOrderId)
@@ -126,6 +143,9 @@ public class PayAppService {
                 .payReqDate(LocalDateTime.parse(cleanedReqDate, formatter))
                 .payDate(LocalDateTime.parse(cleanedPayDate, formatter))
                 .payAppRaw(rawData)
+                .itemName(goodName)
+                .cancelMemo(cancelMemo)
+                .cancelDate(cancelDate != null ? LocalDateTime.parse(cancelDate, formatter) : null)
                 .build()
         );
 
