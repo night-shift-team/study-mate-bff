@@ -152,7 +152,7 @@ public class PayAppService {
                 .get("reqResult[0][payurl]");
     }
 
-    public String getPaymentMethodName(String methodCode) {
+    private String getPaymentMethodName(String methodCode) {
         return switch (methodCode) {
             case "1" -> "신용카드";
             case "2" -> "휴대전화";
@@ -170,7 +170,7 @@ public class PayAppService {
         };
     }
 
-    public PaymentStatus getPaymentStatusName(String status) {
+    private PaymentStatus getPaymentStatusName(String status) {
         return switch (status) {
             case "1" -> PaymentStatus.REQUEST;
             case "4" -> PaymentStatus.PAID;
