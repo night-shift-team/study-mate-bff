@@ -108,18 +108,27 @@ public class PayAppService {
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        /**
+         * 공백 오류 수정
+         */
+        System.out.println("Check 공백 :" + (int) reqDate.charAt(10));
+        String cleanedReqDate = reqDate.replaceAll("\\s+", " ").trim();
+        String cleanedPayDate = payDate.replaceAll("\\s+", " ").trim();
+
         StoreOrders order = storeOrdersRepository.save(StoreOrders.builder()
                 .user(user)
                 .payAppOrderId(payAppOrderId)
                 .status(payState)
                 .paidPrice(Integer.parseInt(paidPrice))
                 .paymentMethod(payMethod)
-                .payReqDate(LocalDateTime.parse(reqDate, formatter))
-                .payDate(LocalDateTime.parse(payDate, formatter))
+                .payReqDate(LocalDateTime.parse(cleanedReqDate, formatter))
+                .payDate(LocalDateTime.parse(cleanedPayDate, formatter))
                 .payAppRaw(rawData)
                 .build()
         );
 
+        log.info("[store] {} 유저가, {} 금액을 결제했습니다.", user.getLoginId(), paidPrice);
         return order.getOrderId();
     }
 
