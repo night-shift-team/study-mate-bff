@@ -61,7 +61,14 @@ public enum ErrorCode {
      * 0600 ~ 0699
      */
     INVALID_BOARD_ID(400, "invalid board id", "0500"),
-    UNAUTHORIZED_USER(400, "not writer or admin", "0500")
+    UNAUTHORIZED_USER(400, "not writer or admin", "0500"),
+
+    /**
+     * Store & Payment Errors
+     * 0700 ~ 0799
+     */
+    PAYMENT_FAIELD(400, "payment failed", "0501"),
+    INVALID_ITEM_ID(400, "invalid store item id", "0502"),
 
     ;
 
