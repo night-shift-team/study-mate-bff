@@ -5,12 +5,17 @@ import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.global.data.BaseEntityDate;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "store_orders")
 @Getter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class StoreOrders extends BaseEntityDate {
@@ -30,11 +35,17 @@ public class StoreOrders extends BaseEntityDate {
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
+    @Column(name = "paid_price")
+    private Integer paidPrice;
+
     @Column(name = "payment_method")
     private String paymentMethod;
 
-    @Column(name = "paid_price")
-    private Integer paidPrice;
+    @Column(name = "pay_req_date")
+    private LocalDateTime payReqDate;
+
+    @Column(name = "pay_date")
+    private LocalDateTime payDate;
 
     @Column(name = "payapp_raw")
     private String payAppRaw;

@@ -1,8 +1,11 @@
 package com.studyMate.studyMate.domain.store.service;
 
+import com.studyMate.studyMate.domain.store.data.PaymentStatus;
 import com.studyMate.studyMate.domain.store.dto.PayAppRequestDto;
 import com.studyMate.studyMate.domain.store.entity.StoreItems;
+import com.studyMate.studyMate.domain.store.entity.StoreOrders;
 import com.studyMate.studyMate.domain.store.repository.StoreItemsRepository;
+import com.studyMate.studyMate.domain.store.repository.StoreOrdersRepository;
 import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.domain.user.repository.UserRepository;
 import com.studyMate.studyMate.global.error.CustomException;
@@ -22,6 +25,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +36,9 @@ public class PayAppService {
     private static final Logger log = LoggerFactory.getLogger(PayAppService.class);
     private final RestTemplate restTemplate = new RestTemplate();
     private final StoreItemsRepository storeItemsRepository;
+    private final StoreOrdersRepository storeOrdersRepository;
     private final UserRepository userRepository;
+
     private final String PAYAPP_URL = "https://api.payapp.kr/oapi/apiLoad.html";
     private final String PAYAPP_CALLBACK_URL = "https://api-dev.study-mate.academy/api/v1/store/payment/callback";
 
@@ -73,23 +79,36 @@ public class PayAppService {
     }
 
     public String handlePayAppCallback(HttpServletRequest request) {
-        // 전체 파라미터 출력
-        request.getParameterMap().forEach((key, values) -> {
-            log.info("[PayApp Callback Param] {} = {}", key, String.join(",", values));
-        });
+        String rawData = request.getParameterMap().entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + String.join(",", entry.getValue()))
+                .collect(Collectors.joining("&"));
 
-        String result = request.getParameter("result");
-        String payState = request.getParameter("paystate");
-        String orderNum = request.getParameter("order_num"); // 주문번호
-        String price = request.getParameter("price"); // 결제금액
-        String mulNo = request.getParameter("mul_no"); // PayApp 결제번호
+        String buyer = request.getParameter("buyerid"); // 구매자 ID
+        String payAppOrderId = request.getParameter("mul_no"); // 결제 요청번호 (결제 취소시 사용)
+        PaymentStatus payState = getPaymentStatusName(request.getParameter("pay_state")); // 결제 상태
 
-        log.info("[PayApp Callback] result={}, payState={}, orderNum={}, price={}, mulNo={}",
-                result, payState, orderNum, price, mulNo);
+        String paidPrice = request.getParameter("price"); // 결제금액
+        String payMethod = getPaymentMethodName(request.getParameter("pay_type")); // 결제 수단
 
-        log.info("결제 성공 처리 완료 for itemId={}", orderNum);
+        String reqDate = request.getParameter("reqdate"); // 결제 요청 시작일
+        String payDate = request.getParameter("pay_date"); // 결제일
 
-        return "test";
+        User user = userRepository.findById(buyer)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
+
+        StoreOrders order = storeOrdersRepository.save(StoreOrders.builder()
+                .user(user)
+                .payAppOrderId(payAppOrderId)
+                .status(payState)
+                .paidPrice(Integer.parseInt(paidPrice))
+                .paymentMethod(payMethod)
+                .payReqDate(LocalDateTime.parse(reqDate))
+                .payDate(LocalDateTime.parse(payDate))
+                .payAppRaw(rawData)
+                .build()
+        );
+
+        return order.getOrderId();
     }
 
     private MultiValueMap<String, String> createPayAppPayParam(
@@ -121,5 +140,38 @@ public class PayAppService {
                         kv -> URLDecoder.decode(kv[1], StandardCharsets.UTF_8)
                 ))
                 .get("reqResult[0][payurl]");
+    }
+
+    public String getPaymentMethodName(String methodCode) {
+        return switch (methodCode) {
+            case "1" -> "신용카드";
+            case "2" -> "휴대전화";
+            case "4" -> "대면결제";
+            case "6" -> "계좌이체";
+            case "7" -> "가상계좌";
+            case "15" -> "카카오페이";
+            case "16" -> "네이버페이";
+            case "17" -> "등록결제";
+            case "21" -> "스마일페이";
+            case "22" -> "위챗페이";
+            case "23" -> "애플페이";
+            case "24" -> "내통장결제";
+            default -> "미확인";
+        };
+    }
+
+    public PaymentStatus getPaymentStatusName(String status) {
+        return switch (status) {
+            case "1" -> PaymentStatus.REQUEST;
+            case "4" -> PaymentStatus.PAID;
+            case "8" -> PaymentStatus.REQ_CANCELLED;
+            case "32" -> PaymentStatus.REQ_CANCELLED;
+            case "9" -> PaymentStatus.PAY_ALL_CANCELLED;
+            case "64" -> PaymentStatus.PAY_ALL_CANCELLED;
+            case "70" -> PaymentStatus.PAY_PARTIAL_CANCELLED;
+            case "71" -> PaymentStatus.PAY_PARTIAL_CANCELLED;
+            case "10" -> PaymentStatus.PENDING;
+            default -> PaymentStatus.FAILED;
+        };
     }
 }
