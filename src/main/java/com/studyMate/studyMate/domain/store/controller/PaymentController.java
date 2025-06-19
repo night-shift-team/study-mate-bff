@@ -1,7 +1,7 @@
 package com.studyMate.studyMate.domain.store.controller;
 
 import com.studyMate.studyMate.domain.store.dto.PayAppRequestDto;
-import com.studyMate.studyMate.domain.store.service.PayAppService;
+import com.studyMate.studyMate.domain.store.service.PaymentService;
 import com.studyMate.studyMate.global.config.RoleAuth;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class PaymentController {
 
-    private final PayAppService payAppService;
+    private final PaymentService paymentService;
 
     @PostMapping("/payment/request")
     @Operation(summary = "PayApp 결제 URL 호출 API (로그인 필수)", description = "페이앱 결제 URL 호출 메소드")
@@ -29,13 +29,13 @@ public class PaymentController {
             @RequestBody PayAppRequestDto dto
     ) {
         String userId = (String) req.getAttribute("userId");
-        return payAppService.requestPayAppPay(dto, userId);
+        return paymentService.requestPayAppPay(dto, userId);
     }
 
     @PostMapping("/payment/callback")
     @Hidden
     @Operation(summary = "비호출 함수 (PayApp 콜백용)", description = "비호출 함수 (PayApp 콜백용)")
     public String handlePayAppCallback(HttpServletRequest req) {
-        return payAppService.handlePayAppCallback(req);
+        return paymentService.handlePayAppCallback(req);
     }
 }
