@@ -32,12 +32,14 @@ public class QuestionFavoriteService {
     private final QuestionFavoriteRepository questionFavoriteRepository;
 
     public List<QuestionDetailDto> getMyFavoriteQuestions(String userId, Integer page, Integer size) {
-        User reqUser = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
+        User reqUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
+
         PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.DESC, "createdDt");
         Page<QuestionFavorite> query = questionFavoriteRepository.findByUser(reqUser, pageRequest);
 
         return query.stream()
-                .map(resp -> new QuestionDetailDto(resp.getQuestion()))
+                .map(resp -> new QuestionDetailDto(resp.getQuestion(), resp.getCreatedDt()))
                 .toList();
     }
 

@@ -2,7 +2,10 @@ package com.studyMate.studyMate.domain.question.dto;
 
 import com.studyMate.studyMate.domain.question.data.QuestionCategory;
 import com.studyMate.studyMate.domain.question.entity.Question;
+import com.studyMate.studyMate.domain.question.entity.QuestionFavorite;
 import lombok.Getter;
+
+import java.time.LocalDateTime;
 
 @Getter
 public class QuestionDetailDto {
@@ -14,8 +17,9 @@ public class QuestionDetailDto {
     private final String questionAnswer;
     private final String questionExplanation;
     private final Integer difficulty;
+    private final LocalDateTime createdDt;
 
-    public QuestionDetailDto(Question question){
+    public QuestionDetailDto(Question question, LocalDateTime favoriteCreatedDt){
         this.questionId = question.getQuestionId();
         this.questionTitle = question.getQuestionTitle();
         this.questionContent = question.getContent();
@@ -23,5 +27,6 @@ public class QuestionDetailDto {
         this.questionAnswer = question.getAnswer();
         this.questionExplanation = question.getAnswerExplanation();
         this.difficulty = question.getDifficulty();
+        this.createdDt = favoriteCreatedDt;
     }
 }
