@@ -1,6 +1,9 @@
 package com.studyMate.studyMate.domain.store.controller;
 
+import com.studyMate.studyMate.domain.store.dto.PageResponseDto;
 import com.studyMate.studyMate.domain.store.dto.PayAppRequestDto;
+import com.studyMate.studyMate.domain.store.dto.vo.OrderDto;
+import com.studyMate.studyMate.domain.store.dto.vo.StoreItemDto;
 import com.studyMate.studyMate.domain.store.service.PaymentService;
 import com.studyMate.studyMate.global.config.RoleAuth;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -8,10 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Tag(name = "store")
@@ -37,5 +37,17 @@ public class PaymentController {
     @Operation(summary = "비호출 함수 (PayApp 콜백용)", description = "비호출 함수 (PayApp 콜백용)")
     public String handlePayAppCallback(HttpServletRequest req) {
         return paymentService.handlePayAppCallback(req);
+    }
+
+    @GetMapping("/payment/orders/my")
+    @Operation(summary = "내 상점 결제 내역 조회 API", description = "나의 결제 내역을 조회하는 기능")
+    @RoleAuth
+    public PageResponseDto<OrderDto> getMyOrders(
+            HttpServletRequest req,
+            @RequestParam("page") int page,
+            @RequestParam("limit") int limit
+    ) {
+        String userId = (String) req.getAttribute("userId");
+        return paymentService.getMyOrders(userId, page, limit);
     }
 }

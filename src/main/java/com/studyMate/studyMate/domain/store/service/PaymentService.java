@@ -1,11 +1,15 @@
 package com.studyMate.studyMate.domain.store.service;
 
 import com.studyMate.studyMate.domain.store.data.PaymentStatus;
+import com.studyMate.studyMate.domain.store.dto.PageResponseDto;
 import com.studyMate.studyMate.domain.store.dto.PayAppRequestDto;
+import com.studyMate.studyMate.domain.store.dto.vo.OrderDto;
+import com.studyMate.studyMate.domain.store.dto.vo.StoreItemDto;
 import com.studyMate.studyMate.domain.store.entity.StoreItems;
 import com.studyMate.studyMate.domain.store.entity.StoreOrders;
 import com.studyMate.studyMate.domain.store.repository.StoreItemsRepository;
 import com.studyMate.studyMate.domain.store.repository.StoreOrdersRepository;
+import com.studyMate.studyMate.domain.user.data.UserStatus;
 import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.domain.user.repository.UserRepository;
 import com.studyMate.studyMate.global.error.CustomException;
@@ -14,6 +18,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -48,6 +54,17 @@ public class PaymentService {
     private final String PAYAPP_URL = "https://api.payapp.kr/oapi/apiLoad.html";
     private final String PAYAPP_CALLBACK_URL = "https://api-dev.study-mate.academy/api/v1/store/payment/callback";
 
+    public PageResponseDto<OrderDto> getMyOrders(String userId, Integer page, Integer size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        System.out.println("Check User Id :: " + userId);
+        User user = this.userRepository.findByUserIdAndStatus(userId, UserStatus.ACTIVE)
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_USERID));
+
+        Page<StoreOrders> orders = this.storeOrdersRepository.findAllByUser(pageRequest, user);
+        Page<OrderDto> orderDtos = orders.map(OrderDto::new);
+
+        return new PageResponseDto<>(orderDtos);
+    }
 
     public String requestPayAppPay(PayAppRequestDto dto, String userId) {
         User user = userRepository.findById(userId)
