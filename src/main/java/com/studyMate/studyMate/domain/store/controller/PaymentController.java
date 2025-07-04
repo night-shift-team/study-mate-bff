@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -58,7 +59,7 @@ public class PaymentController {
         return payAppCallback.getOrderId();
     }
 
-    @GetMapping("/payment/connect")
+    @GetMapping(value = "/payment/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @RoleAuth
     public SseEmitter connect(HttpServletRequest req) {
         return paymentEmitterService.createEmitter((String) req.getAttribute("userId"));
