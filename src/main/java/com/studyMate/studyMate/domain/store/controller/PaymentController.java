@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -23,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RestController
 @Tag(name = "store")
 @RequestMapping("/store")
+@Slf4j
 @RequiredArgsConstructor
 public class PaymentController {
 
@@ -63,6 +65,12 @@ public class PaymentController {
 
     @GetMapping(value = "/payment/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter connect(@RequestParam("token") String token) {
+        if(!jwtTokenUtil.validateToken(token)) {
+            log.warn("토큰 검증 실패 : {}", token);
+        } else {
+            log.warn("토큰 검증 성공 : {}", token);
+        }
+
         return paymentEmitterService.createEmitter(jwtTokenUtil.getUserId(token));
     }
 
