@@ -5,6 +5,9 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class PaymentEmitterService {
@@ -33,7 +36,7 @@ public class PaymentEmitterService {
     public void createPaymentEvent(String userId, Object data) throws IOException {
         SseEmitter emitter = emitters.get(userId);
         if (emitter != null) {
-            emitter.send(SseEmitter.event().name("payment").data(data));
+            emitter.send(SseEmitter.event().name("payment").data(data) + "\n\n");
             emitter.complete();
         }
     }
