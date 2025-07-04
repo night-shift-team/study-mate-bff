@@ -7,6 +7,7 @@ import com.studyMate.studyMate.domain.store.dto.vo.OrderDto;
 import com.studyMate.studyMate.domain.store.service.PaymentEmitterService;
 import com.studyMate.studyMate.domain.store.service.PaymentService;
 import com.studyMate.studyMate.global.config.RoleAuth;
+import com.studyMate.studyMate.global.util.JwtTokenUtil;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,6 +28,7 @@ public class PaymentController {
 
     private final PaymentService paymentService;
     private final PaymentEmitterService paymentEmitterService;
+    private final JwtTokenUtil jwtTokenUtil;
     private final ConcurrentHashMap<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     @PostMapping("/payment/request")
@@ -60,9 +62,8 @@ public class PaymentController {
     }
 
     @GetMapping(value = "/payment/connect", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    @RoleAuth
-    public SseEmitter connect(HttpServletRequest req) {
-        return paymentEmitterService.createEmitter((String) req.getAttribute("userId"));
+    public SseEmitter connect(@RequestParam("token") String token) {
+        return paymentEmitterService.createEmitter(jwtTokenUtil.getUserId(token));
     }
 
     @GetMapping("/payment/orders/my")
