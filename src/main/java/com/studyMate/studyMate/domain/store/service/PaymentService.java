@@ -2,6 +2,7 @@ package com.studyMate.studyMate.domain.store.service;
 
 import com.studyMate.studyMate.domain.store.data.PaymentStatus;
 import com.studyMate.studyMate.domain.store.dto.PageResponseDto;
+import com.studyMate.studyMate.domain.store.dto.PayAppCallbackResponseDto;
 import com.studyMate.studyMate.domain.store.dto.PayAppRequestDto;
 import com.studyMate.studyMate.domain.store.dto.vo.OrderDto;
 import com.studyMate.studyMate.domain.store.dto.vo.StoreItemDto;
@@ -104,7 +105,7 @@ public class PaymentService {
 
     // TODO : (결제, 취소) 분기 처리 필
     @Transactional
-    public String handlePayAppCallback(HttpServletRequest request) {
+    public PayAppCallbackResponseDto handlePayAppCallback(HttpServletRequest request) {
         String rawData = request.getParameterMap().entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + String.join(",", entry.getValue()))
                 .collect(Collectors.joining("&"));
@@ -163,7 +164,13 @@ public class PaymentService {
         );
 
         log.info("[store] {} 유저가, {} 금액을 결제했습니다.", user.getLoginId(), paidPrice);
-        return order.getOrderId();
+
+        return PayAppCallbackResponseDto
+                    .builder()
+                    .orderId(order.getOrderId())
+                    .userId(order.getOrderId())
+                    .paidPrice(order.getPaidPrice())
+                    .build();
     }
 
     private MultiValueMap<String, String> createPayAppPayParam(

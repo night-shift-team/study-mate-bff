@@ -1,25 +1,32 @@
 package com.studyMate.studyMate.domain.store.controller;
 
 import com.studyMate.studyMate.domain.store.dto.PageResponseDto;
+import com.studyMate.studyMate.domain.store.dto.PayAppCallbackResponseDto;
 import com.studyMate.studyMate.domain.store.dto.PayAppRequestDto;
 import com.studyMate.studyMate.domain.store.dto.vo.OrderDto;
-import com.studyMate.studyMate.domain.store.dto.vo.StoreItemDto;
+import com.studyMate.studyMate.domain.store.service.PaymentEmitterService;
 import com.studyMate.studyMate.domain.store.service.PaymentService;
 import com.studyMate.studyMate.global.config.RoleAuth;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+
+import java.io.IOException;
+import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @Tag(name = "store")
 @RequestMapping("/store")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final PaymentEmitterService paymentEmitterService;
+    private final ConcurrentHashMap<String, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     @PostMapping("/payment/request")
     @Operation(summary = "PayApp 결제 URL 호출 API (로그인 필수)", description = "페이앱 결제 URL 호출 메소드")
@@ -36,7 +43,25 @@ public class PaymentController {
     @Hidden
     @Operation(summary = "비호출 함수 (PayApp 콜백용)", description = "비호출 함수 (PayApp 콜백용)")
     public String handlePayAppCallback(HttpServletRequest req) {
-        return paymentService.handlePayAppCallback(req);
+        PayAppCallbackResponseDto payAppCallback = paymentService.handlePayAppCallback(req);
+
+        SseEmitter emitter = emitters.get(payAppCallback.getUserId());
+
+        if (emitter != null) {
+            try {
+                paymentEmitterService.createPaymentEvent(payAppCallback.getUserId(), payAppCallback);
+            } catch (IOException e) {
+                emitter.completeWithError(e);
+            }
+        }
+
+        return payAppCallback.getOrderId();
+    }
+
+    @GetMapping("/payment/connect")
+    @RoleAuth
+    public SseEmitter connect(HttpServletRequest req) {
+        return paymentEmitterService.createEmitter((String) req.getAttribute("userId"));
     }
 
     @GetMapping("/payment/orders/my")
