@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -20,6 +22,7 @@ public class QuestionHistoryDto {
     private Integer score;
     private Boolean isCorrect;
     private QuestionCategory questionType;
+    private LocalDateTime createdDt;
 
     public QuestionHistoryDto(QuestionHistory questionHistory) {
         this(
@@ -30,7 +33,8 @@ public class QuestionHistoryDto {
                 questionHistory.getQuestion().getAnswer(),
                 questionHistory.getScore(),
                 questionHistory.getIsCorrect(),
-                questionHistory.getQType()
+                questionHistory.getQType(),
+                questionHistory.getCreatedDt()
         );
     }
 }
