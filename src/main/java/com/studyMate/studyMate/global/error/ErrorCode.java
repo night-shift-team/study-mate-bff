@@ -16,7 +16,9 @@ public enum ErrorCode {
     NOT_FOUND(404, "data not found", "0004"),
     FORBIDDEN(403, "forbidden", "0005"),
     REQUEST_CONFLICT(409, "Too many requests, Please try again later", "0006"),
-
+    NULL_POINTER(500, "nullpointer exception", "0007"),
+    IO_EXCEPTION(400, "io exception", "0008"),
+    INVALID_AURGUMENT(400, "invalid aurgument", "0009"),
     /**
      * Auth Errors
      * 0100 ~ 0199
