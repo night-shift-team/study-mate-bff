@@ -115,16 +115,6 @@ public class UserController {
         return userService.signInGoogle(googleSignInRequestBody.getGoogleCode());
     }
 
-
-    @PostMapping("/sign-in/github")
-    @Operation(summary = "깃허브 로그인", description = "깃허브 로그인 API")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
-    })
-    public SignInResponseDto githubSignIn (@RequestBody @Validated GithubSignInRequestDto githubSignINRequestBody) {
-        return userService.signInGithub(githubSignINRequestBody.getGithubCode());
-    }
-
     @GetMapping("/email/duplicate")
     @Operation(summary = "이메일 중복체크", description = "이메일 중복체크 API (true = 이미 존재함, false = 존재하지 않음)")
     @ApiResponses(value = {

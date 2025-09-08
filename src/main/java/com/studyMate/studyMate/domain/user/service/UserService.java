@@ -186,45 +186,10 @@ public class UserService {
     }
 
 
-    /**
-     * Github 로그인 - 유저 호출 api 메소드
-     * @return SignInResponseDto
-     */
-    @Transactional
-    public SignInResponseDto signInGithub(String githubCode) {
-        try {
-            // 1. Get Access Token
-            String gAccessToken = getGithubAccessToken(githubCode);
-
-            // 2. Get User info
-            GetGithubUserInfoResponseDto userInfo = getGithubUserInfo(gAccessToken);
-
-            // 3.1 DB 유저 존재확인 -> 있으면 해당 유저 사용
-            User user = userRepository.findByLoginId(userInfo.getEmail()).orElseGet(() -> {
-                // 3.2 없으면, 새로운 유저 생성
-                return this.createUser(
-                        LoginType.GITHUB,
-                        userInfo.getEmail(),
-                        "github",
-                        userInfo.getLogin(),
-                        userInfo.getAvatar_url(),
-                        0
-                );
-            });
-
-            // 4. 토큰 페어 발급 -> 리턴
-            return createTokenPair(user.getUserId());
-        } catch(Exception e) {
-            System.out.println(e);
-            throw new CustomException(ErrorCode.INVALID_GOOGLE_AUTH_CODE);
-        }
-    }
-
-
-    @Transactional
-    public String resetPasswordAdmin(String email) {
-        return resetPassword(email);
-    }
+//    @Transactional
+//    public String resetPasswordAdmin(String email) {
+//        return resetPassword(email);
+//    }
 
     /**
      * Token Pair 생성 (Access Token & Refresh Token)
@@ -290,60 +255,6 @@ public class UserService {
     }
 
     /**
-     * Github 로그인 - 깃허브 Access Token 가져오기
-     */
-    private String getGithubAccessToken(String githubCode) {
-        final HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE);
-
-        final HttpEntity<GetGithubAccessTokenRequest> body = new HttpEntity<>(
-                new GetGithubAccessTokenRequest(
-                        GITHUB_CLIENT_ID,
-                        GITHUB_CLIENT_SECRET,
-                        githubCode
-                ),
-                headers
-        );
-
-        try {
-            // 3. decrypt된 code값으로 google access token 받아오기 : [POST] https://oauth2.googleapis.com/token
-            RestTemplate restTemplate = new RestTemplate();
-
-            ResponseEntity<GetGithubAccessTokenResponse> response = restTemplate.exchange(
-                    GITHUB_GET_ACCESS_TOKEN_URL,
-                    HttpMethod.POST,
-                    body,
-                    GetGithubAccessTokenResponse.class
-            );
-
-            // 4. response 에서 access token 추출 리턴
-            return Objects.requireNonNull(response.getBody()).getAccess_token();
-        } catch(Exception e) {
-            e.getMessage();
-            throw new IllegalArgumentException("fail to get github access token");
-        }
-    }
-
-    /**
-     * Github 로그인 - 계정정보 가져오기
-     */
-    private GetGithubUserInfoResponseDto getGithubUserInfo(String githubAccessToken) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(githubAccessToken);
-        HttpEntity<Void> request = new HttpEntity<>(headers);
-
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<GetGithubUserInfoResponseDto> response = restTemplate.exchange(
-                GITHUB_GET_USERINFO_BASE_URL,
-                HttpMethod.GET,
-                request,
-                GetGithubUserInfoResponseDto.class
-        );
-
-        return Objects.requireNonNull(response.getBody());
-    }
-
-    /**
      * 유저 중복 체크
      */
     public boolean checkDuplicateEmail(String email) {
@@ -354,21 +265,7 @@ public class UserService {
         return userRepository.existsByNickname(nickname);
     }
 
-    /**
-     * Reset Password
-     */
-    private String resetPassword(String email) {
-        User user = userRepository.findByLoginId(email).orElseThrow(() -> new CustomException(ErrorCode.INVALID_LOGINID));
-
-        String encryptedUserPw = encryptionUtil.encryptBcrypt("123456");
-        user.setNewPassword(encryptedUserPw);
-
-        userRepository.save(user);
-
-        return user.getUserId();
-    }
-
-    /**
+    /** 
      * 유저생성
      * return 생성시간
      */
