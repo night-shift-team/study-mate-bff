@@ -38,7 +38,7 @@ public class BoardService {
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_BOARD_ID));
 
         String key = RedisKeyFactory.viewedBoard(boardId, userId);
-
+        // 조회 수 24시간 내, 중복 증감 방지
         boolean isAlreadyView = redisService.hasKey(key);
         if(!isAlreadyView){
             redisService.setValue(key, "1", Duration.ofHours(BOARD_VIEW_TTL_HOURS));
