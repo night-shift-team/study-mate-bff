@@ -44,11 +44,6 @@ public class UserService {
     @Value("${e.auth.redirect_url}")
     private String FRONT_REDIRECT_URL;
 
-    @Value("${e.auth.github_client_id}")
-    private String GITHUB_CLIENT_ID;
-    @Value("${e.auth.github_client_secret}")
-    private String GITHUB_CLIENT_SECRET;
-
     public GetUserDto getActiveUserById(String id) {
         User user = userRepository.findByUserIdAndStatus(id, UserStatus.ACTIVE).orElseThrow(() ->  new CustomException(ErrorCode.NOT_ACTIVE_USER));
 
@@ -265,7 +260,7 @@ public class UserService {
         return userRepository.existsByNickname(nickname);
     }
 
-    /** 
+    /**
      * 유저생성
      * return 생성시간
      */
