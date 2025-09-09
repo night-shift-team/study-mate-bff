@@ -1,9 +1,11 @@
 package com.studyMate.studyMate.domain.user.service;
 
-import com.studyMate.studyMate.domain.user.data.LoginType;
+import com.studyMate.studyMate.domain.user.data.OAuthType;
 import com.studyMate.studyMate.domain.user.data.UserStatus;
 import com.studyMate.studyMate.domain.user.dto.*;
 import com.studyMate.studyMate.domain.user.entity.User;
+import com.studyMate.studyMate.domain.user.entity.UserOAuth;
+import com.studyMate.studyMate.domain.user.repository.UserOAuthRepository;
 import com.studyMate.studyMate.domain.user.repository.UserRepository;
 import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,8 @@ import java.util.Objects;
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
+    private final UserOAuthRepository userOAuthRepository;
+
     private final JwtTokenUtil jwtTokenUtil;
     private final EncryptionUtil encryptionUtil;
 
@@ -106,7 +111,7 @@ public class UserService {
         String encryptedUserPw = encryptionUtil.encryptBcrypt(SignUpRequestDto.getLoginPw());
 
         // 3. 유저 생성
-        User newUser = createUser(LoginType.LOCAL, SignUpRequestDto.getLoginId(), encryptedUserPw, SignUpRequestDto.getNickname(), DEFAULT_PROFILE_IMAGE, 0);
+        User newUser = createUser(SignUpRequestDto.getLoginId(), encryptedUserPw, SignUpRequestDto.getNickname(), DEFAULT_PROFILE_IMAGE, 0);
 
         return new SignUpResponseDto(newUser.getUserId(), newUser.getLoginId());
     }
@@ -151,17 +156,27 @@ public class UserService {
             // 2. Get User info
             GetGoogleUserInfoResponseDto userInfo = getGoogleUserInfo(gAccessToken);
 
+            // (TODO : User 테이블에 존재확인, 있으면 Oauth 목록 등록 확인 -> 있으면 로그인 || 없으면 새로운 OAuth 등록 후 -> 로그인)
+            // User 테이블에 존재하지않는다면, User Table에 생성 -> OAuth 목록에 등록 -> 로그인
             // 3.1 DB 유저 존재확인 -> 있으면 해당 유저 사용
             User user = userRepository.findByLoginId(userInfo.getEmail()).orElseGet(() -> {
                 // 3.2 없으면, 새로운 유저 생성
-                return this.createUser(
-                        LoginType.GOOGLE,
+                User newUser = this.createUser(
                         userInfo.getEmail(),
                         "google",
                         userInfo.getName(),
                         userInfo.getPicture(),
                         0
                 );
+
+                Optional<UserOAuth> userOAuth = userOAuthRepository.findByUser(newUser);
+
+                if(userOAuth.isEmpty()){
+                    UserOAuth newUserOauth = UserOAuth.builder().user(newUser).oauthType(OAuthType.GOOGLE).build();
+                    userOAuthRepository.save(newUserOauth);
+                }
+
+                return newUser;
             });
 
             // 4. 토큰 페어 발급 -> 리턴
@@ -256,7 +271,6 @@ public class UserService {
      * return 생성시간
      */
     private User createUser(
-            LoginType loginType,
             String loginId,
             String loginPw,
             String nickname,

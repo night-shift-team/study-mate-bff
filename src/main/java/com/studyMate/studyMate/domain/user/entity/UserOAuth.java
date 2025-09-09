@@ -1,12 +1,14 @@
 package com.studyMate.studyMate.domain.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.studyMate.studyMate.domain.user.data.OAuthType;
 import com.studyMate.studyMate.global.data.BaseEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Where;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -19,6 +21,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Where(clause = "removed_dt IS NULL")
+@SuperBuilder
 public class UserOAuth extends BaseEntity {
 
     @Id
@@ -30,11 +33,8 @@ public class UserOAuth extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "login_id", nullable = false, unique = true)
-    private String loginId;
-
-    @Column(name = "login_pw", nullable = false)
-    private String loginPw;
+    @Column(name = "oauth_type")
+    private OAuthType oauthType;
 
     @Column(name = "access_token")
     private String accessToken;
