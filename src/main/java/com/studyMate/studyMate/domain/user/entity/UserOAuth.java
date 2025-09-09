@@ -3,9 +3,11 @@ package com.studyMate.studyMate.domain.user.entity;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.studyMate.studyMate.domain.user.data.OAuthType;
 import com.studyMate.studyMate.global.data.BaseEntity;
+import com.studyMate.studyMate.global.data.BaseEntityDate;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -22,7 +24,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Where(clause = "removed_dt IS NULL")
 @SuperBuilder
-public class UserOAuth extends BaseEntity {
+public class UserOAuth extends BaseEntityDate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -46,5 +48,4 @@ public class UserOAuth extends BaseEntity {
     @Schema(description = "삭제일", example = "2024-09-28T16:23:00.00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime removedDt;
-
 }
