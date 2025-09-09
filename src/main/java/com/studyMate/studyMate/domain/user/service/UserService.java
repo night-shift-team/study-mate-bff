@@ -32,9 +32,6 @@ public class UserService {
     private final String GOOGLE_GET_ACCESS_TOKEN_URL = "https://oauth2.googleapis.com/token";
     private final String GOOGLE_GET_USERINFO_BASE_URL = "https://www.googleapis.com/userinfo/v2/me?access_token=";
 
-    private final String GITHUB_GET_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token";
-    private final String GITHUB_GET_USERINFO_BASE_URL = "https://api.github.com/user";
-
     private final String DEFAULT_PROFILE_IMAGE = "https://qwrujioanlzrqiiyxser.supabase.co/storage/v1/object/public/study-mate//default_profile.jpg";
 
     @Value("${e.auth.google_client_id}")
@@ -44,12 +41,14 @@ public class UserService {
     @Value("${e.auth.redirect_url}")
     private String FRONT_REDIRECT_URL;
 
+    /**
+     * 유저 조회 (액티브 유저만)
+     */
     public GetUserDto getActiveUserById(String id) {
         User user = userRepository.findByUserIdAndStatus(id, UserStatus.ACTIVE).orElseThrow(() ->  new CustomException(ErrorCode.NOT_ACTIVE_USER));
 
         return GetUserDto.builder()
                 .userId(user.getUserId())
-                .loginType(user.getLoginType())
                 .loginId(user.getLoginId())
                 .nickname(user.getNickname())
                 .profileImg(user.getProfileImg())
@@ -60,12 +59,6 @@ public class UserService {
                 .build();
     }
 
-    public GetUserRankingResponseDto findUserRanking(String userId, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        System.out.println("Check UserId");
-        return userRepository.findUsersAndRanking(userId, pageRequest);
-    }
-
     /**
      * OAuth Parameter 조회 method for clinet developers
      */
@@ -74,8 +67,6 @@ public class UserService {
                 .googleClientId(this.GOOGLE_CLIENT_ID)
                 .googleClientSecret(this.GOOGLE_CLIENT_SECRET)
                 .googleRedirectUrl(this.FRONT_REDIRECT_URL)
-                .githubClientId(this.GITHUB_CLIENT_ID)
-                .githubClientSecret(this.GITHUB_CLIENT_SECRET)
                 .build();
     }
 
@@ -125,7 +116,7 @@ public class UserService {
         User user = userRepository.findByLoginId(SignInRequestDto.getLoginId()).orElseThrow(() -> new CustomException(ErrorCode.INVALID_LOGINID));
 
         // 2. 비밀번호 검증 비교
-        boolean isValidPw = encryptionUtil.compareBcrypt(SignInRequestDto.getLoginPw(), user.getLoginPw());
+        boolean isValidPw = encryptionUtil.compareBcrypt(SignInRequestDto.getLoginPw(), user.getLocalLoginPw());
         if(!isValidPw){
             throw new CustomException(ErrorCode.INVALID_LOGINPW);
         }
@@ -181,10 +172,11 @@ public class UserService {
     }
 
 
-//    @Transactional
-//    public String resetPasswordAdmin(String email) {
-//        return resetPassword(email);
-//    }
+    public GetUserRankingResponseDto findUserRanking(String userId, int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        System.out.println("Check UserId");
+        return userRepository.findUsersAndRanking(userId, pageRequest);
+    }
 
     /**
      * Token Pair 생성 (Access Token & Refresh Token)
@@ -194,7 +186,6 @@ public class UserService {
         String rfToken = jwtTokenUtil.generateToken(userId, JwtTokenUtil.TokenType.REFRESH);
         return SignInResponseDto.builder().accessToken(acToken).refreshToken(rfToken).build();
     }
-
 
     /**
      * 구글 로그인 - 구글 Access Token 가져오기
@@ -273,9 +264,8 @@ public class UserService {
             int initScore
     ) {
         User user = User.builder()
-                        .loginType(loginType)
                         .loginId(loginId)
-                        .loginPw(loginPw)
+                        .localLoginPw(loginPw)
                         .nickname(nickname)
                         .profileImg(profileImg)
                         .initScore(initScore)

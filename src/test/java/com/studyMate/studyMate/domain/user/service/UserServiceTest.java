@@ -33,9 +33,8 @@ class UserServiceTest {
     private UserService userService;
 
     User user1 = User.builder()
-            .loginType(LoginType.LOCAL)
             .loginId("user1@studymate.com")
-            .loginPw("123456")
+            .localLoginPw("123456")
             .nickname("user1")
             .profileImg("default.png")
             .status(UserStatus.ACTIVE)
@@ -45,9 +44,8 @@ class UserServiceTest {
             .build();
 
     User user2 = User.builder()
-            .loginType(LoginType.LOCAL)
             .loginId("user2@studymate.com")
-            .loginPw("123456")
+            .localLoginPw("123456")
             .nickname("user2")
             .profileImg("default.png")
             .status(UserStatus.ACTIVE)
@@ -57,9 +55,8 @@ class UserServiceTest {
             .build();
 
     User user3 = User.builder()
-            .loginType(LoginType.LOCAL)
             .loginId("user3@studymate.com")
-            .loginPw("123456")
+            .localLoginPw("123456")
             .nickname("user3")
             .profileImg("default.png")
             .status(UserStatus.ACTIVE)
@@ -69,9 +66,8 @@ class UserServiceTest {
             .build();
 
     User userAdmin = User.builder()
-            .loginType(LoginType.LOCAL)
             .loginId("admin@studymate.com")
-            .loginPw("123456")
+            .localLoginPw("123456")
             .nickname("admin")
             .profileImg("default.png")
             .status(UserStatus.ACTIVE)

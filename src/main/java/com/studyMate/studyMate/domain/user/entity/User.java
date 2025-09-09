@@ -11,6 +11,8 @@ import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -20,26 +22,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @SuperBuilder
 public class User extends BaseEntityDate {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "user_id")
     private String userId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "login_type", nullable = false)
-    private LoginType loginType;
-
-    @Column(name = "login_id", nullable = false, unique = true)
-    private String loginId;
-
-    @Column(name = "login_pw", nullable = false)
-    private String loginPw;
 
     @Column(name = "nickname", unique = true)
     private String nickname;
 
     @Column(name = "profile_img")
     private String profileImg;
+
+    @Column(name = "login_id", nullable = false, unique = true)
+    private String loginId;
+
+    @Column(name = "local_login_pw", nullable = false)
+    private String localLoginPw;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -54,14 +53,14 @@ public class User extends BaseEntityDate {
     @Column(name = "role", nullable = false)
     private Integer role;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UserOAuth> userOAuths = new ArrayList<>();
+
     @Column(name = "removed_dt")
     @Schema(description = "삭제일", example = "2024-09-28T16:23:00.00")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime removedDt;
 
-    public void setNewPassword(String password) {
-        this.loginPw = password;
-    }
 
     public void setNewProfileImg(String profileImg) {
         this.profileImg = profileImg;
