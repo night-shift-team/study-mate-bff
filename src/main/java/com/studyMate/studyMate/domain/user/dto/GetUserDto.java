@@ -1,6 +1,5 @@
 package com.studyMate.studyMate.domain.user.dto;
 
-import com.studyMate.studyMate.domain.user.data.LoginType;
 import com.studyMate.studyMate.domain.user.data.UserStatus;
 import com.studyMate.studyMate.domain.user.entity.User;
 import lombok.AllArgsConstructor;

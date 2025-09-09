@@ -1,7 +1,6 @@
 package com.studyMate.studyMate.domain.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.studyMate.studyMate.domain.user.data.LoginType;
 import com.studyMate.studyMate.domain.user.data.UserStatus;
 import com.studyMate.studyMate.global.data.BaseEntityDate;
 import io.swagger.v3.oas.annotations.media.Schema;
