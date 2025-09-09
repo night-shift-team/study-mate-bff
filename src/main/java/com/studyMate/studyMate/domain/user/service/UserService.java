@@ -20,8 +20,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +54,10 @@ public class UserService {
     public GetUserDto getActiveUserById(String id) {
         User user = userRepository.findByUserIdAndStatus(id, UserStatus.ACTIVE).orElseThrow(() ->  new CustomException(ErrorCode.NOT_ACTIVE_USER));
 
+        List<UserOAuthDto> userOAuthDtos = user.getUserOAuths().stream()
+                .map(UserOAuthDto::new)
+                .toList();
+
         return GetUserDto.builder()
                 .userId(user.getUserId())
                 .loginId(user.getLoginId())
@@ -61,6 +67,7 @@ public class UserService {
                 .role(user.getRole())
                 .userScore(user.getScore())
                 .registeredAt(user.getCreatedDt())
+                .userOAuth(userOAuthDtos)
                 .build();
     }
 
