@@ -35,7 +35,7 @@ public class UserOAuth extends BaseEntityDate {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "oauth_type")
+    @Enumerated(EnumType.STRING)
     private OAuthType oauthType;
 
     @Column(name = "access_token")
