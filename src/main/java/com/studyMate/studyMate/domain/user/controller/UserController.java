@@ -47,16 +47,6 @@ public class UserController {
         return userService.refreshTokenPair(userId, refreshTokenRequestbody.getRefreshToken());
     }
 
-    @GetMapping("/oauth/parameters/admin")
-    @RoleAuth(requiredRole = 7)
-    @Operation(summary = "OAuth 인자 확인 (어드민 전용)", description = "OAuth 인자확인 API")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = GetOAuthParametersResponseDto.class))})
-    })
-    public GetOAuthParametersResponseDto getOAuthParameters() {
-        return userService.getOauthParameters();
-    }
-
     @GetMapping("/")
     @RoleAuth
     @Operation(summary = "유저정보조회 (*)", description = "유저정보를 조회하는 API (User Score =0 인 경우 Level테스트 진행하지 않은 유저 | 이미 진행한 유저)")
@@ -97,14 +87,24 @@ public class UserController {
         return userService.updateUserNickname(userId, updateUserNicknameRequestDto.getNickname());
     }
 
-    @PostMapping("/reset-password/admin")
-    @Operation(summary = "비밀번호 초기화 (어드민 전용)", description = "비밀번호 초기화 API (123456)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
-    })
-    public String resetPassword (@RequestBody @Validated ResetPasswordRequestDto resetPasswordRequestBody) {
-        return userService.resetPasswordAdmin(resetPasswordRequestBody.getEmail());
-    }
+//    @PostMapping("/reset-password/admin")
+//    @Operation(summary = "비밀번호 초기화 (어드민 전용)", description = "비밀번호 초기화 API (123456)")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
+//    })
+//    public String resetPassword (@RequestBody @Validated ResetPasswordRequestDto resetPasswordRequestBody) {
+//        return userService.resetPasswordAdmin(resetPasswordRequestBody.getEmail());
+//    }
+
+//    @GetMapping("/oauth/parameters/admin")
+//    @RoleAuth(requiredRole = 7)
+//    @Operation(summary = "OAuth 인자 확인 (어드민 전용)", description = "OAuth 인자확인 API")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = GetOAuthParametersResponseDto.class))})
+//    })
+//    public GetOAuthParametersResponseDto getOAuthParameters() {
+//        return userService.getOauthParameters();
+//    }
 
     @PostMapping("/sign-in/google")
     @Operation(summary = "구글 로그인", description = "구글 로그인 API")
@@ -132,5 +132,4 @@ public class UserController {
     public boolean duplicateCheckNickname(@RequestParam("nickname") String nickname){
         return userService.checkDuplicateNickname(nickname);
     }
-
 }

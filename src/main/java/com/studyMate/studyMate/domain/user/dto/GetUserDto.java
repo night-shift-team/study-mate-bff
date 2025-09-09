@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class GetUserDto {
     private String userId;
-    private LoginType loginType;
     private String loginId;
     private String nickname;
     private String profileImg;
@@ -27,7 +26,6 @@ public class GetUserDto {
 
     public GetUserDto(User user) {
         this.userId = user.getUserId();
-        this.loginType = user.getLoginType();
         this.loginId = user.getLoginId();
         this.nickname = user.getNickname();
         this.profileImg = user.getProfileImg();

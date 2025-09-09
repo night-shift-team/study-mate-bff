@@ -13,6 +13,4 @@ public class GetOAuthParametersResponseDto {
     private String googleClientId;
     private String googleClientSecret;
     private String googleRedirectUrl;
-    private String githubClientId;
-    private String githubClientSecret;
 }
