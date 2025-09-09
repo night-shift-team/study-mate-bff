@@ -60,6 +60,9 @@ public class User extends BaseEntityDate {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime removedDt;
 
+    public void setUserPassword(String password) {
+        this.localLoginPw = password;
+    }
 
     public void setNewProfileImg(String profileImg) {
         this.profileImg = profileImg;

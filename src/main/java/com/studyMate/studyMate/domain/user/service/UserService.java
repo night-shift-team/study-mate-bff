@@ -91,29 +91,48 @@ public class UserService {
 
     /**
      * 로컬 회원가입 메소드
-     * @param SignUpRequestDto
-     * @return signUpResponseDto
      */
     @Transactional
-    public SignUpResponseDto signUpLocal(SignUpRequestDto SignUpRequestDto) {
-        // 1. 중복확인
-        boolean isLoginIdValid = checkDuplicateEmail(SignUpRequestDto.getLoginId());
-        if(isLoginIdValid){
-            throw new CustomException(ErrorCode.DUP_USER_ID);
-        }
-
-        boolean isNicknameValid = checkDuplicateNickname(SignUpRequestDto.getNickname());
+    public SignUpResponseDto signUpLocal(SignUpRequestDto signUpRequestDto) {
+        // 1. 닉네임 확인
+        boolean isNicknameValid = checkDuplicateNickname(signUpRequestDto.getNickname());
         if(isNicknameValid){
             throw new CustomException(ErrorCode.DUP_USER_NICKNAME);
         }
 
-        // 2. 비밀번호 암호화
-        String encryptedUserPw = encryptionUtil.encryptBcrypt(SignUpRequestDto.getLoginPw());
+        // 2. 기존 사용자 조회
+        Optional<User> existingUser = userRepository.findByLoginId(signUpRequestDto.getLoginId());
+        String encryptedUserPw = encryptionUtil.encryptBcrypt(signUpRequestDto.getLoginPw());
 
-        // 3. 유저 생성
-        User newUser = createUser(SignUpRequestDto.getLoginId(), encryptedUserPw, SignUpRequestDto.getNickname(), DEFAULT_PROFILE_IMAGE, 0);
+        // 유저가 없다면 (신규유저) -> 생성 리턴
+        if (existingUser.isEmpty()) {
+            User newUser = createUser(signUpRequestDto.getLoginId(), encryptedUserPw, signUpRequestDto.getNickname(), DEFAULT_PROFILE_IMAGE, 0);
+            return new SignUpResponseDto(newUser.getUserId(), newUser.getLoginId());
+        } else {
+            User user = processRegisterUser(existingUser.get(), encryptedUserPw);
+            return new SignUpResponseDto(user.getUserId(), user.getLoginId());
+        }
+    }
 
-        return new SignUpResponseDto(newUser.getUserId(), newUser.getLoginId());
+    /**
+     * OAuth만 있는 사용자인지, 중복으로 로컬 회원가입하는것인지 판별하는 메소드
+     */
+    private User processRegisterUser(User existingUser, String encryptedUserPw) {
+        if (isOAuthOnlyUser(existingUser)) {
+            // 유저가 있다면 / 비밀번호 판별 oauth면 -> oauth only 사용자 -> local password 업데이트 시키고 리턴
+            existingUser.setUserPassword(encryptedUserPw);
+            return existingUser;
+        } else {
+            // 유저가 있다면 / 비밀번호 판별 oauth 아니면 -> 이미 가입한 사용자 -> 중복가입으로 throw
+            throw new CustomException(ErrorCode.DUP_USER_ID);
+        }
+    }
+
+    /**
+     * OAtuh 만 가입한 유저인지 확인하는 메소드
+     */
+    private boolean isOAuthOnlyUser(User user) {
+        return "oauth".equals(user.getLocalLoginPw());
     }
 
     public SignInResponseDto signInLocal(SignInRequestDto SignInRequestDto) {
@@ -163,7 +182,7 @@ public class UserService {
                 // 3.2 없으면, 새로운 유저 생성
                 User newUser = this.createUser(
                         userInfo.getEmail(),
-                        "google",
+                        "oauth",
                         userInfo.getName(),
                         userInfo.getPicture(),
                         0
