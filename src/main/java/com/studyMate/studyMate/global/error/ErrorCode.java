@@ -37,6 +37,7 @@ public enum ErrorCode {
     INVALID_USERID(400, "invalid user id", "0108"),
     DUP_NICKNAME(400, "nickname already exist", "0109"),
 
+    FAIL_SEND_EMAIL(500, "email already exist", "0110"),
 
     /**
      * Question Errors
