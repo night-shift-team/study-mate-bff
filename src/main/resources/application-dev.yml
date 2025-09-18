@@ -25,6 +25,19 @@ spring:
       username: ${REDIS_USERNAME}
       password: ${REDIS_PASSWORD}
       timeout: 5000
+  mail:
+    host: smtp.gmail.com        # SMTP 서버 호스트
+    port: 587
+    username: ${GMAIL_USERNAME}
+    password: ${GMAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          timeout: 5000
+          starttls:
+            enable: true
+
 springdoc:
   swagger-ui:
     groups-order: DESC
@@ -32,6 +45,7 @@ springdoc:
     operations-sorter: method
   paths-to-match:
     - /**
+
 
 e:
   auth:
