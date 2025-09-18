@@ -61,7 +61,10 @@ dependencies {
 
 	// Prometheus
 	implementation 'io.micrometer:micrometer-registry-prometheus'
-	
+
+	// Mailer
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	compileOnly 'org.projectlombok:lombok'
