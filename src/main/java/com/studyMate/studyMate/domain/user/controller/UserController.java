@@ -11,10 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,19 +60,19 @@ public class UserController {
     // ----------------- 로컬 회원가입 -----------------
 
     @PostMapping("/sign-up/local/email-verification")
-    @Operation(summary = "(1) 로컬 회원가입 인증 이메일 전송", description = "로컬 회원가입 전, 인증 이메일 전송 API")
+    @Operation(summary = "[로컬 회원가입 - 1] 로컬 회원가입 인증 이메일 전송", description = "로컬 회원가입 전, 인증 이메일 전송 API")
     public String signUpLocalEmailSend(@RequestBody @Validated SignUpEmailSendRequestDto signUpEmailSendRequestDto){
         return userService.sendVerificationEmail(signUpEmailSendRequestDto.getEmail());
     }
 
     @PostMapping("/sign-up/local/email-verification/verify")
-    @Operation(summary = "(2) 로컬 회원가입 이메일 검증", description = "인증 이메일 코드 검증 API")
+    @Operation(summary = "[로컬 회원가입 - 2] 로컬 회원가입 이메일 검증", description = "인증 이메일 코드 검증 API")
     public String signUpLocalEmailVerification(@RequestBody @Validated SignUpVerifyRequestDto signUpVerifyRequestDto){
         return userService.verifyEmailCode(signUpVerifyRequestDto.getEmail(), signUpVerifyRequestDto.getCode());
     }
 
     @PostMapping("/sign-up/local")
-    @Operation(summary = "(3) 로컬 회원가입", description = "로컬 회원가입 API")
+    @Operation(summary = "[로컬 회원가입 - 3] 로컬 회원 가입 등록", description = "로컬 회원가입 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignUpResponseDto.class))})
     })
@@ -92,6 +89,39 @@ public class UserController {
         return userService.signInLocal(signInRequestBody);
     }
 
+
+
+    @PostMapping("/reset-password/email-verification")
+    @Operation(summary = "[비밀번호 초기화 - 1] 비밀번호 초기화 이메일 전송", description = "비밀번호 초기화를 위한 인증 코드 메일 전송")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
+    })
+    public String resetPasswordEmailVerification (@RequestBody @Validated ResetPasswordEmailVerificationRequestDto resetPasswordEmailVerificationRequestDto) {
+        return userService.sendResetPasswordVerificationEmail(resetPasswordEmailVerificationRequestDto.getEmail());
+    }
+
+
+    @PostMapping("/reset-password/email-verification/verify")
+    @Operation(summary = "[비밀번호 초기화 - 2] 비밀번호 초기화", description = "비밀번호 초기화 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
+    })
+    public String resetPassword (@RequestBody @Validated ResetPasswordRequestDto resetPasswordRequestDto) {
+        return userService.resetPassword(resetPasswordRequestDto.getEmail(), resetPasswordRequestDto.getCode());
+    }
+
+
+
+
+    @PostMapping("/sign-in/google")
+    @Operation(summary = "구글 로그인", description = "구글 로그인 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
+    })
+    public SignInResponseDto googleSignIn (@RequestBody @Validated GoogleSignInRequestDto googleSignInRequestBody) {
+        return userService.signInGoogle(googleSignInRequestBody.getGoogleCode());
+    }
+
     @PatchMapping("/nickname")
     @Operation(summary = "유저 닉네임 변경", description = "닉네임 변경 API")
     @RoleAuth
@@ -101,34 +131,6 @@ public class UserController {
     ) {
         String userId = (String) request.getAttribute("userId");
         return userService.updateUserNickname(userId, updateUserNicknameRequestDto.getNickname());
-    }
-
-//    @PostMapping("/reset-password/admin")
-//    @Operation(summary = "비밀번호 초기화 (어드민 전용)", description = "비밀번호 초기화 API (123456)")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
-//    })
-//    public String resetPassword (@RequestBody @Validated ResetPasswordRequestDto resetPasswordRequestBody) {
-//        return userService.resetPasswordAdmin(resetPasswordRequestBody.getEmail());
-//    }
-
-//    @GetMapping("/oauth/parameters/admin")
-//    @RoleAuth(requiredRole = 7)
-//    @Operation(summary = "OAuth 인자 확인 (어드민 전용)", description = "OAuth 인자확인 API")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = GetOAuthParametersResponseDto.class))})
-//    })
-//    public GetOAuthParametersResponseDto getOAuthParameters() {
-//        return userService.getOauthParameters();
-//    }
-
-    @PostMapping("/sign-in/google")
-    @Operation(summary = "구글 로그인", description = "구글 로그인 API")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignInResponseDto.class))})
-    })
-    public SignInResponseDto googleSignIn (@RequestBody @Validated GoogleSignInRequestDto googleSignInRequestBody) {
-        return userService.signInGoogle(googleSignInRequestBody.getGoogleCode());
     }
 
     @GetMapping("/email/duplicate")

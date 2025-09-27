@@ -22,12 +22,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -203,6 +203,84 @@ public class UserService {
             return new SignUpResponseDto(user.getUserId(), user.getLoginId());
         }
     }
+
+
+    /**
+     * 비밀번호 초기화 인증 이메일 전송
+     * @param email 유저의 가입 아이디(eamil)
+     * @return ok
+     */
+    public String sendResetPasswordVerificationEmail(String email) {
+        // 유저 없으면 팅
+        Optional<User> existingUser = userRepository.findByLoginId(email);
+        if(!existingUser.isPresent()) {
+            throw new CustomException(ErrorCode.INVALID_USERID);
+        }
+
+        // 1. 6자리 랜덤 글자 또는 숫자 생성
+        String code = this.generateVerificationCode(6);
+
+        // 2. Redis 에 유저 인증코드 전송 내역 저장 (ttl= 5분)
+        int ttlValidMinutes = 5;
+
+        String key = RedisKeyFactory.findPwdUser(email);
+        redisService.setValue(key, code, Duration.ofMinutes(ttlValidMinutes));
+
+        // 3. 인증 이메일을 전송 (인증코드 & 가입인증 폼)
+        String subject = "[Study Mate] 비밀번호 초기화 이메일";
+        mailService.sendResetPasswordVerificationEmail(email, subject, code);
+
+        return "ok";
+    }
+
+    /**
+     * 비밀번호 초기화
+     * @param email 유저의 이메일 주소
+     * @param code 코드번호
+     * @return true || false
+     */
+    public String resetPassword(String email, String code) {
+        // 1. Redis에 유저가 가입하려는 Email로된 Key값이 있나 조회
+        String findPwdKey = RedisKeyFactory.findPwdUser(email);
+        String value = redisService.getValue(findPwdKey);
+
+        // 2.1 없으면, 인증되지않음 -> 리턴
+        if(value == null || !value.equals(code)) {
+            throw new CustomException(ErrorCode.INVALID_VERIFICATION_CODE);
+        }
+
+        // 2.2 있으면, 키 지우고
+        redisService.delete(findPwdKey);
+
+        // 2.3 비밀번호 초기화
+        User user = userRepository.findByUserIdAndStatus(email, UserStatus.ACTIVE).orElseThrow(() ->  new CustomException(ErrorCode.NOT_ACTIVE_USER));
+        String newPassword = generateSecureAlphanumericCode(8);
+
+        user.setUserPassword(encryptionUtil.encryptBcrypt(newPassword));
+
+        // 3. 새 비밀번호를 유저에게 전송
+        String subject = "[Study Mate] 비밀번호 초기화 완료";
+        mailService.sendResetPasswordResultEmail(email, subject, newPassword);
+
+        return "ok";
+    }
+
+    /**
+     * 랜덤 비밀번호 생성
+     */
+    public static String generateSecureAlphanumericCode(int length) {
+        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        SecureRandom secureRandom = new SecureRandom();
+        StringBuilder code = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            int index = secureRandom.nextInt(characters.length());
+            code.append(characters.charAt(index));
+        }
+
+        return code.toString();
+    }
+
 
     /**
      * OAuth만 있는 사용자인지, 중복으로 로컬 회원가입하는것인지 판별하는 메소드
