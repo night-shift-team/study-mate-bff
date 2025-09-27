@@ -128,4 +128,18 @@ class UserServiceTest {
         assertNotNull(responseDto.getAccessToken());
         assertNotNull(responseDto.getRefreshToken());
     }
+
+    @Test
+    @DisplayName("[이메일 전송] 랜덤 코드 생성")
+    void generateVerificationCode_codeTest_shouldReturnCode() {
+        // given - 자릿수,
+        int digits = 6;
+
+        // when - 자릿수로 코드 생성하면,
+        String code = userService.generateVerificationCode(digits);
+
+        // then - 자릿 수 만큼의 코드 생성ㄱ
+        assertNotNull(code);
+        assertEquals(digits, code.length());
+    }
 }
