@@ -39,7 +39,7 @@ public enum ErrorCode {
 
     FAIL_SEND_EMAIL(500, "email already exist", "0110"),
     INVALID_VERIFICATION_CODE(400, "invalid verification code", "0111"),
-
+    NOT_VERIFIED(400, "not verified", "0112"),
     /**
      * Question Errors
      * 0400 ~ 0499

@@ -177,6 +177,13 @@ public class UserService {
      */
     @Transactional
     public SignUpResponseDto signUpLocal(SignUpRequestDto signUpRequestDto) {
+        // TODO : redis에 검증 키 있는지 확인
+        String key = RedisKeyFactory.singupVerifiedLocalUser(signUpRequestDto.getLoginId());
+        String value = redisService.getValue(key);
+        if(value != null && !value.equals(signUpRequestDto.getLoginId())) {
+            throw new CustomException(ErrorCode.NOT_VERIFIED);
+        }
+
         // 1. 닉네임 확인
         boolean isNicknameValid = checkDuplicateNickname(signUpRequestDto.getNickname());
         if(isNicknameValid){
