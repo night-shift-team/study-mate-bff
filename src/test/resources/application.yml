@@ -18,10 +18,21 @@ spring:
   h2:
     console:
       enabled: true
+  mail:
+    host: localhost
+    port: 25
+    username: test
+    password: test
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
 e:
   auth:
     google_client_id: "test-client-id"
     google_client_secret: "test-client-id"
     redirect_url: http://localhost:3000/api/auth/google
-    github_client_id: "test-client-id"
-    github_client_secret: "test-client-id"
+  payapp:
+    user_phone: "01000000000"
