@@ -96,6 +96,20 @@ public class UserService {
         return createTokenPair(user.getUserId());
     }
 
+
+    /**
+     * 랜덤 6글자 코드 생성
+     */
+    public String generateVerificationCode(int digit) {
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+
+        for (int i = 0; i < digit; i++) {
+            sb.append(random.nextInt(10));
+        }
+
+        return sb.toString();
+    }
     /**
      * 로컬 회원가입 메소드
      */
