@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,14 +62,20 @@ public class UserController {
 
     // ----------------- 로컬 회원가입 -----------------
 
-    @PostMapping("/sign-up/local/email-verification/{email}")
-    @Operation(summary = "(1) 로컬 회원가입 이메일 인증", description = "메일 테스트 API")
-    public String sendMail(@PathVariable String email){
-        return userService.sendVerificationEmail(email);
+    @PostMapping("/sign-up/local/email-verification")
+    @Operation(summary = "(1) 로컬 회원가입 인증 이메일 전송", description = "로컬 회원가입 전, 인증 이메일 전송 API")
+    public String signUpLocalEmailSend(@RequestBody @Validated SignUpEmailSendRequestDto signUpEmailSendRequestDto){
+        return userService.sendVerificationEmail(signUpEmailSendRequestDto.getEmail());
+    }
+
+    @PostMapping("/sign-up/local/email-verification/verify")
+    @Operation(summary = "(2) 로컬 회원가입 이메일 검증", description = "인증 이메일 코드 검증 API")
+    public String signUpLocalEmailVerification(@RequestBody @Validated SignUpVerifyRequestDto signUpVerifyRequestDto){
+        return userService.verifyEmailCode(signUpVerifyRequestDto.getEmail(), signUpVerifyRequestDto.getCode());
     }
 
     @PostMapping("/sign-up/local")
-    @Operation(summary = "로컬 회원가입", description = "로컬 회원가입 API")
+    @Operation(summary = "(3) 로컬 회원가입", description = "로컬 회원가입 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignUpResponseDto.class))})
     })

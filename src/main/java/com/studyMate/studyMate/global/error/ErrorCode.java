@@ -38,6 +38,7 @@ public enum ErrorCode {
     DUP_NICKNAME(400, "nickname already exist", "0109"),
 
     FAIL_SEND_EMAIL(500, "email already exist", "0110"),
+    INVALID_VERIFICATION_CODE(400, "invalid verification code", "0111"),
 
     /**
      * Question Errors

@@ -140,17 +140,31 @@ public class UserService {
         return sb.toString();
     }
 
-//    /**
-//     * 이메일 인증코드 검증 메소드
-//     * @param email 유저의 이메일 주소
-//     * @param code 코드번호
-//     * @return true || false
-//     */
-//    public String verifyEmailCode(String email, String code) {
-//        // 1. Redis에 유저가 가입하려는 Email로된 Key값이 있나 조회
-//        // 2.1 없으면, 인증되지않음 -> 리턴
-//        // 2.2 있으면, verify 인증내용을 redis에 저장 -> 리턴
-//    }
+    /**
+     * 이메일 인증코드 검증 메소드
+     * @param email 유저의 이메일 주소
+     * @param code 코드번호
+     * @return true || false
+     */
+    public String verifyEmailCode(String email, String code) {
+        // 1. Redis에 유저가 가입하려는 Email로된 Key값이 있나 조회
+        String signUpKey = RedisKeyFactory.signUpLocalUser(email);
+
+        String value = redisService.getValue(signUpKey);
+
+        // 2.1 없으면, 인증되지않음 -> 리턴
+        if(value == null || !value.equals(code)) {
+            throw new CustomException(ErrorCode.INVALID_VERIFICATION_CODE);
+        }
+
+        // 2.2 있으면, verify 인증내용을 redis에 저장 -> 리턴
+        redisService.delete(signUpKey);
+
+        String verifiedKey = RedisKeyFactory.singupVerifiedLocalUser(email);
+        redisService.setValue(verifiedKey, code, Duration.ofMinutes(15));
+
+        return "ok";
+    }
 
     /**
      * 로컬 회원가입 메소드 (이메일 인증 우선 진행 필수)
