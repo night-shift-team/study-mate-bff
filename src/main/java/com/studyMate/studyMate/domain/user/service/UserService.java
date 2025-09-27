@@ -167,7 +167,7 @@ public class UserService {
         redisService.delete(signUpKey);
 
         String verifiedKey = RedisKeyFactory.singupVerifiedLocalUser(email);
-        redisService.setValue(verifiedKey, code, Duration.ofMinutes(15));
+        redisService.setValue(verifiedKey, email, Duration.ofMinutes(15));
 
         return "ok";
     }
