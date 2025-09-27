@@ -25,37 +25,6 @@ public class UserController {
     private final UserService userService;
     private final MailService mailService;
 
-    @GetMapping("test")
-    @Operation(summary = "메일 테스트", description = "메일 테스트 API")
-    public String sendMail(){
-        String to = "blockmonkey@naver.com";
-        String subj = "study mate test";
-        String content = """
-                    <!DOCTYPE html>
-                    <html xmlns:th="http://www.thymeleaf.org">
-                                        
-                    <body>
-                    <div style="margin:100px;">
-                        <h1> 테스트 메일 </h1>
-                        <br>
-                                        
-                                        
-                        <div align="center" style="border:1px solid black;">
-                            <h3> 테스트 메일 내용 </h3>
-                        </div>
-                        <br/>
-                    </div>
-                                        
-                    </body>
-                    </html>
-                    """;
-
-        mailService.sendHtmlEmail(to, subj, content);
-
-        return "success";
-    }
-
-
     @GetMapping("rank")
     @Operation(summary = "유저 랭킹 정보확인", description = "유저 랭킹 정보 확인 API")
     @RoleAuth
@@ -88,6 +57,14 @@ public class UserController {
     public GetUserDto getUserInfo(HttpServletRequest request) {
         String userId = (String) request.getAttribute("userId");
         return userService.getActiveUserById(userId);
+    }
+
+    // ----------------- 로컬 회원가입 -----------------
+
+    @PostMapping("/sign-up/local/email-verification/{email}")
+    @Operation(summary = "(1) 로컬 회원가입 이메일 인증", description = "메일 테스트 API")
+    public String sendMail(@PathVariable String email){
+        return userService.sendVerificationEmail(email);
     }
 
     @PostMapping("/sign-up/local")

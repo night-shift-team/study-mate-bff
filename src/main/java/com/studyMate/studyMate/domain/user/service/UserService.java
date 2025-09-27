@@ -9,6 +9,8 @@ import com.studyMate.studyMate.domain.user.repository.UserOAuthRepository;
 import com.studyMate.studyMate.domain.user.repository.UserRepository;
 import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
+import com.studyMate.studyMate.global.redis.RedisKeyFactory;
+import com.studyMate.studyMate.global.redis.RedisService;
 import com.studyMate.studyMate.global.util.EncryptionUtil;
 import com.studyMate.studyMate.global.util.JwtTokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +22,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,10 +40,13 @@ public class UserService {
     private final JwtTokenUtil jwtTokenUtil;
     private final EncryptionUtil encryptionUtil;
 
+    private final MailService mailService;
+
     private final String GOOGLE_GET_ACCESS_TOKEN_URL = "https://oauth2.googleapis.com/token";
     private final String GOOGLE_GET_USERINFO_BASE_URL = "https://www.googleapis.com/userinfo/v2/me?access_token=";
 
     private final String DEFAULT_PROFILE_IMAGE = "https://qwrujioanlzrqiiyxser.supabase.co/storage/v1/object/public/study-mate//default_profile.jpg";
+    private final RedisService redisService;
 
     @Value("${e.auth.google_client_id}")
     private String GOOGLE_CLIENT_ID;
@@ -98,6 +105,28 @@ public class UserService {
 
 
     /**
+     * 이메일 인증 코드 전송
+     * @param email 유저의 가입 아이디(eamil)
+     * @return ok
+     */
+    public String sendVerificationEmail(String email) {
+        // 1. 6자리 랜덤 글자 또는 숫자 생성
+        String code = this.generateVerificationCode(6);
+
+        // 2. Redis 에 유저 인증코드 전송 내역 저장 (ttl= 5분)
+        int ttlValidMinutes = 5;
+
+        String key = RedisKeyFactory.signUpLocalUser(email);
+        redisService.setValue(key, code, Duration.ofMinutes(ttlValidMinutes));
+
+        // 3. 인증 이메일을 전송 (인증코드 & 가입인증 폼)
+        String subject = "[Study Mate] 회원가입 인증 이메일";
+        mailService.sendLocalSignUpEmail(email, subject, code);
+
+        return "ok";
+    }
+
+    /**
      * 랜덤 6글자 코드 생성
      */
     public String generateVerificationCode(int digit) {
@@ -110,8 +139,21 @@ public class UserService {
 
         return sb.toString();
     }
+
+//    /**
+//     * 이메일 인증코드 검증 메소드
+//     * @param email 유저의 이메일 주소
+//     * @param code 코드번호
+//     * @return true || false
+//     */
+//    public String verifyEmailCode(String email, String code) {
+//        // 1. Redis에 유저가 가입하려는 Email로된 Key값이 있나 조회
+//        // 2.1 없으면, 인증되지않음 -> 리턴
+//        // 2.2 있으면, verify 인증내용을 redis에 저장 -> 리턴
+//    }
+
     /**
-     * 로컬 회원가입 메소드
+     * 로컬 회원가입 메소드 (이메일 인증 우선 진행 필수)
      */
     @Transactional
     public SignUpResponseDto signUpLocal(SignUpRequestDto signUpRequestDto) {
