@@ -110,6 +110,12 @@ public class UserService {
      * @return ok
      */
     public String sendVerificationEmail(String email) {
+        // TODO : 이미 존재하는 이메일 체크하고, 이미 있는 이메일이면 팅
+        Optional<User> existingUser = userRepository.findByLoginId(email);
+        if(existingUser.isPresent()) {
+            throw new CustomException(ErrorCode.DUP_USER_ID);
+        }
+
         // 1. 6자리 랜덤 글자 또는 숫자 생성
         String code = this.generateVerificationCode(6);
 
