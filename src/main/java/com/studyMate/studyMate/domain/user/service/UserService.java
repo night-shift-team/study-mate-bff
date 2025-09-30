@@ -179,10 +179,20 @@ public class UserService {
     public SignUpResponseDto signUpLocal(SignUpRequestDto signUpRequestDto) {
         // TODO : redis에 검증 키 있는지 확인
         String key = RedisKeyFactory.singupVerifiedLocalUser(signUpRequestDto.getLoginId());
-        String value = redisService.getValue(key);
-        if(value != null && !value.equals(signUpRequestDto.getLoginId())) {
+        String userEmail = redisService.getValue(key);
+
+        // 0-1. 이메일 인증 Verify 된 유저인지 확인
+        if(!redisService.hasKey(key)) {
             throw new CustomException(ErrorCode.NOT_VERIFIED);
         }
+
+        // 0-2. 로그인 시도 정보 - 레디스 인증 정보 일치확인
+        if(!userEmail.equals(signUpRequestDto.getLoginId())) {
+            throw new CustomException(ErrorCode.NOT_VERIFIED);
+        }
+
+        // 0-3. Redis Clear
+        redisService.delete(key);
 
         // 1. 닉네임 확인
         boolean isNicknameValid = checkDuplicateNickname(signUpRequestDto.getNickname());
