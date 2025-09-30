@@ -76,6 +76,7 @@ public class UserService {
                 .userScore(user.getScore())
                 .registeredAt(user.getCreatedDt())
                 .userOAuth(userOAuthDtos)
+                .passwordChangeRequired(isPasswordChangeRequired(user.getUserId()))
                 .build();
     }
 
@@ -248,6 +249,10 @@ public class UserService {
 
         user.setUserPassword(encryptionUtil.encryptBcrypt(newPassword));
 
+        // TODO : 비밀번호 초기화하고, 비밀번호 변경 필요 플래그 추가 (3일)
+        String key = RedisKeyFactory.changePasswordRequiredUser(user.getUserId());
+        redisService.setValue(key, newPassword, Duration.ofDays(3));
+
         // 3. 새 비밀번호를 유저에게 전송
         String subject = "[Study Mate] 비밀번호 초기화 완료";
         mailService.sendResetPasswordResultEmail(email, subject, newPassword);
@@ -276,6 +281,12 @@ public class UserService {
 
         // 새로운 비밀번호로 변경
         user.setUserPassword(encryptionUtil.encryptBcrypt(newPassword));
+
+        // 만약 비밀번호 변경 필요 플래그 있으면, 삭제
+        String key = RedisKeyFactory.changePasswordRequiredUser(user.getUserId());
+        if(redisService.hasKey(key)) {
+            redisService.delete(key);
+        }
 
         return user.getUserId();
     }
@@ -492,6 +503,19 @@ public class UserService {
 
     public boolean checkDuplicateNickname(String nickname) {
         return userRepository.existsByNickname(nickname);
+    }
+
+    /**
+     * 비밀번호 변경이 필요한 유저인지 체크
+     */
+    private boolean isPasswordChangeRequired(String userId) {
+        boolean result = false;
+        // 비밀번호 초기화 내역 시,
+        if(redisService.hasKey(RedisKeyFactory.changePasswordRequiredUser(userId))) {
+            result = true;
+        }
+
+        return result;
     }
 
     /**

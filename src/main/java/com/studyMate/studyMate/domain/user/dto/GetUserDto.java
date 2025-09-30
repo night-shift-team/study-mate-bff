@@ -26,6 +26,7 @@ public class GetUserDto {
     private Integer userScore;
     private LocalDateTime registeredAt;
     private List<UserOAuthDto> userOAuth;
+    private boolean passwordChangeRequired = false;
 
     public GetUserDto(User user) {
         this.userId = user.getUserId();
@@ -39,5 +40,20 @@ public class GetUserDto {
         this.userOAuth = user.getUserOAuths().stream()
                 .map(UserOAuthDto::new)
                 .collect(Collectors.toList());
+    }
+
+    public GetUserDto(User user, boolean passwordChangeRequired) {
+        this.userId = user.getUserId();
+        this.loginId = user.getLoginId();
+        this.nickname = user.getNickname();
+        this.profileImg = user.getProfileImg();
+        this.status = user.getStatus();
+        this.role = user.getRole();
+        this.userScore = user.getScore();
+        this.registeredAt = user.getCreatedDt();
+        this.userOAuth = user.getUserOAuths().stream()
+                .map(UserOAuthDto::new)
+                .collect(Collectors.toList());
+        this.passwordChangeRequired = passwordChangeRequired;
     }
 }

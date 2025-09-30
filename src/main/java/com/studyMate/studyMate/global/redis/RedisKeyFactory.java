@@ -45,4 +45,11 @@ public class RedisKeyFactory {
     public static String findPwdUser(String userId) {
         return String.format("find-pwd:%s", userId);
     }
+
+    /**
+     * 비밀번호 초기화 후, 비밀번호 변경 필요한 유저인지 체크하는 Key
+     */
+    public static String changePasswordRequiredUser(String userId) {
+        return String.format("chg-pwd-required:%s", userId);
+    }
 }
