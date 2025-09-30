@@ -41,9 +41,9 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = SignUpResponseDto.class))})
     })
     @RoleAuth
-    public SignInResponseDto tokenRefresh(HttpServletRequest request, @RequestBody @Validated RefreshTokenRequestDto refreshTokenRequestbody) {
+    public SignInResponseDto tokenRefresh(HttpServletRequest request) {
         String userId = (String) request.getAttribute("userId");
-        return userService.refreshTokenPair(userId, refreshTokenRequestbody.getRefreshToken());
+        return userService.refreshTokenPair(userId);
     }
 
     @GetMapping("/")

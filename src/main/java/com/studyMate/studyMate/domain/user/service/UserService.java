@@ -82,17 +82,21 @@ public class UserService {
     /**
      * Token Refresh
      */
-    public SignInResponseDto refreshTokenPair(String userId, String refreshToken) {
-        boolean isValid = jwtTokenUtil.validateToken(refreshToken);
-        if(!isValid) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED);
+    public SignInResponseDto refreshTokenPair(String userId) {
+        // 1. Redis에 Refresh Token 조회
+        String key = RedisKeyFactory.refreshTokenUser(userId);
+
+        // 2. 없으면 나가리
+        if(!redisService.hasKey(key)) {
+            throw new CustomException(ErrorCode.NOT_VERIFIED);
         }
 
-        User user = userRepository.findByUserIdAndStatus(userId, UserStatus.ACTIVE).orElseThrow(() -> new CustomException(ErrorCode.INVALID_LOGINID));
+        // 3. 유저가 Active 한 상태의 유저인지 확인
+        userRepository.findByUserIdAndStatus(userId, UserStatus.ACTIVE).orElseThrow(() -> new CustomException(ErrorCode.INVALID_LOGINID));
 
-        return createTokenPair(user.getUserId());
+        // 4. 리프레시
+        return createTokenPair(userId);
     }
-
 
     /**
      * 이메일 인증 코드 전송
@@ -340,7 +344,13 @@ public class UserService {
         }
 
         // 3. JWT Token 발급
-        return createTokenPair(user.getUserId());
+        SignInResponseDto tokenPair = createTokenPair(user.getUserId());
+
+        // TODO : refresh token redis 저장
+        String key = RedisKeyFactory.refreshTokenUser(SignInRequestDto.getLoginId());
+        redisService.setValue(key, tokenPair.getRefreshToken(), Duration.ofDays(5));
+
+        return tokenPair;
     }
 
     @Transactional
@@ -392,13 +402,18 @@ public class UserService {
                 return newUser;
             });
 
-            // 4. 토큰 페어 발급 -> 리턴
-            return createTokenPair(user.getUserId());
+            // 3. JWT Token 발급
+            SignInResponseDto tokenPair = createTokenPair(user.getUserId());
+
+            // TODO : refresh token redis 저장
+            String key = RedisKeyFactory.refreshTokenUser(user.getUserId());
+            redisService.setValue(key, tokenPair.getRefreshToken(), Duration.ofDays(5));
+
+            return tokenPair;
         } catch (Exception e) {
             throw new CustomException(ErrorCode.INVALID_GOOGLE_AUTH_CODE);
         }
     }
-
 
     public GetUserRankingResponseDto findUserRanking(String userId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
