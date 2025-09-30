@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Method;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -131,12 +133,14 @@ class UserServiceTest {
 
     @Test
     @DisplayName("[이메일 전송] 랜덤 코드 생성")
-    void generateVerificationCode_codeTest_shouldReturnCode() {
+    void generateVerificationCode_codeTest_shouldReturnCode() throws Exception {
         // given - 자릿수,
         int digits = 6;
 
         // when - 자릿수로 코드 생성하면,
-        String code = userService.generateVerificationCode(digits);
+        Method method = UserService.class.getDeclaredMethod("generateVerificationCode", int.class);
+        method.setAccessible(true);
+        String code = (String) method.invoke(userService, digits);
 
         // then - 자릿 수 만큼의 코드 생성ㄱ
         assertNotNull(code);

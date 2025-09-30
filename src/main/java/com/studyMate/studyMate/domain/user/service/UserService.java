@@ -1,5 +1,6 @@
 package com.studyMate.studyMate.domain.user.service;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.studyMate.studyMate.domain.user.data.OAuthType;
 import com.studyMate.studyMate.domain.user.data.UserStatus;
 import com.studyMate.studyMate.domain.user.dto.*;
@@ -133,20 +134,6 @@ public class UserService {
     }
 
     /**
-     * 랜덤 6글자 코드 생성
-     */
-    public String generateVerificationCode(int digit) {
-        StringBuilder sb = new StringBuilder();
-        Random random = new Random();
-
-        for (int i = 0; i < digit; i++) {
-            sb.append(random.nextInt(10));
-        }
-
-        return sb.toString();
-    }
-
-    /**
      * 이메일 인증코드 검증 메소드
      * @param email 유저의 이메일 주소
      * @param code 코드번호
@@ -276,9 +263,24 @@ public class UserService {
     }
 
     /**
+     * 랜덤 6글자 코드 생성
+     */
+    @VisibleForTesting
+    private String generateVerificationCode(int digit) {
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+
+        for (int i = 0; i < digit; i++) {
+            sb.append(random.nextInt(10));
+        }
+
+        return sb.toString();
+    }
+
+    /**
      * 랜덤 비밀번호 생성
      */
-    public static String generateSecureAlphanumericCode(int length) {
+    private static String generateSecureAlphanumericCode(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         SecureRandom secureRandom = new SecureRandom();
         StringBuilder code = new StringBuilder();
@@ -290,7 +292,6 @@ public class UserService {
 
         return code.toString();
     }
-
 
     /**
      * OAuth만 있는 사용자인지, 중복으로 로컬 회원가입하는것인지 판별하는 메소드
