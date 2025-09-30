@@ -89,8 +89,6 @@ public class UserController {
         return userService.signInLocal(signInRequestBody);
     }
 
-
-
     @PostMapping("/reset-password/email-verification")
     @Operation(summary = "[비밀번호 초기화 - 1] 비밀번호 초기화 이메일 전송", description = "비밀번호 초기화를 위한 인증 코드 메일 전송")
     @ApiResponses(value = {
@@ -118,6 +116,13 @@ public class UserController {
     })
     public SignInResponseDto googleSignIn (@RequestBody @Validated GoogleSignInRequestDto googleSignInRequestBody) {
         return userService.signInGoogle(googleSignInRequestBody.getGoogleCode());
+    }
+
+    @PostMapping("/change-password")
+    @Operation(summary = "비밀번호 변경", description = "비밀번호 변경 API")
+    @RoleAuth
+    public String changePassword(@RequestBody @Validated ChangePasswordRequestDto changePasswordRequestDto) {
+        return userService.changePassword(changePasswordRequestDto.getLoginId(), changePasswordRequestDto.getOldPassword(), changePasswordRequestDto.getNewPassword());
     }
 
     @PatchMapping("/nickname")

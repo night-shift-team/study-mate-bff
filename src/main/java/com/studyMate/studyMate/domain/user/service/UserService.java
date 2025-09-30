@@ -263,6 +263,32 @@ public class UserService {
     }
 
     /**
+     * 비밀번호 변경
+     */
+    @Transactional
+    public String changePassword(String email, String oldPassword, String newPassword) {
+
+        // 유저 확인하고,
+        Optional<User> existingUser = userRepository.findByLoginId(email);
+        if(!existingUser.isPresent()) {
+            throw new CustomException(ErrorCode.INVALID_USERID);
+        }
+
+        // 기존 비밀번호와 oldPassword 대조
+        User user = existingUser.get();
+        boolean isPasswordMatch = encryptionUtil.compareBcrypt(oldPassword, user.getLocalLoginPw());
+        if(!isPasswordMatch) {
+            throw new CustomException(ErrorCode.INVALID_LOGINPW);
+        }
+
+        // 새로운 비밀번호로 변경
+        user.setUserPassword(encryptionUtil.encryptBcrypt(newPassword));
+
+        return user.getUserId();
+    }
+
+
+    /**
      * 랜덤 6글자 코드 생성
      */
     @VisibleForTesting
