@@ -80,17 +80,6 @@ public class UserService {
     }
 
     /**
-     * OAuth Parameter 조회 method for clinet developers
-     */
-    public GetOAuthParametersResponseDto getOauthParameters() {
-        return GetOAuthParametersResponseDto.builder()
-                .googleClientId(this.GOOGLE_CLIENT_ID)
-                .googleClientSecret(this.GOOGLE_CLIENT_SECRET)
-                .googleRedirectUrl(this.FRONT_REDIRECT_URL)
-                .build();
-    }
-
-    /**
      * Token Refresh
      */
     public SignInResponseDto refreshTokenPair(String userId, String refreshToken) {
