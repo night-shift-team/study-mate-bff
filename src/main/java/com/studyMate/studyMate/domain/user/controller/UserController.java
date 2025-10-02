@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "User API")
 public class UserController {
     private final UserService userService;
-    private final MailService mailService;
 
     @GetMapping("rank")
     @Operation(summary = "유저 랭킹 정보확인", description = "유저 랭킹 정보 확인 API")
