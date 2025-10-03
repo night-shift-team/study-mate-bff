@@ -8,6 +8,7 @@ import com.studyMate.studyMate.domain.user.entity.User;
 import com.studyMate.studyMate.domain.user.entity.UserOAuth;
 import com.studyMate.studyMate.domain.user.repository.UserOAuthRepository;
 import com.studyMate.studyMate.domain.user.repository.UserRepository;
+import com.studyMate.studyMate.domain.user.repository.UserRepositoryImpl;
 import com.studyMate.studyMate.global.error.CustomException;
 import com.studyMate.studyMate.global.error.ErrorCode;
 import com.studyMate.studyMate.global.redis.RedisKeyFactory;
@@ -36,6 +37,7 @@ import java.util.Random;
 @Slf4j
 public class UserService {
     private final UserRepository userRepository;
+    private final UserRepositoryImpl userRepositoryImpl;
     private final UserOAuthRepository userOAuthRepository;
 
     private final JwtTokenUtil jwtTokenUtil;
@@ -424,12 +426,6 @@ public class UserService {
         } catch (Exception e) {
             throw new CustomException(ErrorCode.INVALID_GOOGLE_AUTH_CODE);
         }
-    }
-
-    public GetUserRankingResponseDto findUserRanking(String userId, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        System.out.println("Check UserId");
-        return userRepository.findUsersAndRanking(userId, pageRequest);
     }
 
     /**

@@ -101,6 +101,9 @@ public class User extends BaseEntityDate {
             this.score += weightedScore;
         }
 
+        // TODO: Redis 동기화는 Service 레이어에서 처리 필요
+        // userRepositoryImpl.updateUserScoreInRedis(this.userId, this.score, this.createdDt)
+        
         return this.score;
     }
 }
