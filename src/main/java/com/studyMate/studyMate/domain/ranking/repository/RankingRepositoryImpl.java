@@ -96,7 +96,7 @@ public class RankingRepositoryImpl implements RankingRepository {
 
         return GetUserRankingResponseDto.builder()
                 .myRanking(myRanking)
-                .otherUsers(rankingUserDtos)
+                .list(rankingUserDtos)
                 .pageSize(pageable.getPageSize())
                 .pageNumber(pageable.getPageNumber())
                 .build();
@@ -165,7 +165,7 @@ public class RankingRepositoryImpl implements RankingRepository {
 
             return GetUserRankingResponseDto.builder()
                     .myRanking(myRanking)
-                    .otherUsers(rankingUserDtos)
+                    .list(rankingUserDtos)
                     .pageSize(pageable.getPageSize())
                     .pageNumber(pageable.getPageNumber())
                     .build();

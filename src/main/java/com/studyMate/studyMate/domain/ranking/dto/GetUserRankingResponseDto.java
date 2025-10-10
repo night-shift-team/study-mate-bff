@@ -8,19 +8,19 @@ import java.util.List;
 @Getter
 public class GetUserRankingResponseDto {
     private Integer myRanking;
-    private List<RankingUserDto> otherUsers;
+    private List<RankingUserDto> list;
 
     private Integer pageSize;
     private Integer pageNumber;
 
     public GetUserRankingResponseDto(
             Integer myRanking,
-            List<RankingUserDto> otherUsers,
+            List<RankingUserDto> list,
             Integer pageSize,
             Integer pageNumber
     ) {
         this.myRanking = myRanking;
-        this.otherUsers = otherUsers;
+        this.list = list;
         this.pageSize = pageSize;
         this.pageNumber = pageNumber;
     }
