@@ -1,7 +1,6 @@
 package com.studyMate.studyMate.domain.user.controller;
 
 import com.studyMate.studyMate.domain.user.dto.*;
-import com.studyMate.studyMate.domain.user.service.MailService;
 import com.studyMate.studyMate.domain.user.service.UserService;
 import com.studyMate.studyMate.global.config.RoleAuth;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,18 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "User API")
 public class UserController {
     private final UserService userService;
-
-    @GetMapping("rank")
-    @Operation(summary = "유저 랭킹 정보확인", description = "유저 랭킹 정보 확인 API")
-    @RoleAuth
-    public GetUserRankingResponseDto getUserRanking(
-            HttpServletRequest request,
-            @RequestParam("page") Integer page,
-            @RequestParam("limit") Integer limit
-    ) {
-        String userId = (String) request.getAttribute("userId");
-        return userService.findUserRanking(userId, page, limit);
-    }
 
     @PostMapping("/refresh")
     @Operation(summary = "Token 리프레쉬(*)", description = "토큰 리프레시 API")
@@ -55,8 +42,6 @@ public class UserController {
         String userId = (String) request.getAttribute("userId");
         return userService.getActiveUserById(userId);
     }
-
-    // ----------------- 로컬 회원가입 -----------------
 
     @PostMapping("/sign-up/local/email-verification")
     @Operation(summary = "[로컬 회원가입 - 1] 로컬 회원가입 인증 이메일 전송", description = "로컬 회원가입 전, 인증 이메일 전송 API")
@@ -97,7 +82,6 @@ public class UserController {
         return userService.sendResetPasswordVerificationEmail(resetPasswordEmailVerificationRequestDto.getEmail());
     }
 
-
     @PostMapping("/reset-password/email-verification/verify")
     @Operation(summary = "[비밀번호 초기화 - 2] 비밀번호 초기화", description = "비밀번호 초기화 API")
     @ApiResponses(value = {
@@ -106,7 +90,6 @@ public class UserController {
     public String resetPassword (@RequestBody @Validated ResetPasswordRequestDto resetPasswordRequestDto) {
         return userService.resetPassword(resetPasswordRequestDto.getEmail(), resetPasswordRequestDto.getCode());
     }
-
 
     @PostMapping("/sign-in/google")
     @Operation(summary = "구글 로그인", description = "구글 로그인 API")

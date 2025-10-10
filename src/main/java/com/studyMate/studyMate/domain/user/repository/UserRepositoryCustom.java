@@ -1,9 +1,5 @@
 package com.studyMate.studyMate.domain.user.repository;
 
-import com.studyMate.studyMate.domain.user.dto.GetUserRankingResponseDto;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 public interface UserRepositoryCustom {
-    GetUserRankingResponseDto findUsersAndRanking(String userId, Pageable pageable);
+    // 랭킹 관련 메서드는 ranking 모듈로 이동
 }
