@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "User API")
 public class UserController {
     private final UserService userService;
-    private final MailService mailService;
 
     @PostMapping("/refresh")
     @Operation(summary = "Token 리프레쉬(*)", description = "토큰 리프레시 API")
