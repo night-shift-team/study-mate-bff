@@ -7,13 +7,12 @@ import java.lang.annotation.Target;
 
 /**
  * API 레이턴시 측정 어노테이션
- * 컨트롤러 메서드에 이 어노테이션을 붙이면 자동으로 레이턴시가 측정됩니다.
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MeasureLatency {
     /**
-     * 레이블 (예: "Redis 기반", "DB 기반")
+     * 레이블
      */
     String label() default "";
     

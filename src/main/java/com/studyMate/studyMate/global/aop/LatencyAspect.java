@@ -48,11 +48,11 @@ public class LatencyAspect {
         String statusPart = success ? "" : " (FAILED)";
         
         if (latency > 1000) {
-            log.warn("[API_LATENCY] [{}]{} - {}ms ⚠️ SLOW{}", label, descPart, latency, statusPart);
+            log.warn("[API_LATENCY] [{}]{} - {}ms {} (⚠SLOW)", label, descPart, latency, statusPart);
         } else if (latency > 500) {
-            log.info("[API_LATENCY] [{}]{} - {}ms{}", label, descPart, latency, statusPart);
+            log.info("[API_LATENCY] [{}]{} - {}ms {} (Standard)", label, descPart, latency, statusPart);
         } else {
-            log.info("[API_LATENCY] [{}]{} - {}ms{}", label, descPart, latency, statusPart);
+            log.info("[API_LATENCY] [{}]{} - {}ms {} (Fast)", label, descPart, latency, statusPart);
         }
     }
 }
