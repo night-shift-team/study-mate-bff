@@ -14,16 +14,10 @@ public class RankingService {
 
     private final RankingRepository rankingRepository;
 
-    // Redis 기반 랭킹 조회
+    // 랭킹 조회
     public GetUserRankingResponseDto getUserRanking(String userId, int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         return rankingRepository.findUsersAndRankingWithRedis(userId, pageRequest);
-    }
-
-    // DB 기반 랭킹 조회 (성능 비교용)
-    public GetUserRankingResponseDto getUserRankingLegacy(String userId, int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        return rankingRepository.findUsersAndRanking(userId, pageRequest);
     }
 
     // Redis 랭킹 초기화

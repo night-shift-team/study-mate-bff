@@ -31,19 +31,6 @@ public class RankingController {
         return rankingService.getUserRanking(userId, page, limit);
     }
 
-    @GetMapping("/legacy")
-    @Operation(summary = "유저 랭킹 조회 (기존 방식)", description = "DB 기반 랭킹 조회 (성능 비교용)")
-    @RoleAuth
-    @MeasureLatency(label = "DB 기반 랭킹", description = "QueryDSL 사용")
-    public GetUserRankingResponseDto getUserRankingLegacy(
-            HttpServletRequest request,
-            @RequestParam("page") Integer page,
-            @RequestParam("limit") Integer limit
-    ) {
-        String userId = (String) request.getAttribute("userId");
-        return rankingService.getUserRankingLegacy(userId, page, limit);
-    }
-
     @PostMapping("/initialize")
     @Operation(summary = "랭킹 Redis 초기화", description = "전체 사용자 랭킹을 Redis에 동기화 (관리자용)")
     @RoleAuth

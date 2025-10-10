@@ -39,7 +39,7 @@ public class RedisService {
         return redisTemplate.opsForZSet().reverseRank(key, value);
     }
 
-    // Sorted Set에서 범위 조회 (점수 포함, 내림차순), 시작 인덱스 (0부터)
+    // Sorted Set에서 범위 조회 (점수 포함, 내림차순)
     public Set<ZSetOperations.TypedTuple<String>> getRangeWithScoresFromSortedSet(String key, long start, long end) {
         return redisTemplate.opsForZSet().reverseRangeWithScores(key, start, end);
     }
