@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@Tag(name = "store")
+@Tag(name = "상점 API")
 @RequestMapping("/store")
 @Slf4j
 @RequiredArgsConstructor
