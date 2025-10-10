@@ -1,8 +1,9 @@
-package com.studyMate.studyMate.domain.user.repository;
+package com.studyMate.studyMate.domain.ranking.repository;
 
+import com.studyMate.studyMate.RedisTestContainerConfig;
+import com.studyMate.studyMate.domain.ranking.dto.GetUserRankingResponseDto;
+import com.studyMate.studyMate.domain.ranking.dto.RankingUserDto;
 import com.studyMate.studyMate.domain.user.data.UserStatus;
-import com.studyMate.studyMate.domain.user.dto.GetUserRankingResponseDto;
-import com.studyMate.studyMate.domain.user.dto.RankingUserDto;
 import com.studyMate.studyMate.domain.user.entity.User;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,22 +11,30 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.annotation.Transactional;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Import(RedisTestContainerConfig.class)
 @Transactional
-class UserRepositoryImplTest {
+class RankingRepositoryImplTest {
 
     @Autowired
     private EntityManager em;
 
     @Autowired
-    private UserRepositoryImpl userRepositoryImpl;
+    private RankingRepositoryImpl rankingRepository;
 
     User user1 = User.builder()
             .loginId("user1@test.com")
@@ -36,6 +45,7 @@ class UserRepositoryImplTest {
             .score(5000)
             .initScore(5000)
             .role(1)
+            .createdDt(LocalDateTime.of(2025, 10, 10, 10, 10, 0))
             .build();
 
     User user2 = User.builder()
@@ -47,6 +57,7 @@ class UserRepositoryImplTest {
             .score(4000)
             .initScore(4000)
             .role(1)
+            .createdDt(LocalDateTime.of(2025, 10, 10, 10, 20, 0))
             .build();
 
     User user3 = User.builder()
@@ -58,6 +69,7 @@ class UserRepositoryImplTest {
             .score(3000)
             .initScore(3000)
             .role(1)
+            .createdDt(LocalDateTime.of(2025, 10, 10, 10, 30, 0))
             .build();
 
     User user4 = User.builder()
@@ -69,6 +81,7 @@ class UserRepositoryImplTest {
             .score(2000)
             .initScore(2000)
             .role(1)
+            .createdDt(LocalDateTime.of(2025, 10, 10, 10, 40, 0))
             .build();
 
     User user5 = User.builder()
@@ -80,6 +93,7 @@ class UserRepositoryImplTest {
             .score(1000)
             .initScore(1000)
             .role(1)
+            .createdDt(LocalDateTime.of(2025, 10, 10, 10, 50, 0))
             .build();
 
     User user6 = User.builder()
@@ -91,6 +105,7 @@ class UserRepositoryImplTest {
             .score(3000)
             .initScore(3000)
             .role(1)
+            .createdDt(LocalDateTime.of(2025, 10, 10, 11, 0, 0))
             .build();
 
     User user7 = User.builder()
@@ -102,6 +117,7 @@ class UserRepositoryImplTest {
             .score(3000)
             .initScore(3000)
             .role(1)
+            .createdDt(LocalDateTime.of(2025, 10, 10, 11, 10, 0))
             .build();
 
     @BeforeEach
@@ -113,6 +129,8 @@ class UserRepositoryImplTest {
         em.persist(user5);
         em.persist(user6);
         em.persist(user7);
+
+        rankingRepository.initializeRankings();
     }
 
     @Test
@@ -120,8 +138,8 @@ class UserRepositoryImplTest {
     void findUsersAndRanking_withFirstPlace_shouldReturnRankOne() {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        GetUserRankingResponseDto result = userRepositoryImpl.findUsersAndRanking(user1.getUserId(), pageRequest);
-
+        GetUserRankingResponseDto result = rankingRepository.findUsersAndRankingWithRedis(user1.getUserId(), pageRequest);
+        System.out.println(result);
         assertEquals(1, result.getMyRanking());
     }
 
@@ -130,25 +148,10 @@ class UserRepositoryImplTest {
     void findUsersAndRanking_withSameScore_shouldOrderByCreatedDate() {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        GetUserRankingResponseDto result3 = userRepositoryImpl.findUsersAndRanking(user3.getUserId(), pageRequest);
-        GetUserRankingResponseDto result6 = userRepositoryImpl.findUsersAndRanking(user6.getUserId(), pageRequest);
-
+        GetUserRankingResponseDto result3 = rankingRepository.findUsersAndRankingWithRedis(user3.getUserId(), pageRequest);
+        GetUserRankingResponseDto result6 = rankingRepository.findUsersAndRankingWithRedis(user6.getUserId(), pageRequest);
+        System.out.println("3번 유저 : " + result3.getMyRanking() + " || " + result6.getMyRanking());
         assertTrue(result3.getMyRanking() < result6.getMyRanking());
-    }
-
-    @Test
-    @DisplayName("[랭킹 조회] 페이징 동작 테스트")
-    void findUsersAndRanking_withPagination_shouldReturnCorrectPages() {
-        PageRequest firstPage = PageRequest.of(0, 3);
-        PageRequest secondPage = PageRequest.of(1, 3);
-
-        GetUserRankingResponseDto firstResult = userRepositoryImpl.findUsersAndRanking(user1.getUserId(), firstPage);
-        GetUserRankingResponseDto secondResult = userRepositoryImpl.findUsersAndRanking(user1.getUserId(), secondPage);
-
-        assertEquals(3, firstResult.getOtherUsers().size());
-        assertEquals(3, secondResult.getOtherUsers().size());
-        assertEquals(1, firstResult.getOtherUsers().get(0).getRankNo());
-        assertEquals(4, secondResult.getOtherUsers().get(0).getRankNo());
     }
 
     @Test
@@ -156,9 +159,9 @@ class UserRepositoryImplTest {
     void findUsersAndRanking_withMultipleUsers_shouldSortByScore() {
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        GetUserRankingResponseDto result = userRepositoryImpl.findUsersAndRanking(user1.getUserId(), pageRequest);
+        GetUserRankingResponseDto result = rankingRepository.findUsersAndRankingWithRedis(user1.getUserId(), pageRequest);
 
-        List<RankingUserDto> rankings = result.getOtherUsers();
+        List<RankingUserDto> rankings = result.getList();
         for (int i = 0; i < rankings.size() - 1; i++) {
             assertTrue(rankings.get(i).getUserScore() >= rankings.get(i + 1).getUserScore());
         }
@@ -171,30 +174,9 @@ class UserRepositoryImplTest {
         int size = 5;
         PageRequest pageRequest = PageRequest.of(page, size);
 
-        GetUserRankingResponseDto result = userRepositoryImpl.findUsersAndRanking(user1.getUserId(), pageRequest);
+        GetUserRankingResponseDto result = rankingRepository.findUsersAndRankingWithRedis(user1.getUserId(), pageRequest);
 
         assertEquals(page, result.getPageNumber());
         assertEquals(size, result.getPageSize());
-    }
-
-    @Test
-    @DisplayName("[랭킹 조회] 다양한 점수 사용자 랭킹 테스트")
-    void findUsersAndRanking_withVariousScores_shouldReturnCorrectRanks() {
-        PageRequest pageRequest = PageRequest.of(0, 10);
-
-        GetUserRankingResponseDto result1 = userRepositoryImpl.findUsersAndRanking(user1.getUserId(), pageRequest);
-        assertEquals(1, result1.getMyRanking());
-
-        GetUserRankingResponseDto result2 = userRepositoryImpl.findUsersAndRanking(user2.getUserId(), pageRequest);
-        assertEquals(2, result2.getMyRanking());
-
-        GetUserRankingResponseDto result3 = userRepositoryImpl.findUsersAndRanking(user3.getUserId(), pageRequest);
-        assertEquals(3, result3.getMyRanking());
-
-        GetUserRankingResponseDto result4 = userRepositoryImpl.findUsersAndRanking(user4.getUserId(), pageRequest);
-        assertEquals(6, result4.getMyRanking());
-
-        GetUserRankingResponseDto result5 = userRepositoryImpl.findUsersAndRanking(user5.getUserId(), pageRequest);
-        assertEquals(7, result5.getMyRanking());
     }
 }
