@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SignUpRequestDto {
-    @Email(message = "invalid email")
+    @Email(message = "유효한 이메일이 아닙니다.")
     String loginId;
 
     @NotBlank(message = "invalid password")
