@@ -25,6 +25,10 @@ spring:
       username: ${REDIS_USERNAME}
       password: ${REDIS_PASSWORD}
       timeout: 5000
+
+logging:
+  config: classpath:logback-prod.xml
+
 e:
   auth:
     google_client_id: ${GOOGLE_CLIENT_ID}

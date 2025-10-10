@@ -73,6 +73,9 @@ management:
       exposure:
         include: '*'
 
+logging:
+  config: classpath:logback-dev.xml
+
 e:
   auth:
     google_client_id: ${GOOGLE_CLIENT_ID}

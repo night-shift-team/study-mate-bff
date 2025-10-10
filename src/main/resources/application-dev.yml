@@ -46,6 +46,8 @@ springdoc:
   paths-to-match:
     - /**
 
+logging:
+  config: classpath:logback-dev.xml
 
 e:
   auth:
