@@ -29,9 +29,19 @@ public class RedisService {
         redisTemplate.delete(key);
     }
 
+    public void rename(String oldKey, String newKey) {
+        redisTemplate.rename(oldKey, newKey);
+    }
+
     // Sorted Set에 값 추가 (점수 포함)
     public void addToSortedSet(String key, String value, double score) {
         redisTemplate.opsForZSet().add(key, value, score);
+    }
+
+    // Sorted Set에 값 추가 (점수 포함 + TTL)
+    public void addToSortedSet(String key, String value, double score, Duration ttl) {
+        redisTemplate.opsForZSet().add(key, value, score);
+        redisTemplate.expire(key, ttl);
     }
 
     // Sorted Set에서 점수 순 조회

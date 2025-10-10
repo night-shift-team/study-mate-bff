@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Repository;
 
+import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ public class RankingRepositoryImpl implements RankingRepository {
     }
 
     private static final String RANKING_KEY = RedisKeyFactory.userRankingSortedSet();
+    private static final String tempKey = RANKING_KEY + "_temp";
 
     // 랭킹 조회 개선 (캐시미스 시, 1500ms 수준 || 캐시히트 시, 600 ms 수준)
     @Override
@@ -122,7 +124,7 @@ public class RankingRepositoryImpl implements RankingRepository {
 
         } catch (Exception e) {
             log.warn("랭킹 조회 실패 : {}", e.getMessage());
-            throw new CustomException(ErrorCode.UNKNOWN_ERROR);
+            throw new CustomException(ErrorCode.CACHE_ERR);
         }
     }
 
@@ -131,6 +133,12 @@ public class RankingRepositoryImpl implements RankingRepository {
     public void updateUserScoreInRedis(String userId, int newScore, long createdTimestamp) {
         double redisScore = calculateRedisScore(newScore, createdTimestamp);
         redisService.addToSortedSet(RANKING_KEY, userId, redisScore);
+    }
+
+    @Override
+    public void updateTempUserScoreInRedis(String userId, int newScore, long createdTimestamp, Duration ttl) {
+        double redisScore = calculateRedisScore(newScore, createdTimestamp);
+        redisService.addToSortedSet(tempKey, userId, redisScore, ttl);
     }
 
     // Redis 점수 계산 (동점 처리용)
@@ -144,16 +152,44 @@ public class RankingRepositoryImpl implements RankingRepository {
     @Override
     public void initializeRankings() {
         log.info("랭킹 초기화 시작");
-
+        // 새 데이터 삽입 여기서 실패하면?
+        // Clear 시키는건 좋은데, 하는 도중에 실패하면 빈 캐시로 유지됨 ㄱ-
+        // 따라서, 이전 데이터 temp 임시값으로 유지시키면서 이동
+        // Fetching all users하고,
         List<User> allUsers = queryFactory
                 .selectFrom(user)
                 .fetch();
 
-        for (User user : allUsers) {
-            long createdTimestamp = user.getCreatedDt().atZone(java.time.ZoneId.systemDefault()).toEpochSecond();
-            updateUserScoreInRedis(user.getUserId(), user.getScore(), createdTimestamp);
-        }
+        // 랭킹데이터가 존재하는 경우 -> 스왑 방식으로 안전하게 ㄱ
+        if(redisService.hasKey(RANKING_KEY)){
+            try {
+                // 임시 데이터 저장
+                for (User user : allUsers) {
+                    long createdTimestamp = user.getCreatedDt().atZone(java.time.ZoneId.systemDefault()).toEpochSecond();
+                    updateTempUserScoreInRedis(user.getUserId(), user.getScore() ,createdTimestamp, Duration.ofMinutes(5));
+                }
 
-        log.info("랭킹 초기화 완료: {} 명", allUsers.size());
+                // 기존 랭킹 데이터 삭제
+                // 키네임 임시값 -> 랭킹정보로 변경
+                this.clearCache();
+                redisService.rename(tempKey, RANKING_KEY);
+
+                log.info("랭킹 초기화 완료: {} 명", allUsers.size());
+            } catch (Exception e) {
+                log.warn("랭킹 초기화 실패 : {}", e.getMessage());
+                throw new CustomException(ErrorCode.CACHE_ERR);
+            }
+        } else {
+            // 랭킹 데이터 없고 최초라면, 생성.
+            for (User user : allUsers) {
+                long createdTimestamp = user.getCreatedDt().atZone(java.time.ZoneId.systemDefault()).toEpochSecond();
+                updateUserScoreInRedis(user.getUserId(), user.getScore() ,createdTimestamp);
+            }
+        }
+    }
+
+    @Override
+    public void clearCache() {
+        redisService.delete(RANKING_KEY);
     }
 }

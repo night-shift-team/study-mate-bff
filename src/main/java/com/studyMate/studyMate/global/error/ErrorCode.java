@@ -19,7 +19,7 @@ public enum ErrorCode {
     NULL_POINTER(500, "nullpointer exception", "0007"),
     IO_EXCEPTION(400, "io exception", "0008"),
     INVALID_AURGUMENT(400, "invalid aurgument", "0009"),
-
+    CACHE_ERR(500, "cache error", "0010"),
     /**
      * Auth Errors
      * 0100 ~ 0199
