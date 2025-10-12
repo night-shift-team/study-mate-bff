@@ -530,25 +530,28 @@ public class QuestionService {
         }
 
         List<Integer> difficultyResult;
-
+        // 난이도 : 10, 20, 30, 40, 50 문제를 채워라.
+        // Level 1 ~ 3 : Difficulty 1 ~ 30
         if(userScore <= 2000) {
-            difficultyResult = Arrays.asList(1, 10);
+            difficultyResult = Arrays.asList(1, 30);
         } else if (userScore <= 4000) {
-            difficultyResult = Arrays.asList(11, 20);
+            difficultyResult = Arrays.asList(5, 30);
         } else if (userScore <= 8000) {
-            difficultyResult = Arrays.asList(21, 30);
+            difficultyResult = Arrays.asList(10, 30);
+        // Level 4 ~ 6 : Difficulty 10 ~ 50
         } else if (userScore <= 16000) {
-            difficultyResult = Arrays.asList(31, 40);
+            difficultyResult = Arrays.asList(10, 50);
         } else if (userScore <= 32000) {
-            difficultyResult = Arrays.asList(41, 50);
+            difficultyResult = Arrays.asList(15, 50);
         } else if (userScore <= 64000) {
-            difficultyResult = Arrays.asList(51, 60);
+            difficultyResult = Arrays.asList(20, 50);
+        // Level 7 ~ 9 : Difficulty 30 ~ 99
         } else if (userScore <= 128000) {
-            difficultyResult = Arrays.asList(61, 70);
+            difficultyResult = Arrays.asList(30, 80);
         } else if (userScore <= 256000) {
-            difficultyResult = Arrays.asList(71, 80);
+            difficultyResult = Arrays.asList(40, 85);
         } else if (userScore <= 512000) {
-            difficultyResult = Arrays.asList(81, 100);
+            difficultyResult = Arrays.asList(50, 99);
         } else {
             difficultyResult = Arrays.asList(1, 9999999);
         }
