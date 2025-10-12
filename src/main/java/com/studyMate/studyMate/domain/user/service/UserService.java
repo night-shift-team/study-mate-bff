@@ -232,6 +232,7 @@ public class UserService {
      * @param code 코드번호
      * @return true || false
      */
+    @Transactional
     public String resetPassword(String email, String code) {
         // 1. Redis에 유저가 가입하려는 Email로된 Key값이 있나 조회
         String findPwdKey = RedisKeyFactory.findPwdUser(email);
@@ -246,7 +247,7 @@ public class UserService {
         redisService.delete(findPwdKey);
 
         // 2.3 비밀번호 초기화
-        User user = userRepository.findByUserIdAndStatus(email, UserStatus.ACTIVE).orElseThrow(() ->  new CustomException(ErrorCode.NOT_ACTIVE_USER));
+        User user = userRepository.findByLoginIdAndStatus(email, UserStatus.ACTIVE).orElseThrow(() -> new CustomException(ErrorCode.NOT_ACTIVE_USER));
         String newPassword = generateSecureAlphanumericCode(8);
 
         user.setUserPassword(encryptionUtil.encryptBcrypt(newPassword));
